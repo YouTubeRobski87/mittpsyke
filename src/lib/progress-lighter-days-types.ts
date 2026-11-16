@@ -71,5 +71,5 @@ export type SummaryStatement = {
 
 export type SummaryResponse = {
 	statements: SummaryStatement[];
-	reason: 'no-sources' | 'withheld' | 'no-traceable-statements' | null;
+	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'no-traceable-statements' | null;
 };

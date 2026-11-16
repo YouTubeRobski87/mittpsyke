@@ -10,6 +10,7 @@
 	// AI-sammanfattningen körs bara när användaren trycker på knappen.
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { supabase } from '$lib/supabase';
+	import { createSummaryRequests, getSummarySnapshotId } from '$lib/progress-summary-request';
 	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
 	import {
@@ -55,14 +56,17 @@
 		| { status: 'error'; message: string };
 	let summary = $state<SummaryState>({ status: 'idle' });
 
-	// En sammanfattning gäller exakt det underlag den skapades från. När
-	// perioden byts eller ett tema korrigeras börjar den om från knappen.
-	$effect(() => {
-		void view;
-		summary = { status: 'idle' };
-	});
-
 	const hasThemes = $derived((view?.themes.length ?? 0) > 0);
+	const requests = createSummaryRequests();
+	const summaryView = $derived(
+		view && view.themes.length > 0 && !loading && !failed && !saving ? view : null
+	);
+
+	$effect(() => {
+		void summaryView;
+		summary = { status: 'idle' };
+		return requests.cancel;
+	});
 
 	function evidenceLabel(theme: LighterDaysTheme) {
 		return openEvidence[theme.id] ? 'Dölj underlaget' : 'Visa underlaget';
@@ -83,6 +87,8 @@
 	async function saveOverrides(update: (current: ProgressThemeOverrides) => ProgressThemeOverrides) {
 		if (saving) return false;
 		saving = true;
+		requests.cancel();
+		summary = { status: 'idle' };
 		saveError = '';
 		try {
 			const {
@@ -131,12 +137,28 @@
 		if (saved && receipt?.id === id) receipt = null;
 	}
 
-	async function runSummary() {
-		if (!view || summary.status === 'loading') return;
+	async function runSummary(grantConsent = false) {
+		const snapshot = summaryView;
+		if (!snapshot || summary.status === 'loading') return;
+		const request = requests.start(snapshot);
 		summary = { status: 'loading' };
 		try {
 			const token = await accessToken();
+			if (!request.isCurrent(summaryView)) return;
 			if (!token) throw new Error('Du behöver vara inloggad.');
+			const snapshotId = await getSummarySnapshotId(snapshot);
+			if (!request.isCurrent(summaryView)) return;
+
+			if (grantConsent) {
+				const consent = await fetch('/api/consent/diary-ai', {
+					method: 'POST',
+					headers: { Authorization: `Bearer ${token}` },
+					signal: request.signal
+				});
+				if (!request.isCurrent(summaryView)) return;
+				if (!consent.ok) throw new Error('Kunde inte spara samtycket just nu. Försök igen.');
+			}
+
 			const response = await fetch('/api/diary/insights/summary', {
 				method: 'POST',
 				headers: {
@@ -144,13 +166,13 @@
 					'Content-Type': 'application/json',
 					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
 				},
-				body: JSON.stringify({ period: view.periodDays })
+				body: JSON.stringify({ period: snapshot.periodDays, snapshotId }),
+				signal: request.signal
 			});
-			const payload = (await response.json().catch(() => null)) as {
-				statements?: SummaryStatement[];
-				reason?: string | null;
+			const payload = (await response.json().catch(() => null)) as (SummaryResponse & {
 				error?: string;
-			} | null;
+			}) | null;
+			if (!request.isCurrent(summaryView)) return;
 			if (response.status === 403 && payload?.reason === 'ai-consent') {
 				summary = { status: 'needs-consent' };
 				return;
@@ -161,29 +183,26 @@
 			summary = {
 				status: 'done',
 				statements: payload?.statements ?? [],
-				reason: (payload?.reason as SummaryResponse['reason']) ?? null
+				reason: payload?.reason ?? null
 			};
 		} catch (error) {
+			if (!request.isCurrent(summaryView)) return;
 			summary = {
 				status: 'error',
 				message: error instanceof Error ? error.message : 'Kunde inte skapa en sammanfattning just nu.'
 			};
+		} finally {
+			request.finish();
 		}
 	}
 
 	async function grantAiConsentAndSummarize() {
-		const token = await accessToken();
-		if (!token) throw new Error('Du behöver vara inloggad för att ge samtycke.');
-		const response = await fetch('/api/consent/diary-ai', {
-			method: 'POST',
-			headers: { Authorization: `Bearer ${token}` }
-		});
-		if (!response.ok) throw new Error('Kunde inte spara samtycket just nu.');
-		await runSummary();
+		await runSummary(true);
 	}
 
 	function summaryEmptyCopy(reason: SummaryResponse['reason']) {
 		if (reason === 'withheld') return 'Sammanfattningen görs inte för det här underlaget. Inläggen och siffrorna nedan finns kvar.';
+		if (reason === 'insufficient-data') return 'Underlaget räcker inte för en sammanfattning.';
 		if (reason === 'no-sources') return 'Det finns inga utdrag att sammanfatta ännu.';
 		return 'Det gick inte att skapa en sammanfattning där varje del går att spåra till dina inlägg. Siffrorna nedan gäller fortfarande.';
 	}
@@ -215,7 +234,7 @@
 			</p>
 		{/if}
 
-		{#if hasThemes}
+		{#if summaryView}
 			{@render aiSummary()}
 		{/if}
 
@@ -351,10 +370,10 @@
 			<div class="lighter-days-ai">
 				{#if summary.status === 'idle' || summary.status === 'error'}
 					<p class="lighter-days-muted">
-						Vill du kan en AI formulera en kort sammanfattning av utdragen nedan. Den körs bara om du
+						Vill du kan en AI välja ut några av observationerna nedan. Den körs bara om du
 						trycker på knappen, och varje mening visar vilka inlägg den bygger på.
 					</p>
-					<button type="button" class="lighter-days-action" onclick={runSummary} data-testid="lighter-days-ai-button">
+					<button type="button" class="lighter-days-action" onclick={() => runSummary()} data-testid="lighter-days-ai-button">
 						Sammanfatta underlaget med AI
 					</button>
 					{#if summary.status === 'error'}<p class="lighter-days-error" role="alert">{summary.message}</p>{/if}
