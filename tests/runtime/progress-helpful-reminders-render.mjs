@@ -1,4 +1,4 @@
-// Run after building the adapter-node output. The fixture binds only to loopback.
+// Kör efter produktionsbygget med adapter-node. Testservern lyssnar bara lokalt.
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';

@@ -1,11 +1,15 @@
+import { render } from 'svelte/server';
 import { describe, expect, it, vi } from 'vitest';
+import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
+import { getLighterDaysSummaryView, getVisibleComparisonThemes, MAX_SUMMARY_SOURCES } from '$lib/progress-summary-request';
 import { generateAIText, type AITextProvider } from './ai/text-generation';
 import { buildLighterDaysView, type LighterDaysRow } from './progress-lighter-days';
 import {
 	buildLighterDaysSummaryRequest,
-	collectSummaryFacts,
 	parseLighterDaysSummary
 } from './progress-lighter-days-summary';
+
+vi.mock('$lib/supabase', () => ({ supabase: {} }));
 
 const NOW = new Date('2026-06-30T12:00:00Z');
 
@@ -23,13 +27,13 @@ const rows: LighterDaysRow[] = [
 ];
 
 const view = buildLighterDaysView(rows, 30, {}, NOW);
-const facts = collectSummaryFacts(view);
+const facts = getLighterDaysSummaryView(view, false)!.facts;
 
 describe('AI-sammanfattningens underlag', () => {
 	it('binder varje observation till serverns siffror och ordagranna utdrag från samma tema', () => {
 		expect(facts).toHaveLength(1);
 		const [fact] = facts;
-		expect(fact.text).toBe(`${view.themes[0].note} ${view.themes[0].comparison}`);
+		expect(fact.text).toBe(`${view.helpfulPatterns!.themes[0].note} ${view.helpfulPatterns!.themes[0].comparison}`);
 		expect(fact.sources.map((source) => source.entryId).sort()).toEqual(['e1', 'e2', 'e3']);
 		for (const source of fact.sources) {
 			expect(rows.find((row) => row.id === source.entryId)?.text).toContain(source.excerpt);
@@ -42,14 +46,77 @@ describe('AI-sammanfattningens underlag', () => {
 	});
 
 	it('erbjuder ingen observation från ett dolt tema eller ett tema utan tillåtna utdrag', () => {
-		expect(collectSummaryFacts(buildLighterDaysView(rows, 30, { [view.themes[0].id]: { hidden: true } }, NOW))).toEqual([]);
-		expect(collectSummaryFacts({
+		const hidden = buildLighterDaysView(rows, 30, { [view.themes[0].id]: { hidden: true } }, NOW);
+		expect(getLighterDaysSummaryView(hidden, false)).toBeNull();
+		const withoutExcerpts = {
 			...view,
-			themes: view.themes.map((theme) => ({
+			helpfulPatterns: { ready: true, themes: view.helpfulPatterns!.themes.map((theme) => ({
 				...theme,
 				evidence: theme.evidence.map((item) => ({ ...item, excerpt: null }))
+			})) }
+		};
+		expect(getLighterDaysSummaryView(withoutExcerpts, false)).toBeNull();
+		expect(render(LighterDaysCard, { props: { view: withoutExcerpts } }).body)
+			.not.toContain('lighter-days-ai-button');
+	});
+	it('visar varken tema eller AI-knapp när promenader bara förekommer på två olika dagar', () => {
+		const oldOnlyRows = [
+			...rows.map((row) => row.id === 'e2' ? { ...row, created_at: rows[0].created_at } : row),
+			entry('e4', '2026-06-20', 9, 'Vanlig dag hemma.')
+		];
+		const oldOnly = buildLighterDaysView(oldOnlyRows, 30, {}, NOW);
+		expect(oldOnly.themes.map((theme) => theme.id)).toContain('Motion');
+		expect(oldOnly.helpfulPatterns).toEqual({ ready: true, themes: [] });
+		expect(getLighterDaysSummaryView(oldOnly, false)).toBeNull();
+		const { body } = render(LighterDaysCard, { props: { view: oldOnly } });
+		expect(body).not.toContain('lighter-days-ai-button');
+		expect(body).not.toContain('Visa underlaget');
+	});
+
+	it('erbjuder ingen sammanfattning när andelarna skiljer sig med mindre än 15 procentenheter', () => {
+		const closeShares = [
+			...rows.map((row, index) => index >= 3 && index < 9 ? { ...row, text: 'Promenad.' } : row),
+			entry('e4', '2026-06-20', 8, 'Vanlig dag hemma.'),
+			entry('b7', '2026-06-21', 4, 'Vanlig dag hemma.'),
+			entry('b8', '2026-06-22', 4, 'Vanlig dag hemma.')
+		];
+		const comparison = buildLighterDaysView(closeShares, 30, {}, NOW);
+		expect(comparison.themes).toMatchObject([{ id: 'Motion', count: 3, base: 4, otherCount: 6, otherBase: 9 }]);
+		expect(getLighterDaysSummaryView(comparison, false)).toBeNull();
+		expect(render(LighterDaysCard, { props: { view: comparison } }).body).not.toContain('lighter-days-ai-button');
+	});
+
+	it('använder samma spärr för avkortat underlag i vyn och sammanfattningen', () => {
+		const { body: full } = render(LighterDaysCard, { props: { view } });
+		expect(full).toContain('lighter-days-ai-button');
+		expect(full).toContain('antalet inlägg med temat och det totala antalet inlägg i varje grupp');
+		expect(full).toContain('skickas till OpenAI');
+		const { body: limited } = render(LighterDaysCard, { props: { view, comparisonLimited: true } });
+		expect(limited).not.toContain('lighter-days-ai-button');
+		expect(limited).not.toContain('Visa underlaget');
+		expect(getLighterDaysSummaryView(view, true)).toBeNull();
+	});
+
+	it('begränsar utdragen till synliga teman och samma maximala antal', () => {
+		const theme = view.helpfulPatterns!.themes[0];
+		const themes = ['Motion', 'Natur', 'Sömn'].map((label) => ({
+			...theme,
+			id: label,
+			label,
+			note: label + ' förekom i jämförelsen.',
+			evidence: Array.from({ length: 8 }, (_, index) => ({
+				...theme.evidence[0],
+				excerpt: label + ' utdrag ' + (index + 1)
 			}))
-		})).toEqual([]);
+		}));
+		const comparison = { ...view, helpfulPatterns: { ready: true, themes } };
+		expect(getVisibleComparisonThemes(comparison, false)).toEqual(themes);
+		const snapshot = getLighterDaysSummaryView(comparison, false)!;
+		expect(snapshot.facts.flatMap((fact) => fact.sources)).toHaveLength(MAX_SUMMARY_SOURCES);
+		expect(snapshot.facts.map((fact) => fact.sources.length)).toEqual([8, 8, 4]);
+		const payload = buildLighterDaysSummaryRequest(snapshot.facts).messages[0].content;
+		expect(payload).not.toContain('Sömn utdrag 5');
+		expect(payload).not.toContain(theme.evidence[0].entryId);
 	});
 });
 
