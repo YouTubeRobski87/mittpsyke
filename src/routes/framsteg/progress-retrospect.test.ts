@@ -30,9 +30,9 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	it('anropas bara från knappens klickhanterare, aldrig vid laddning', () => {
 		const calls = card.match(/fetch\('\/api\/diary\/insights\/summary'/g) ?? [];
 		expect(calls).toHaveLength(1);
-		const runSummary = card.slice(card.indexOf('async function runSummary()'), card.indexOf('async function grantAiConsentAndSummarize()'));
+		const runSummary = card.slice(card.indexOf('async function runSummary('), card.indexOf('async function grantAiConsentAndSummarize()'));
 		expect(runSummary).toContain("fetch('/api/diary/insights/summary'");
-		expect(card).toContain('onclick={runSummary}');
+		expect(card).toContain('onclick={() => runSummary()}');
 		// Ingen effekt eller mount-hook startar sammanfattningen.
 		expect(card).not.toMatch(/onMount/);
 		const effects = card.match(/\$effect\(\(\) => \{[\s\S]*?\n\t\}\);/g) ?? [];
@@ -52,11 +52,11 @@ describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
 		const render = card.indexOf('{@render aiSummary()}');
 		expect(render).toBeGreaterThan(-1);
 		expect(render).toBeLessThan(card.indexOf('<ul class="lighter-days-list">'));
-		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if hasThemes}');
+		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if summaryView}');
 		expect(card.match(/\{@render aiSummary\(\)\}/g)).toHaveLength(1);
 		expect(card.match(/data-testid="lighter-days-ai-button"/g)).toHaveLength(1);
 		// Knappen startar fortfarande sammanfattningen - inget körs av sig självt.
-		expect(card).toContain('onclick={runSummary} data-testid="lighter-days-ai-button"');
+		expect(card).toContain('onclick={() => runSummary()} data-testid="lighter-days-ai-button"');
 		expect(card).not.toMatch(/\$effect\([^)]*\{[^}]*runSummary\(/);
 	});
 

@@ -3,7 +3,7 @@ import { generateAIText, type AITextProvider } from './ai/text-generation';
 import { buildLighterDaysView, type LighterDaysRow } from './progress-lighter-days';
 import {
 	buildLighterDaysSummaryRequest,
-	collectSummarySources,
+	collectSummaryFacts,
 	parseLighterDaysSummary
 } from './progress-lighter-days-summary';
 
@@ -23,90 +23,63 @@ const rows: LighterDaysRow[] = [
 ];
 
 const view = buildLighterDaysView(rows, 30, {}, NOW);
-const sources = collectSummarySources(view);
+const facts = collectSummaryFacts(view);
 
 describe('AI-sammanfattningens underlag', () => {
-	it('skickar bara ordagranna utdrag ur användarens egna inlägg, numrerade', () => {
-		expect(sources.map((source) => source.entryId).sort()).toEqual(['e1', 'e2', 'e3']);
-		for (const source of sources) {
-			const original = rows.find((row) => row.id === source.entryId);
-			expect(original?.text).toContain(source.excerpt);
+	it('binder varje observation till serverns siffror och ordagranna utdrag från samma tema', () => {
+		expect(facts).toHaveLength(1);
+		const [fact] = facts;
+		expect(fact.text).toBe(`${view.themes[0].note} ${view.themes[0].comparison}`);
+		expect(fact.sources.map((source) => source.entryId).sort()).toEqual(['e1', 'e2', 'e3']);
+		for (const source of fact.sources) {
+			expect(rows.find((row) => row.id === source.entryId)?.text).toContain(source.excerpt);
 		}
-		const request = buildLighterDaysSummaryRequest(view, sources);
-		const systemInstructions = request.systemInstructions;
-		if (!systemInstructions) throw new Error('Sammanfattningens request måste innehålla systeminstruktioner.');
-		const prompt = request.messages.map((message) => message.content).join('\n');
-		expect(prompt).toContain('[1]');
-		// Inlägg utan temat (jämförelsegruppen) skickas aldrig.
+		const request = buildLighterDaysSummaryRequest(facts);
+		const prompt = request.messages[0].content;
+		expect(prompt).toContain(fact.text);
 		expect(prompt).not.toContain('Vanlig dag hemma.');
-		expect(systemInstructions.join('\n')).toContain('återkommande mönster, förändring eller kontinuitet över tid');
-		expect(systemInstructions.join('\n')).toContain('inte med en uppräkning av enskilda datum');
-		expect(systemInstructions.join('\n')).toContain('observation och försiktig tolkning');
 		expect(request.outputFormat).toBe('json_object');
+	});
+
+	it('erbjuder ingen observation från ett dolt tema eller ett tema utan tillåtna utdrag', () => {
+		expect(collectSummaryFacts(buildLighterDaysView(rows, 30, { [view.themes[0].id]: { hidden: true } }, NOW))).toEqual([]);
+		expect(collectSummaryFacts({
+			...view,
+			themes: view.themes.map((theme) => ({
+				...theme,
+				evidence: theme.evidence.map((item) => ({ ...item, excerpt: null }))
+			}))
+		})).toEqual([]);
 	});
 });
 
-describe('varje påstående måste gå att spåra', () => {
-	it('behåller påståenden som pekar på existerande utdrag och bifogar dem', () => {
-		const raw = JSON.stringify({
-			statements: [{ text: 'Promenad nämns i tre inlägg, bland annat "Promenad före frukost." [2]', sources: [2, 3] }]
-		});
-		const [statement] = parseLighterDaysSummary(raw, sources);
-
-		expect(statement.text).toBe('Promenad nämns i tre inlägg, bland annat "Promenad före frukost."');
-		expect(statement.sources.map((source) => source.ref)).toEqual([2, 3]);
+describe('modellen får enbart välja serverns observationer', () => {
+	it('återger endast serverns text och källor, utan dubletter', () => {
+		expect(parseLighterDaysSummary('{"factIds":[1,1]}', facts)).toEqual(facts);
 	});
 
-	it('kastar påståenden utan underlag eller med påhittade källnummer', () => {
-		const raw = JSON.stringify({
-			statements: [
-				{ text: 'Promenader återkommer.', sources: [] },
-				{ text: 'Promenader återkommer ofta.', sources: [99] },
-				{ text: 'Promenader återkommer ofta i juni.' }
-			]
-		});
-
-		expect(parseLighterDaysSummary(raw, sources)).toEqual([]);
+	it.each([
+		['ogiltigt nummer', { factIds: [99] }],
+		['ogiltigt nummer bland giltiga', { factIds: [1, 99] }],
+		['felaktigt påstående med giltig källa', { statements: [{ text: 'Arbete förekom.', sources: [1] }] }],
+		['påhittat citat med giltigt val', { factIds: [1], quote: 'Jag sprang ett maraton.' }],
+		['påhittad siffra med giltigt val', { factIds: [{ id: 1, count: 99 }] }],
+		['tomt urval', { factIds: [] }]
+	])('visar inget för %s', (_name, reply) => {
+		expect(parseLighterDaysSummary(JSON.stringify(reply), facts)).toEqual([]);
 	});
 
-	it('dokumenterar att ett giltigt källnummer inte semantiskt verifierar påståendet', () => {
-		const raw = JSON.stringify({
-			statements: [{ text: 'Arbete förekom under perioden.', sources: [1] }]
-		});
-		const [statement] = parseLighterDaysSummary(raw, sources);
-
-		// Detta är en karakterisering av den kvarvarande P1-bristen, inte en säkerhetsgaranti:
-		// parsern accepterar texten trots att källan bara beskriver en promenad.
-		expect(statement.text).toBe('Arbete förekom under perioden.');
-		expect(statement.sources[0].excerpt).toBe('En promenad till affären.');
-	});
-
-	it('kastar identitets-, diagnos- och orsakspåståenden även med giltiga källor', () => {
-		const raw = JSON.stringify({
-			statements: [
-				{ text: 'Du är en person som behöver röra på dig.', sources: [1] },
-				{ text: 'Det kan tyda på depression.', sources: [1] },
-				{ text: 'Promenaderna ledde till högre humör.', sources: [1] },
-				{ text: 'Promenad fanns med i alla tre inläggen.', sources: [1, 2, 3] }
-			]
-		});
-
-		expect(parseLighterDaysSummary(raw, sources).map((statement) => statement.text)).toEqual([
-			'Promenad fanns med i alla tre inläggen.'
-		]);
-	});
-
-	it('tål ett trasigt svar utan att visa något', () => {
-		expect(parseLighterDaysSummary('inte json', sources)).toEqual([]);
+	it('visar inget vid trasigt JSON eller tomt serverunderlag', () => {
+		expect(parseLighterDaysSummary('inte json', facts)).toEqual([]);
+		expect(parseLighterDaysSummary('{"factIds":[1]}', [])).toEqual([]);
 	});
 
 	it('går genom den gemensamma, injicerbara AI-tjänsten', async () => {
 		const provider: AITextProvider = {
-			generate: vi.fn().mockResolvedValue(JSON.stringify({ statements: [{ text: 'Promenad nämns tre gånger.', sources: [1] }] }))
+			generate: vi.fn().mockResolvedValue('{"factIds":[1]}')
 		};
-		const result = await generateAIText(buildLighterDaysSummaryRequest(view, sources), provider);
-
+		const result = await generateAIText(buildLighterDaysSummaryRequest(facts), provider);
 		expect(provider.generate).toHaveBeenCalledWith(expect.objectContaining({ purpose: 'diary-narrative' }));
-		expect(parseLighterDaysSummary(result.text, sources)).toHaveLength(1);
+		expect(parseLighterDaysSummary(result.text, facts)).toEqual(facts);
 	});
 });

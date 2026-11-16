@@ -1394,7 +1394,7 @@
 				<section class="card reflection-card lighter-days-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="lighter-days-heading" data-testid="lighter-days">
 					<p class="auth-eyebrow">Din personliga återblick</p>
 					<LighterDaysCard
-						view={lighterDaysView}
+						view={lighterDaysView?.periodDays === selectedPeriod ? lighterDaysView : null}
 						loading={insightsLoading}
 						failed={Boolean(insightsError)}
 						onChanged={loadInsights}
