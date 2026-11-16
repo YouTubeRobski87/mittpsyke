@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
-import { getSummarySnapshotId } from '$lib/progress-summary-request';
+import { getLighterDaysSummaryView, getSummarySnapshotId } from '$lib/progress-summary-request';
 import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 import { POST } from './+server';
 
@@ -42,7 +42,10 @@ const view: LighterDaysView = {
 	}]
 };
 
-async function summarize(snapshot = view, { authenticated = true, sensitiveConsent = true } = {}) {
+view.helpfulPatterns = { ready: true, themes: view.themes };
+const visibleSnapshot = getLighterDaysSummaryView(view, false)!;
+
+async function summarize(snapshot = visibleSnapshot, { authenticated = true, sensitiveConsent = true } = {}) {
 	const headers = new Headers({ 'Content-Type': 'application/json' });
 	if (authenticated) headers.set('Authorization', 'Bearer test-token');
 	if (sensitiveConsent) headers.set(SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION);
@@ -66,8 +69,8 @@ beforeEach(() => {
 
 describe('Framstegs sammanfattningsendpoint', () => {
 	it('behåller inloggnings- och samtyckeskrav före läsning av dagboken', async () => {
-		expect((await summarize(view, { sensitiveConsent: false })).status).toBe(403);
-		expect((await summarize(view, { authenticated: false })).status).toBe(401);
+		expect((await summarize(visibleSnapshot, { sensitiveConsent: false })).status).toBe(403);
+		expect((await summarize(visibleSnapshot, { authenticated: false })).status).toBe(401);
 		mocks.consent.mockResolvedValue(false);
 		const denied = await summarize();
 		expect(denied.status).toBe(403);
@@ -76,8 +79,11 @@ describe('Framstegs sammanfattningsendpoint', () => {
 		expect(mocks.generate).not.toHaveBeenCalled();
 	});
 
-	it('avvisar en tidigare vy när serverns temainställningar har ändrats', async () => {
-		mocks.view.mockReturnValue({ ...view, themes: [], hiddenThemes: [{ id: 'Sömn', label: 'Sömn' }] });
+	it('avvisar en tidigare vy när det synliga temat har bytt namn', async () => {
+		mocks.view.mockReturnValue({
+			...view,
+			helpfulPatterns: { ready: true, themes: [{ ...view.themes[0], note: 'Vila fanns med i 3 av 4.', label: 'Vila' }] }
+		});
 		expect((await summarize()).status).toBe(409);
 		expect(mocks.generate).not.toHaveBeenCalled();
 	});
@@ -85,10 +91,10 @@ describe('Framstegs sammanfattningsendpoint', () => {
 	it('hoppar över modellen vid tomt, tunt eller avkortat underlag', async () => {
 		const thin = { ...view, lowConfidence: true, relevantEntryCount: 4 };
 		mocks.view.mockReturnValue(thin);
-		expect(await (await summarize(thin)).json()).toEqual({ statements: [], reason: 'insufficient-data' });
-		const empty = { ...view, themes: [] };
+		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'insufficient-data' });
+		const empty = { ...view, helpfulPatterns: { ready: true, themes: [] } };
 		mocks.view.mockReturnValue(empty);
-		expect(await (await summarize(empty)).json()).toEqual({ statements: [], reason: 'no-sources' });
+		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'no-sources' });
 		mocks.view.mockReturnValue(view);
 		mocks.rows.mockResolvedValue({ rows: [], truncated: true, error: null });
 		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'insufficient-data' });
@@ -96,6 +102,11 @@ describe('Framstegs sammanfattningsendpoint', () => {
 	});
 
 	it('returnerar serverns verifierbara text och dess källor vid ett giltigt urval', async () => {
+		mocks.view.mockReturnValue({
+			...view,
+			themes: [...view.themes, { ...view.themes[0], id: 'Motion', label: 'Motion',
+				note: 'Motion fanns med i 3 av 4.', evidence: [{ ...view.themes[0].evidence[0], excerpt: 'Tog en promenad.' }] }]
+		});
 		const response = await summarize();
 		expect(response.status).toBe(200);
 		expect(await response.json()).toMatchObject({
@@ -103,5 +114,11 @@ describe('Framstegs sammanfattningsendpoint', () => {
 			reason: null
 		});
 		expect(mocks.generate).toHaveBeenCalledTimes(1);
+		const request = mocks.generate.mock.calls[0][0];
+		expect(JSON.parse(request.messages[0].content)).toEqual([{
+			id: 1,
+			observation: 'Sömn fanns med i 3 av 4. I övriga inlägg: 1 av 6.',
+			utdrag: ['Jag sov länge i går.']
+		}]);
 	});
 });

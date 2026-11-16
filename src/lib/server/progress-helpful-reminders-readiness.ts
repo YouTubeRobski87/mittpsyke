@@ -10,7 +10,7 @@ export async function requireHelpfulRemindersMigration(): Promise<void> {
 	const key = privateEnv.SUPABASE_SERVICE_ROLE_KEY;
 	if (!url || !key) throw new Error('Render: Supabase configuration is required to check the helpful reminders migration.');
 
-	// The page uses the public URL. Account export may use the private URL.
+	// Sidan använder den publika adressen. Kontoexporten kan använda den privata adressen.
 	const urls = new Set([url, privateEnv.SUPABASE_URL || url]);
 	try {
 		await Promise.all([...urls].map(async (databaseUrl) => {

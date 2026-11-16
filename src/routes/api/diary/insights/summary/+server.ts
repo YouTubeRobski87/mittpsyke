@@ -1,13 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
-import { getSummarySnapshotId } from '$lib/progress-summary-request';
+import { getLighterDaysSummaryView, getSummarySnapshotId } from '$lib/progress-summary-request';
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import { generateAIText } from '$lib/server/ai/text-generation';
 import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import { buildLighterDaysView } from '$lib/server/progress-lighter-days';
 import {
 	buildLighterDaysSummaryRequest,
-	collectSummaryFacts,
 	parseLighterDaysSummary
 } from '$lib/server/progress-lighter-days-summary';
 import { loadProgressRows, parseProgressPeriod, readThemeOverrides } from '$lib/server/progress-rows';
@@ -76,17 +75,17 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (error) return json({ error }, { status: 500 });
 
 	const view = buildLighterDaysView(rows, period, readThemeOverrides(user));
-	if (await getSummarySnapshotId(view) !== snapshotId) {
-		return json({ error: 'Underlaget har ändrats. Ladda om återblicken och försök igen.' }, { status: 409 });
-	}
-
 	if (truncated || view.lowConfidence) {
 		return json({ statements: [], reason: 'insufficient-data' });
 	}
-	const facts = collectSummaryFacts(view);
-	if (facts.length === 0) {
+	const summaryView = getLighterDaysSummaryView(view, truncated);
+	if (!summaryView) {
 		return json({ statements: [], reason: 'no-sources' });
 	}
+	if (await getSummarySnapshotId(summaryView) !== snapshotId) {
+		return json({ error: 'Underlaget har ändrats. Ladda om återblicken och försök igen.' }, { status: 409 });
+	}
+	const { facts } = summaryView;
 
 	const aiRequest = buildLighterDaysSummaryRequest(facts);
 	const promptText = aiRequest.messages.map((message) => message.content).join('\n');

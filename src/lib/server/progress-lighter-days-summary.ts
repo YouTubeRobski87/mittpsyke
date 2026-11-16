@@ -1,35 +1,8 @@
 import type { AITextRequest } from '$lib/server/ai/text-generation';
 import { buildSharedSafetyInstructions } from '$lib/server/ai/safety-instructions';
-import { findForbiddenProgressPhrase } from '$lib/progress-language';
-import type { LighterDaysView, SummaryStatement } from '$lib/progress-lighter-days-types';
+import type { SummaryStatement } from '$lib/progress-lighter-days-types';
 
-export const MAX_SUMMARY_SOURCES = 20;
 const MAX_SUMMARY_STATEMENTS = 4;
-
-/** Tillåt bara serverns egna observationer med utdrag från samma tema. */
-export function collectSummaryFacts(view: LighterDaysView): SummaryStatement[] {
-	const facts: SummaryStatement[] = [];
-	let sourceCount = 0;
-	for (const theme of view.themes) {
-		const text = `${theme.note} ${theme.comparison}`;
-		if (findForbiddenProgressPhrase(text)) continue;
-		const sources: SummaryStatement['sources'] = [];
-		for (const item of theme.evidence) {
-			if (sourceCount >= MAX_SUMMARY_SOURCES) break;
-			if (!item.excerpt) continue;
-			sources.push({
-				ref: ++sourceCount,
-				entryId: item.entryId,
-				date: item.date,
-				dateLabel: item.dateLabel,
-				themeLabel: theme.label,
-				excerpt: item.excerpt
-			});
-		}
-		if (sources.length > 0) facts.push({ text, sources });
-	}
-	return facts;
-}
 
 export function buildLighterDaysSummaryRequest(facts: readonly SummaryStatement[]): AITextRequest {
 	const candidates = facts.map((fact, index) => ({

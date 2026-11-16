@@ -1,6 +1,6 @@
-// Run against a fresh loopback-only PostgreSQL database named mittpsyke_helpful_test.
-// Set HELPFUL_TEST_PG_URL and HELPFUL_TEST_PG_MODULE (path to the package.json of a directory with pg installed).
-// Build the app first so the workers can exercise the compiled API handlers.
+// Kör mot en ny lokal PostgreSQL-databas med namnet mittpsyke_helpful_test.
+// Ange HELPFUL_TEST_PG_URL och HELPFUL_TEST_PG_MODULE (sökvägen till package.json i katalogen med pg installerat).
+// Bygg appen först så att processerna kan köra de kompilerade API-routarna.
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
 import { once } from 'node:events';
@@ -51,7 +51,7 @@ async function serve() {
 			return;
 		}
 		if (requestUrl.pathname === '/auth/v1/user' || requestUrl.pathname.startsWith('/rest/v1/')) {
-			// Local Auth/PostgREST transport for the compiled account export.
+			// Lokal Auth- och PostgREST-transport för den kompilerade kontoexporten.
 			const id = req.headers.authorization?.split(' ')[1];
 			assert.ok([a, b].includes(id));
 			let result = [];
@@ -176,7 +176,7 @@ async function overlap(first, second, db, left, right, sameItem = false) {
 		const competing = post(second, ...right);
 		await started;
 		if (!sameItem) {
-			// The second request commits before the first transaction is released.
+			// Det andra anropet sparar innan den första transaktionen släpps.
 			assert.equal((await competing).status, 200);
 		} else {
 			let blocked = false;

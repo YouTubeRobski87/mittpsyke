@@ -10,7 +10,13 @@
 	// AI-sammanfattningen körs bara när användaren trycker på knappen.
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { supabase } from '$lib/supabase';
-	import { createSummaryRequests, getSummarySnapshotId } from '$lib/progress-summary-request';
+	import {
+		createSummaryRequests,
+		getLighterDaysSummaryView,
+		getSummarySnapshotId,
+		getVisibleComparisonThemes,
+		MAX_SUMMARY_SOURCES
+	} from '$lib/progress-summary-request';
 	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
 	import {
@@ -58,10 +64,9 @@
 		| { status: 'error'; message: string };
 	let summary = $state<SummaryState>({ status: 'idle' });
 
-	const hasThemes = $derived((view?.themes.length ?? 0) > 0);
 	const requests = createSummaryRequests();
 	const summaryView = $derived(
-		view && view.themes.length > 0 && !loading && !failed && !saving ? view : null
+		!loading && !failed && !saving ? getLighterDaysSummaryView(view, comparisonLimited) : null
 	);
 
 	$effect(() => {
@@ -70,7 +75,9 @@
 		return requests.cancel;
 	});
 
-	const helpfulThemes = $derived(comparisonLimited ? [] : view?.helpfulPatterns?.themes ?? []);
+	const helpfulThemes = $derived(getVisibleComparisonThemes(view, comparisonLimited));
+	const summaryDataLabel = 'Temanamnen, antalet inlägg med temat och det totala antalet inlägg i varje grupp, periodens längd och upp till ' +
+		MAX_SUMMARY_SOURCES + ' ordagranna utdrag som visas under Visa underlaget';
 	const percent = new Intl.NumberFormat('sv-SE', { style: 'percent', maximumFractionDigits: 1 });
 
 	function evidenceLabel(theme: LighterDaysTheme) {
@@ -385,8 +392,7 @@
 			<div class="lighter-days-ai">
 				{#if summary.status === 'idle' || summary.status === 'error'}
 					<p class="lighter-days-muted">
-						Vill du kan en AI välja ut några observationer ur underlaget för lättare dagar. Den körs bara om du
-						trycker på knappen, och varje mening visar vilka inlägg den bygger på.
+						{summaryDataLabel} skickas till OpenAI när du väljer att sammanfatta. AI väljer bland jämförelserna. Varje vald observation visar vilka inlägg den bygger på.
 					</p>
 					<button type="button" class="lighter-days-action" onclick={() => runSummary()} data-testid="lighter-days-ai-button">
 						Sammanfatta underlaget med AI
@@ -397,8 +403,8 @@
 				{:else if summary.status === 'needs-consent'}
 					<ConsentGate
 						title="Innan AI sammanfattar"
-						dataLabel="Utdragen ur dina inlägg som visas under Visa underlaget"
-						serviceLabel="MittPsyke och OpenAI för att formulera en kort sammanfattning"
+						dataLabel={summaryDataLabel}
+						serviceLabel="MittPsyke och OpenAI"
 						onAccept={grantAiConsentAndSummarize}
 					/>
 				{:else if summary.status === 'done'}
