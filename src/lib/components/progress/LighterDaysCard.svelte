@@ -32,11 +32,13 @@
 		view,
 		loading = false,
 		failed = false,
+		comparisonLimited = false,
 		onChanged = () => {}
 	}: {
 		view: LighterDaysView | null;
 		loading?: boolean;
 		failed?: boolean;
+		comparisonLimited?: boolean;
 		/** Anropas när en korrigering sparats, så att sidan kan räkna om analysen. */
 		onChanged?: () => void | Promise<void>;
 	} = $props();
@@ -67,6 +69,9 @@
 		summary = { status: 'idle' };
 		return requests.cancel;
 	});
+
+	const helpfulThemes = $derived(comparisonLimited ? [] : view?.helpfulPatterns?.themes ?? []);
+	const percent = new Intl.NumberFormat('sv-SE', { style: 'percent', maximumFractionDigits: 1 });
 
 	function evidenceLabel(theme: LighterDaysTheme) {
 		return openEvidence[theme.id] ? 'Dölj underlaget' : 'Visa underlaget';
@@ -212,13 +217,13 @@
      i en <section aria-labelledby="lighter-days-heading">. -->
 <div class="lighter-days">
 	<div class="lighter-days-header">
-		<h2 id="lighter-days-heading">Det som ofta fanns med under lättare dagar</h2>
+		<h2 id="lighter-days-heading">Det här verkar hjälpa mig</h2>
 		{#if view?.lowConfidence}
 			<span class="low-confidence-badge" data-testid="low-confidence">Låg säkerhet</span>
 		{/if}
 	</div>
 	<p class="lighter-days-intro">
-		Teman ur dina egna texter som fanns med i inlägg där humöret låg högre än vanligt för perioden.
+		Här ser du teman som nämndes oftare i anteckningar med högre registrerat humör under perioden.
 		Det visar vad som fanns med – inte vad som orsakade något.
 	</p>
 
@@ -247,9 +252,9 @@
 			</p>
 		{/if}
 
-		{#if hasThemes}
+		{#if helpfulThemes.length > 0}
 			<ul class="lighter-days-list">
-				{#each view.themes as theme (theme.id)}
+				{#each helpfulThemes as theme (theme.id)}
 					<li class="lighter-days-theme">
 						{#if renaming === theme.id}
 							<form
@@ -280,9 +285,9 @@
 						{:else}
 							<h3>{theme.label}</h3>
 						{/if}
-						<p class="lighter-days-note">{theme.note}</p>
+						<p class="lighter-days-note">{theme.note} Andel: {percent.format(theme.count / theme.base)}.</p>
 						<p class="lighter-days-comparison">
-							{theme.comparison} Spritt över {theme.weekCount} {theme.weekCount === 1 ? 'vecka' : 'veckor'}.
+							{theme.comparison} Andel: {percent.format(theme.otherCount / theme.otherBase)}. Spritt över {theme.weekCount} {theme.weekCount === 1 ? 'vecka' : 'veckor'}.
 						</p>
 
 						<div class="lighter-days-actions">
@@ -339,8 +344,13 @@
 			</ul>
 		{:else}
 			<p class="lighter-days-muted">
-				Inget tema har ännu funnits med tillräckligt ofta under lättare dagar. Ett tema visas när det
-				fanns med i minst 3 inlägg med högre humör, under minst 2 olika veckor.
+				{#if comparisonLimited}
+					Underlaget är avkortat för perioden, så temajämförelsen visas inte här.
+				{:else if !view.helpfulPatterns?.ready}
+					Underlaget räcker ännu inte för att jämföra två grupper av anteckningar med både text och humör.
+				{:else}
+					Inget tema har ännu nämnts tillräckligt ofta under lättare dagar för att visa en jämförelse.
+				{/if}
 			</p>
 		{/if}
 
@@ -362,7 +372,12 @@
 			</details>
 		{/if}
 
-		<p class="lighter-days-basis">{view.basis}</p>
+		{#if helpfulThemes.length > 0}
+			<p class="lighter-days-basis">
+				Högre humör betyder över periodens mittvärde. Temat behöver finnas med på minst tre olika dagar
+				under minst två veckor och i en minst 15 procentenheter större andel anteckningar.
+			</p>
+		{/if}
 
 		<!-- AI-delen är oförändrad men ritas överst i kortet (se @render ovan),
 		     så att den går att hitta utan att skrolla förbi alla teman. -->
@@ -370,7 +385,7 @@
 			<div class="lighter-days-ai">
 				{#if summary.status === 'idle' || summary.status === 'error'}
 					<p class="lighter-days-muted">
-						Vill du kan en AI välja ut några av observationerna nedan. Den körs bara om du
+						Vill du kan en AI välja ut några observationer ur underlaget för lättare dagar. Den körs bara om du
 						trycker på knappen, och varje mening visar vilka inlägg den bygger på.
 					</p>
 					<button type="button" class="lighter-days-action" onclick={() => runSummary()} data-testid="lighter-days-ai-button">

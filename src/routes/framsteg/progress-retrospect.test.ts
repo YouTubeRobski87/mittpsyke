@@ -45,7 +45,7 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	});
 });
 
-describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
+describe('kortet "Det här verkar hjälpa mig"', () => {
 	it('ritar AI-delen överst i kortet, en gång, och bara när det finns teman', () => {
 		// AI-delen låg sist i kortet, under alla teman. Den ritas nu före
 		// temalistan så att knappen går att hitta. Markupen är densamma.
@@ -61,7 +61,7 @@ describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
 	});
 
 	it('har den nya rubriken och ingen gammal', () => {
-		expect(card).toContain('<h2 id="lighter-days-heading">Det som ofta fanns med under lättare dagar</h2>');
+		expect(card).toContain('<h2 id="lighter-days-heading">Det här verkar hjälpa mig</h2>');
 		for (const source of [card, route]) expect(source).not.toContain('Det som verkar hjälpa');
 	});
 

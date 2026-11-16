@@ -48,7 +48,9 @@ function supabaseWith(count: CountResult, user: { id: string } | null = { id: 'u
 		auth: {
 			getUser: async () => ({ data: { user: user ? { ...user, user_metadata: {} } : null } })
 		},
-		from: () => query
+		from: (table: string) => table === 'user_helpful_reminders'
+			? { select: () => ({ eq: async () => ({ data: [{ item_id: 'rest', active: true, revision: 1 }] }) }) }
+			: query
 	};
 }
 
@@ -56,7 +58,7 @@ type LoadEvent = Parameters<typeof load>[0];
 type LoadResult = { entriesStatus: 'ready' | 'error'; entryCount: number; isAnonymous: boolean };
 
 async function runLoad(count: CountResult, user?: { id: string } | null) {
-	const event = { locals: { supabase: supabaseWith(count, user) } } as unknown as LoadEvent;
+	const event = { locals: { supabase: supabaseWith(count, user) }, setHeaders: vi.fn() } as unknown as LoadEvent;
 	return (await load(event)) as unknown as LoadResult;
 }
 
@@ -80,6 +82,18 @@ describe('Framstegs laddare', () => {
 
 		expect(result.entriesStatus).toBe('ready');
 		expect(result.entryCount).toBe(7);
+	});
+
+	it('märker svaret med kontots lista som privat och utan cache', async () => {
+		const setHeaders = vi.fn();
+		const supabase = supabaseWith({ count: 0, error: null });
+		supabase.auth.getUser = vi.fn().mockResolvedValue({
+			data: { user: { id: 'user-1', user_metadata: { progress_helpful_reminders: ['Vila', 'Fritext'] } } }
+		});
+		const result = await load({ locals: { supabase }, setHeaders } as unknown as LoadEvent);
+
+		expect(result).toMatchObject({ helpfulReminderAccount: { id: 'user-1', reminders: [{ item_id: 'rest', active: true, revision: 1 }] } });
+		expect(setHeaders).toHaveBeenCalledWith({ 'cache-control': 'private, no-store' });
 	});
 
 	it('en anonym besökare får ready, eftersom inget har lästs', async () => {

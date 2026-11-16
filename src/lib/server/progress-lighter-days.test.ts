@@ -272,3 +272,51 @@ describe('språkregler för genererad text', () => {
 		}
 	});
 });
+
+describe('jämförelsen i Det här verkar hjälpa mig', () => {
+	function high(dates: string[], text = 'Promenad.') {
+		return dates.map((date, index) => entry(`h${index}`, `2026-06-${date}`, 8, text));
+	}
+
+	it('kräver tillräckligt underlag även i gruppen med övriga anteckningar', () => {
+		const lighter = high(['02', '03', '10', '11', '12', '13']);
+		expect(buildLighterDaysView([...lighter, ...baseline().slice(0, 3)], 30, {}, NOW).helpfulPatterns)
+			.toEqual({ ready: false, themes: [] });
+		expect(buildLighterDaysView([...lighter, ...baseline().slice(0, 4)], 30, {}, NOW).helpfulPatterns)
+			.toEqual({ ready: false, themes: [] });
+	});
+
+	it('jämför andelar och kräver minst 15 procentenheters skillnad', () => {
+		const lighter = [...high(['02', '03', '10']), entry('x', '2026-06-11', 8, 'Vanlig dag.')];
+		const lower = [
+			...baseline(),
+			...['20', '21', '22'].map((day) => entry(day, `2026-06-${day}`, 4, 'Vanlig dag.'))
+		].map((row, index) => index < 6 ? { ...row, text: 'Promenad.' } : row);
+		expect(buildLighterDaysView([...lighter, ...lower.slice(0, 9)], 30, {}, NOW).helpfulPatterns)
+			.toEqual({ ready: true, themes: [] });
+		expect(buildLighterDaysView([...lighter, ...lower], 30, {}, NOW).helpfulPatterns?.themes)
+			.toMatchObject([{ id: 'Motion', count: 3, base: 4, otherCount: 6, otherBase: 10 }]);
+	});
+
+	it('kräver förekomster på minst tre datum och behåller länkbart underlag', () => {
+		const repeated = high(['02', '02', '10']);
+		const crowded = [...repeated, entry('x', '2026-06-11', 8, 'Vanlig dag.'), ...baseline()];
+		expect(buildLighterDaysView(crowded, 30, {}, NOW).helpfulPatterns?.themes).toEqual([]);
+		const eligible = [...high(['02', '02', '03', '10']), ...baseline()];
+		const themes = buildLighterDaysView(eligible, 30, {}, NOW).helpfulPatterns?.themes;
+		expect(themes).toMatchObject([{ id: 'Motion', count: 4, base: 4 }]);
+		expect(themes?.[0].evidence.map((item) => item.entryId).sort()).toEqual(['h0', 'h1', 'h2', 'h3']);
+	});
+
+	it('respekterar dolda och omdöpta teman och visar högst tre', () => {
+		const rows = [...high(['02', '03', '10'], 'Promenad i skogen. Vila med mina barn.'), ...baseline()];
+		const view = buildLighterDaysView(rows, 30, {}, NOW);
+		expect(view.themes.length).toBeGreaterThan(3);
+		expect(view.helpfulPatterns?.themes).toHaveLength(3);
+		const motionOnly = [...high(['02', '03', '10']), ...baseline()];
+		expect(buildLighterDaysView(motionOnly, 30, { Motion: { hidden: true } }, NOW).helpfulPatterns?.themes)
+			.toEqual([]);
+		expect(buildLighterDaysView(motionOnly, 30, { Motion: { label: 'Promenader' } }, NOW).helpfulPatterns?.themes)
+			.toMatchObject([{ id: 'Motion', label: 'Promenader' }]);
+	});
+});

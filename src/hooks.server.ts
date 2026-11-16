@@ -7,6 +7,9 @@ import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
 import { legacyBlogRedirects, mergedGuideRedirects } from '$lib/server/legacy-redirects'
 import { normalizeStructuredDataSiteUrls } from '$lib/seo'
 import { warnAboutUnexpectedPublicEnv } from '$lib/server/public-env'
+import { requireHelpfulRemindersMigration } from '$lib/server/progress-helpful-reminders-readiness'
+
+export const init = requireHelpfulRemindersMigration
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''

@@ -29,6 +29,10 @@ export const MIN_LIGHTER_DAY_OCCURRENCES = 3;
 export { LOW_CONFIDENCE_ENTRY_LIMIT, MIN_THEME_WEEKS };
 
 const MAX_THEMES = 5;
+const MAX_HELPFUL_PATTERNS = 3;
+const MIN_COMPARISON_ENTRIES = 5;
+const MIN_COMPARISON_DAYS = 3;
+const MIN_HELPFUL_SHARE_GAP_PERCENT = 15;
 const MAX_EVIDENCE_PER_THEME = 8;
 
 export type LighterDaysRow = DiaryInsightRow & { id?: string | number | null };
@@ -112,6 +116,12 @@ export function buildLighterDaysView(
 		.map(([id]) => ({ id, label: getThemeDisplayLabel(overrides, id) }));
 
 	const themes: LighterDaysTheme[] = [];
+	const helpfulPatterns: LighterDaysTheme[] = [];
+	const helpfulComparisonReady =
+		entries.length >= LOW_CONFIDENCE_ENTRY_LIMIT &&
+		new Set(higher.map((entry) => entry.date)).size >= MIN_LIGHTER_DAY_OCCURRENCES &&
+		other.length >= MIN_COMPARISON_ENTRIES &&
+		new Set(other.map((entry) => entry.date)).size >= MIN_COMPARISON_DAYS;
 	for (const topic of TOPICS) {
 		const id = topic.label;
 		if (isThemeHidden(overrides, id)) continue;
@@ -127,7 +137,7 @@ export function buildLighterDaysView(
 		if (higherShare <= otherShare) continue;
 
 		const label = getThemeDisplayLabel(overrides, id);
-		themes.push({
+		const theme: LighterDaysTheme = {
 			id,
 			label,
 			renamed: label !== id,
@@ -145,7 +155,16 @@ export function buildLighterDaysView(
 				mood: entry.mood,
 				excerpt: extractThemeExcerpt(entry.text, id)
 			}))
-		});
+		};
+		themes.push(theme);
+		// Jämför andelar med heltal, så att exakt 15 procentenheter räknas likadant
+		// även när grupperna är olika stora. Flera inlägg samma dag uppfyller inte dagkravet.
+		if (
+			helpfulComparisonReady &&
+			new Set(withTheme.map((entry) => entry.date)).size >= MIN_LIGHTER_DAY_OCCURRENCES &&
+			100 * (theme.count * theme.otherBase - theme.otherCount * theme.base) >=
+				MIN_HELPFUL_SHARE_GAP_PERCENT * theme.base * theme.otherBase
+		) helpfulPatterns.push(theme);
 	}
 
 	// Flest förekomster först; vid lika antal det tema som skiljer sig mest
@@ -153,6 +172,7 @@ export function buildLighterDaysView(
 	const shareGap = (theme: LighterDaysTheme) =>
 		theme.count / theme.base - theme.otherCount / Math.max(theme.otherBase, 1);
 	themes.sort((a, b) => b.count - a.count || shareGap(b) - shareGap(a));
+	helpfulPatterns.sort((a, b) => shareGap(b) - shareGap(a) || b.count - a.count);
 
 	return {
 		periodDays,
@@ -161,6 +181,10 @@ export function buildLighterDaysView(
 		medianMood,
 		lowConfidence: entries.length < LOW_CONFIDENCE_ENTRY_LIMIT,
 		themes: themes.slice(0, MAX_THEMES),
+		helpfulPatterns: {
+			ready: helpfulComparisonReady,
+			themes: helpfulPatterns.slice(0, MAX_HELPFUL_PATTERNS)
+		},
 		hiddenThemes,
 		basis: buildBasis(periodDays, entries.length, higher.length, medianMood)
 	};

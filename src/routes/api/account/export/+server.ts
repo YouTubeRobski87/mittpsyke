@@ -1,3 +1,5 @@
+import { activeHelpfulReminders, HELPFUL_REMINDER_LABELS, HELPFUL_REMINDERS_KEY } from '$lib/progress-helpful-reminders';
+import { loadHelpfulReminders } from '$lib/server/progress-helpful-reminders';
 import { json } from '@sveltejs/kit';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { env as privateEnv } from '$env/dynamic/private';
@@ -143,15 +145,18 @@ export const GET: RequestHandler = async ({ request }) => {
 		return errorResponse(EXPORT_RATE_LIMIT_MESSAGE, 429);
 	}
 
+	const settings = pickMetadata(user.user_metadata);
 	const data: Record<string, unknown> = {
 		konto: {
 			e_post: user.email ?? null,
 			skapat: user.created_at ?? null
 		},
-		installningar: pickMetadata(user.user_metadata)
+		installningar: settings
 	};
 
 	try {
+		const reminders = await loadHelpfulReminders(supabase, user.id);
+		settings[HELPFUL_REMINDERS_KEY] = activeHelpfulReminders(reminders).map((item) => HELPFUL_REMINDER_LABELS[item]);
 		for (const { key, table, columns, orderBy } of EXPORT_TABLES) {
 			const { data: rows, error } = await supabase
 				.from(table)
