@@ -28,6 +28,11 @@ const USER = { id: 'user-1', email: 'anvandare@example.com', created_at: '2026-0
 
 /** Rader per tabell. Fixturen innehåller även en annan användares rad. */
 const TABLE_ROWS: Record<string, Record<string, unknown>[]> = {
+	user_helpful_reminders: [
+		{ user_id: 'user-1', item_id: 'music', active: true, revision: 1 },
+		{ user_id: 'user-1', item_id: 'rest', active: false, revision: 2 },
+		{ user_id: 'user-2', item_id: 'nature', active: true, revision: 1 }
+	],
 	diary: [
 		{ id: 'd1', user_id: 'user-1', created_at: '2026-02-01T10:00:00.000Z', text: 'Min text', mood: '7', tags: null },
 		{ id: 'd2', user_id: 'user-2', created_at: '2026-02-02T10:00:00.000Z', text: 'ANNAN ANVÄNDARE', mood: '3', tags: null }
@@ -76,6 +81,9 @@ function createBuilder(table: string, options: BuilderOptions) {
 			rows = rows.filter((row) => row[column] === value);
 			return builder;
 		},
+		then: (resolve: (result: unknown) => void) => resolve(options.failOn === table
+			? { data: null, error: { message: 'boom' } }
+			: { data: rows, error: null }),
 		in: (column: string, values: unknown[]) => {
 			rows = rows.filter((row) => values.includes(row[column]));
 			return builder;
@@ -264,6 +272,7 @@ describe('känsliga och interna fält', () => {
 							user_metadata: {
 								display_name: 'Robban',
 								personal_goals: [{ id: 'g1', text: 'Skriva oftare', status: 'open' }],
+								progress_helpful_reminders: ['Vila', 'ogiltigt'],
 								provider_refresh_token: 'HEMLIG',
 								is_admin: true
 							}
@@ -279,6 +288,7 @@ describe('känsliga och interna fält', () => {
 
 		expect(body.data.installningar.display_name).toBe('Robban');
 		expect(body.data.installningar.personal_goals).toHaveLength(1);
+		expect(body.data.installningar.progress_helpful_reminders).toEqual(['Musik']);
 		expect(body.data.installningar.provider_refresh_token).toBeUndefined();
 		expect(body.data.installningar.is_admin).toBeUndefined();
 		expect(JSON.stringify(body)).not.toContain('HEMLIG');

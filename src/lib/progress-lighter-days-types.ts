@@ -48,6 +48,7 @@ export type LighterDaysView = {
 	medianMood: number | null;
 	lowConfidence: boolean;
 	themes: LighterDaysTheme[];
+	helpfulPatterns?: { ready: boolean; themes: LighterDaysTheme[] };
 	/** Teman användaren dolt, så att de kan visas igen. */
 	hiddenThemes: { id: string; label: string }[];
 	/** Hur urvalet är gjort, i klartext. */

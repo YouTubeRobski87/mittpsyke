@@ -9,6 +9,8 @@
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import type { HelpfulReminderState } from '$lib/progress-helpful-reminders';
+	import HelpfulReminders from '$lib/components/progress/HelpfulReminders.svelte';
 	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
 	import RecurringThemesCard from '$lib/components/progress/RecurringThemesCard.svelte';
@@ -348,6 +350,7 @@
 		diaryActivityDays?: Record<string, number>;
 		worldProgress?: { marks: WorldMarkId[]; stage: WorldStage } | null;
 		isAnonymous?: boolean;
+		helpfulReminderAccount?: { id: string; reminders: HelpfulReminderState[] | null };
 		/** Kontots skapandedatum. En av världens tidssignaler, aldrig visad som siffra. */
 		accountCreatedAt?: string | null;
 	}
@@ -1161,6 +1164,16 @@
 	</section>
 {/snippet}
 
+{#snippet helpfulReminders()}
+	{#if !isAnonymous && data.helpfulReminderAccount}
+		<section class="card reflection-card" aria-labelledby="helpful-reminders-heading">
+			{#key data.helpfulReminderAccount.id}
+				<HelpfulReminders accountId={data.helpfulReminderAccount.id} initial={data.helpfulReminderAccount.reminders} />
+			{/key}
+		</section>
+	{/if}
+{/snippet}
+
 <div class="auth-page framsteg-page" style={themeStyle}>
 	<div class="auth-shell framsteg-shell">
 		<header class="auth-hero">
@@ -1216,6 +1229,7 @@
 						</p>
 						<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
 					</section>
+					{@render helpfulReminders()}
 					{@render creativeMomentsCard()}
 				</div>
 			{:else}
@@ -1391,16 +1405,19 @@
 			     platsen är ändrad. AI körs fortfarande först när användaren själv
 			     trycker på knappen och har samtyckt. -->
 			{#if !isAnonymous && hasSensitiveDataConsent}
-				<section class="card reflection-card lighter-days-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="lighter-days-heading" data-testid="lighter-days">
+				<section class="card reflection-card lighter-days-card" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
 					<p class="auth-eyebrow">Din personliga återblick</p>
 					<LighterDaysCard
 						view={lighterDaysView?.periodDays === selectedPeriod ? lighterDaysView : null}
+						comparisonLimited={Boolean(progressAnalysis?.coverage.truncated)}
 						loading={insightsLoading}
 						failed={Boolean(insightsError)}
 						onChanged={loadInsights}
 					/>
 				</section>
 			{/if}
+
+			{@render helpfulReminders()}
 
 			<!-- Veckoöverblicken ska gå att läsa på några sekunder och svarar på
 			     "hur har den senaste tiden sett ut?". Kurvan och analysen under är

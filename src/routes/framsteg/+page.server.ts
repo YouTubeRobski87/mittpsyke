@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { loadHelpfulReminders } from '$lib/server/progress-helpful-reminders';
 import { THEMES } from '$lib/theme';
 import { getProgressInitialSceneSpot } from '$lib/progressCompanionPlacement';
 import { getProgressSceneBand } from '$lib/progressScene';
@@ -11,7 +12,7 @@ import { loadEveningPatternRows } from '$lib/server/evening-checkin';
 import { syncWorldProgress } from '$lib/server/world-progress';
 import { buildWorldPresence } from '$lib/world/worldStage';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	const {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
@@ -30,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// och låter sedan sin minutuppdatering ta över.
 	const initialSceneBand = getProgressSceneBand();
 
-	if (!user) {
+	if (!user || user.is_anonymous) {
 		return {
 			isAnonymous: true,
 			entriesStatus: 'ready' as const,
@@ -55,8 +56,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	}
 
+	setHeaders({ 'cache-control': 'private, no-store' });
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-	const [entryCountResult, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount] = await Promise.all([
+	const [entryCountResult, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount, reminders] = await Promise.all([
 		// Status följer med så att sidan kan skilja ett läsfel från noll inlägg.
 		loadDiaryEntryCountResult(locals.supabase, user.id),
 		loadCompanionDailyState(locals.supabase, user.id),
@@ -65,7 +67,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// "Kvällar över tid". Egen dataväg, aldrig sammanblandad med dagbokens
 		// humörvärden, och utan kvällens fritext.
 		loadEveningPatternRows(locals.supabase, user.id),
-		loadCreativeMomentCount(locals.supabase, user.id)
+		loadCreativeMomentCount(locals.supabase, user.id),
+		loadHelpfulReminders(locals.supabase, user.id).catch(() => null)
 	]);
 
 	const entryCount = entryCountResult.count;
@@ -88,6 +91,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		isAnonymous: false,
+		helpfulReminderAccount: {
+			id: user.id,
+			reminders
+		},
 		// 'error' när antalet inlägg inte kunde läsas. Då visar sidan en felruta
 		// i stället för tomt läge ("Din utveckling börjar här").
 		entriesStatus: entryCountResult.status,
