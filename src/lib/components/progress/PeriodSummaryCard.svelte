@@ -368,8 +368,9 @@
 			<h3 id="period-summary-review-heading">Det här skickas till OpenAI</h3>
 			<p id="period-summary-processing">
 				Texten i {preview.entryCount} {noteWord(preview.entryCount)} från {formatLong(preview.firstDate)} till
-				{formatLong(preview.lastDate)}, med datum och humörvärden. OpenAI har sitt säte i USA. Inget namn eller
-				någon e-post skickas, och sammanfattningen sparas inte.
+				{formatLong(preview.lastDate)}, med datum och humörvärden. OpenAI har sitt säte i USA. Ditt kontonamn
+				och din e-postadress skickas inte, men texterna skickas precis som du skrev dem, även namn och
+				andra uppgifter som står i dem. Sammanfattningen sparas inte.
 			</p>
 			{#if preview.capped}
 				<p class="period-summary-note">
