@@ -7,7 +7,7 @@
 	// ett tema eller ta bort det ur återblicken. Korrigeringen sparas i
 	// user_metadata och rör aldrig dagboksinläggen.
 	//
-	// AI-frågan begärs från det öppna temats markerade utdrag.
+	// AI-frågan begärs från det valda temats markerade utdrag.
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { supabase } from '$lib/supabase';
 	import {
@@ -38,16 +38,19 @@
 		loading = false,
 		failed = false,
 		comparisonLimited = false,
+		active = true,
 		onChanged = () => {}
 	}: {
 		view: LighterDaysView | null;
 		loading?: boolean;
 		failed?: boolean;
 		comparisonLimited?: boolean;
+		active?: boolean;
 		/** Anropas när en korrigering sparats, så att sidan kan räkna om analysen. */
 		onChanged?: () => void | Promise<void>;
 	} = $props();
 
+	let selectedThemeId = $state('');
 	let openThemeId = $state<string | null>(null);
 	let selection = $state.raw<{ view: NonNullable<ReturnType<typeof getLighterDaysSummaryView>>; ref: number } | null>(null);
 	let renaming = $state<string | null>(null);
@@ -65,10 +68,13 @@
 	let summary = $state<SummaryState>({ status: 'idle' });
 
 	const requests = createSummaryRequests();
-	const summaryView = $derived(
-		!loading && !failed && !saving ? getLighterDaysSummaryView(view, comparisonLimited, openThemeId) : null
+	const helpfulThemes = $derived(getVisibleComparisonThemes(view, comparisonLimited));
+	const reflectionThemes = $derived(
+		active && !loading && !failed && !saving
+			? helpfulThemes.flatMap((theme) => getLighterDaysSummaryView(view, comparisonLimited, theme.id) ?? [])
+			: []
 	);
-
+	const summaryView = $derived(reflectionThemes.find((theme) => theme.themeId === selectedThemeId) ?? null);
 	const selectedSnapshot = $derived(
 		selection && selection.view === summaryView ? selectSummarySource(summaryView, selection.ref) : null
 	);
@@ -79,7 +85,6 @@
 		return requests.cancel;
 	});
 
-	const helpfulThemes = $derived(getVisibleComparisonThemes(view, comparisonLimited));
 	const summaryDataLabel = 'Bara det valda utdraget';
 	const percent = new Intl.NumberFormat('sv-SE', { style: 'percent', maximumFractionDigits: 1 });
 
@@ -224,9 +229,101 @@
 	}
 </script>
 
-<!-- Kortets ram (klassen .card) ägs av Framsteg-sidan, som lägger komponenten
-     i en <section aria-labelledby="lighter-days-heading">. -->
-<div class="lighter-days">
+<section class="card personal-reflection-card" aria-labelledby="personal-reflection-heading">
+	<h2 id="personal-reflection-heading">Din personliga reflektion</h2>
+	<p class="lighter-days-intro">Välj ett utdrag ur din dagbok och låt AI hjälpa dig att hitta en fråga att fundera över.</p>
+	{#if reflectionThemes.length > 0}
+		<label class="reflection-theme">
+			Tema
+			<select value={summaryView?.themeId ?? ''} onchange={(event) => {
+				selectedThemeId = event.currentTarget.value;
+				selection = null;
+			}}>
+				<option value="">Välj ett tema</option>
+				{#each reflectionThemes as theme (theme.themeId)}
+					<option value={theme.themeId}>{theme.themeLabel}</option>
+				{/each}
+			</select>
+		</label>
+		{#if summaryView}
+			<fieldset class="lighter-days-source-picker">
+				<legend>Välj ett utdrag</legend>
+				<ul>
+					{#each summaryView.sources as source (source.ref)}
+						<li id={'ai-question-source-' + source.ref} tabindex="-1">
+							<label class="lighter-days-source-choice">
+								<input
+									type="radio"
+									name="progress-question-source"
+									checked={selectedSnapshot?.source.ref === source.ref}
+									onchange={() => {
+										if (summaryView) selection = { view: summaryView, ref: source.ref };
+									}}
+								/>
+								<span><strong>{source.dateLabel}</strong><span>{source.excerpt}</span></span>
+							</label>
+						</li>
+					{/each}
+				</ul>
+			</fieldset>
+		{/if}
+		{#if selectedSnapshot}
+			<div class="lighter-days-ai">
+				<p class="lighter-days-muted reflection-processing" id="reflection-processing">{summaryDataLabel} behandlas av OpenAI när du ber om en fråga.</p>
+				<button
+					type="button"
+					class="auth-button primary reflection-submit"
+					aria-describedby="reflection-processing"
+					disabled={summary.status === 'loading' || summary.status === 'needs-consent'}
+					onclick={() => runSummary()}
+					data-testid="lighter-days-ai-button"
+				>
+					Skapa min reflektionsfråga
+				</button>
+				{#if summary.status === 'error'}
+					<p class="lighter-days-error" role="alert">{summary.message}</p>
+				{:else if summary.status === 'loading'}
+					<p class="lighter-days-muted" role="status">Tar fram en fråga…</p>
+				{:else if summary.status === 'needs-consent'}
+					<ConsentGate
+						title="Innan AI tar fram en fråga"
+						dataLabel={summaryDataLabel}
+						serviceLabel="MittPsyke och OpenAI"
+						onAccept={grantAiConsentAndAsk}
+					/>
+				{:else if summary.status === 'done'}
+					<div class="reflection-result">
+						<div role="status">
+							{#if summary.question}
+								<p class="lighter-days-question">{summary.question}</p>
+							{:else}
+								<p class="lighter-days-muted">{summaryEmptyCopy(summary.reason)}</p>
+							{/if}
+						</div>
+						{#if summary.question && summary.sourceRef !== undefined}
+							{@const entryHref = diaryEntryHref(selectedSnapshot?.source.entryId)}
+							<a class="lighter-days-entry-link" href={entryHref ?? '#ai-question-source-' + summary.sourceRef}>
+								{entryHref ? 'Läs anteckningen som frågan bygger på' : 'Läs utdraget som frågan bygger på'}
+							</a>
+							<p class="lighter-days-muted">
+								{summary.questionOrigin === 'mittpsyke' ? 'Allmän reflektionsfråga från MittPsyke.' : 'Framtagen med AI.'}
+								Bara det valda utdraget användes. Frågan sparas inte.
+							</p>
+						{/if}
+					</div>
+				{/if}
+			</div>
+		{/if}
+	{:else if loading}
+		<p class="lighter-days-muted">Hämtar utdrag för perioden.</p>
+	{:else if failed}
+		<p class="lighter-days-muted">Det gick inte att hämta utdrag just nu.</p>
+	{:else}
+		<p class="lighter-days-muted">Det finns ännu inga utdrag att välja för perioden.</p>
+	{/if}
+</section>
+
+<section class="card lighter-days" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
 	<div class="lighter-days-header">
 		<h2 id="lighter-days-heading">Det här verkar hjälpa mig</h2>
 		{#if view?.lowConfidence}
@@ -327,46 +424,25 @@
 										? `De ${theme.count} inläggen med högre humör där ${theme.label} fanns med:`
 										: `De senaste ${theme.evidence.length} av ${theme.count} inlägg med högre humör där ${theme.label} fanns med:`}
 								</p>
-								<fieldset class="lighter-days-source-picker">
-									{#if summaryView}<legend>Välj ett utdrag för AI-frågan</legend>{/if}
-									<ul>
-										{#each theme.evidence as item, index (`${item.entryId ?? item.date}-${item.dateLabel}`)}
-											{@const source = summaryView?.sources.find((candidate) => candidate.evidenceIndex === index)}
-											<li id={source ? 'ai-question-source-' + source.ref : undefined}>
-												{#if source}
-													<label class="lighter-days-source-choice">
-														<input
-															type="radio"
-															name="progress-question-source"
-															checked={selectedSnapshot?.source.ref === source.ref}
-															aria-label={`Välj utdrag ${source.ref} från ${item.dateLabel}`}
-															onchange={() => {
-																if (summaryView) selection = { view: summaryView, ref: source.ref };
-															}}
-														/>
-														Välj utdrag
-													</label>
-												{/if}
-												<strong>{item.dateLabel} · humör {formatMood(item.mood)} av 10</strong>
-												{#if item.excerpt}
-													<blockquote>{item.excerpt}</blockquote>
-												{:else}
-													<small>Utdraget visas inte här. Inlägget finns kvar i din dagbok.</small>
-												{/if}
-												{#if diaryEntryHref(item.entryId)}
-													<a
-														class="lighter-days-entry-link"
-														href={diaryEntryHref(item.entryId)}
-														aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
-													>Läs hela anteckningen</a>
-												{/if}
-											</li>
-										{/each}
-									</ul>
-								</fieldset>
-								{#if selectedSnapshot}
-									{@render aiQuestion()}
-								{/if}
+								<ul>
+									{#each theme.evidence as item (`${item.entryId ?? item.date}-${item.dateLabel}`)}
+										<li>
+											<strong>{item.dateLabel} · humör {formatMood(item.mood)} av 10</strong>
+											{#if item.excerpt}
+												<blockquote>{item.excerpt}</blockquote>
+											{:else}
+												<small>Utdraget visas inte här. Inlägget finns kvar i din dagbok.</small>
+											{/if}
+											{#if diaryEntryHref(item.entryId)}
+												<a
+													class="lighter-days-entry-link"
+													href={diaryEntryHref(item.entryId)}
+													aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
+												>Läs hela anteckningen</a>
+											{/if}
+										</li>
+									{/each}
+								</ul>
 								<a class="lighter-days-link" href="/dagbok">Öppna dagboken</a>
 							</div>
 						{/if}
@@ -404,57 +480,54 @@
 		{/if}
 
 		{#if helpfulThemes.length > 0}
-			<p class="lighter-days-basis">
-				Högre humör betyder över periodens mittvärde. Temat behöver finnas med på minst tre olika dagar
-				under minst två veckor och i en minst 15 procentenheter större andel anteckningar.
-			</p>
+			<details class="lighter-days-basis">
+				<summary>Så jämförs anteckningarna</summary>
+				<p>
+					Högre humör betyder över periodens mittvärde. Temat behöver finnas med på minst tre olika dagar
+					under minst två veckor och i en minst 15 procentenheter större andel anteckningar.
+				</p>
+			</details>
 		{/if}
-
-		{#snippet aiQuestion()}
-			<div class="lighter-days-ai">
-				{#if summary.status === 'idle' || summary.status === 'error'}
-					<p class="lighter-days-muted">
-						{summaryDataLabel} behandlas av OpenAI när du ber om en fråga.
-					</p>
-					<button type="button" class="lighter-days-action" onclick={() => runSummary()} data-testid="lighter-days-ai-button">
-						Få en fråga att fundera på
-					</button>
-					{#if summary.status === 'error'}<p class="lighter-days-error" role="alert">{summary.message}</p>{/if}
-				{:else if summary.status === 'loading'}
-					<p class="lighter-days-muted" role="status">Tar fram en fråga…</p>
-				{:else if summary.status === 'needs-consent'}
-					<ConsentGate
-						title="Innan AI tar fram en fråga"
-						dataLabel={summaryDataLabel}
-						serviceLabel="MittPsyke och OpenAI"
-						onAccept={grantAiConsentAndAsk}
-					/>
-				{:else if summary.status === 'done'}
-					<div role="status">
-						{#if summary.question}
-							<h4>En fråga att fundera på</h4>
-							<p class="lighter-days-question">{summary.question}</p>
-						{:else}
-							<p class="lighter-days-muted">{summaryEmptyCopy(summary.reason)}</p>
-						{/if}
-					</div>
-					{#if summary.question && summary.sourceRef !== undefined}
-						{@const entryHref = diaryEntryHref(selectedSnapshot?.source.entryId)}
-						<a class="lighter-days-entry-link" href={entryHref ?? '#ai-question-source-' + summary.sourceRef}>
-							{entryHref ? 'Läs anteckningen som frågan bygger på' : 'Läs utdraget som frågan bygger på'}
-						</a>
-						<p class="lighter-days-muted">
-							{summary.questionOrigin === 'mittpsyke' ? 'Allmän reflektionsfråga från MittPsyke.' : 'Framtagen med AI.'}
-							Frågan sparas inte.
-						</p>
-					{/if}
-				{/if}
-			</div>
-		{/snippet}
 	{/if}
-</div>
+</section>
 
 <style>
+	.reflection-theme {
+		display: grid;
+		gap: 0.35rem;
+		max-width: 24rem;
+	}
+
+	.reflection-theme select {
+		width: 100%;
+		min-height: 44px;
+		border: 1px solid hsl(var(--border));
+		border-radius: 0.6rem;
+		padding: 0.4rem;
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		font: inherit;
+	}
+
+	.reflection-theme select:focus-visible {
+		outline: 2px solid hsl(var(--ring, var(--primary)));
+		outline-offset: 2px;
+	}
+
+	.lighter-days-source-picker ul {
+		display: grid;
+		gap: 0.5rem;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.lighter-days-source-choice span {
+		display: block;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
 	.lighter-days-header {
 		display: flex;
 		flex-wrap: wrap;
@@ -694,7 +767,8 @@
 		margin-top: 1rem;
 	}
 
-	.lighter-days-hidden summary {
+	.lighter-days-hidden summary,
+	.lighter-days-basis summary {
 		cursor: pointer;
 		font-weight: 600;
 		color: hsl(var(--foreground));
@@ -713,15 +787,48 @@
 	}
 
 	.lighter-days-ai {
-		margin: 0.9rem 0;
-		padding-top: 0.8rem;
-		border-top: 1px solid hsl(var(--border));
+		margin-top: 0.65rem;
 	}
 
-	.lighter-days-ai h4 {
+	.reflection-processing {
+		margin: 0 0 0.45rem;
+		font-size: 0.88rem;
+	}
+
+	.reflection-submit {
+		min-height: 44px;
+		margin-bottom: 0.55rem;
+		border-color: hsl(var(--foreground) / 0.45);
+		background: color-mix(in srgb, var(--theme-accent, #436e8f) 26%, hsl(var(--surface)));
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.reflection-submit:focus-visible {
+		outline: 2px solid hsl(var(--ring, var(--foreground)));
+		outline-offset: 2px;
+	}
+
+	.reflection-submit:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
+
+	.personal-reflection-card h2 {
 		margin: 0 0 0.5rem;
 		font-size: 1rem;
 		color: hsl(var(--foreground));
+	}
+
+	.reflection-result {
+		padding: 0.85rem 1rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 0.75rem;
+		background: hsl(var(--surface-soft, var(--muted)));
+	}
+
+	.reflection-result .lighter-days-muted {
+		margin: 0.4rem 0 0;
 	}
 
 	.lighter-days-question {
@@ -731,6 +838,10 @@
 	}
 
 	@media (max-width: 640px) {
+		.reflection-submit {
+			width: 100%;
+		}
+
 		.lighter-days-header h2 {
 			font-size: 1.2rem;
 		}

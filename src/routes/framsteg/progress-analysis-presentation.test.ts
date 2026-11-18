@@ -16,13 +16,10 @@ const analysisBlock = route.slice(
 );
 
 const currentEmptyState = route.slice(
-	route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'),
-	route.indexOf('{:else}', route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'))
+	route.indexOf('{:else if emptyProgress}'),
+	route.indexOf('{:else if hasSensitiveDataConsent}', route.indexOf('{:else if emptyProgress}'))
 );
-const populatedProgressState = route.slice(
-	route.indexOf('{:else}', route.indexOf('creativeMomentCount === 0')),
-	route.indexOf('{#if false}')
-);
+const insightsPanel = route.slice(route.indexOf('id="progress-panel-insights"'), route.indexOf('id="progress-panel-place"'));
 const lowDataWorldCopy = route.slice(
 	route.indexOf('{#if showLowDataOverview}', route.indexOf('<div class="companion-copy">')),
 	route.indexOf('{:else}', route.indexOf('{#if showLowDataOverview}', route.indexOf('<div class="companion-copy">')))
@@ -43,24 +40,12 @@ describe('Framstegs första blick', () => {
 		expect(route).toContain("[data-low-data-hidden='true']");
 	});
 
-	it('visar underlagskortet före Living World-scenen när underlaget är tunt', () => {
-		const lowDataCard = populatedProgressState.indexOf('data-testid="low-data-overview"');
-		const livingWorldScene = populatedProgressState.indexOf('class="companion-banner"');
-
-		expect(lowDataCard).toBeGreaterThan(-1);
-		expect(livingWorldScene).toBeGreaterThan(lowDataCard);
-		expect(populatedProgressState).toContain('{#if showLowDataOverview}');
-		expect(populatedProgressState).toContain('data-low-data-secondary={showLowDataOverview}');
-	});
-
-	it('behåller Living World i samma innehållsflöde när konkreta observationer finns', () => {
-		const livingWorldScene = populatedProgressState.indexOf('class="companion-banner"');
-		const observations = populatedProgressState.indexOf('<div class="framsteg-layout framsteg-layout-v2">');
-
-		expect(route).toContain('const showLowDataOverview = $derived(');
-		expect(route).toContain('!hasConcretePersonalAnalysis');
-		expect(livingWorldScene).toBeGreaterThan(-1);
-		expect(observations).toBeGreaterThan(livingWorldScene);
+	it('visar tunt underlag i standardfliken och scenen under Min plats', () => {
+		expect(route).toContain("activeTab = $state<ProgressTab>('insights')");
+		expect(insightsPanel).toContain('data-testid="low-data-overview"');
+		expect(insightsPanel).not.toContain('class="companion-banner"');
+		expect(route.slice(route.indexOf('id="progress-panel-place"'), route.indexOf('id="progress-panel-mood"')))
+			.toContain('class="companion-banner"');
 	});
 
 	it('använder kontinuitetsspråk i scenen vid tunt underlag', () => {
@@ -93,7 +78,7 @@ describe('Framstegs första blick', () => {
 	it('visar inga nollor eller påhittade observationer i lågdataläget', () => {
 		const lowDataBlock = route.slice(
 			route.indexOf('<section class="card low-data-overview"'),
-			route.indexOf('<section class="card week-summary-card"')
+			route.indexOf('</section>', route.indexOf('<section class="card low-data-overview"'))
 		);
 
 		expect(lowDataBlock).not.toMatch(/0 dagar|0 veckor/i);
@@ -249,7 +234,7 @@ describe('periodens tydligaste insikt', () => {
 // vilar på - och inte räkna upp nollor för den som ännu inte sparat något.
 const historyBlock = route.slice(
 	route.indexOf('<section class="card garden-presence-card"'),
-	route.indexOf('{#if false}')
+	route.indexOf('<FramstegComprehensionCard')
 );
 
 describe('underlagskortet', () => {
@@ -275,7 +260,7 @@ describe('underlagskortet', () => {
 			'const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);'
 		);
 		const emptyBranch = historyBlock.slice(historyBlock.indexOf('{:else}'));
-		expect(emptyBranch).toContain('Här samlas underlaget som korten ovan vilar på.');
+		expect(emptyBranch).toContain('Här samlas underlaget som återblicken vilar på.');
 		expect(emptyBranch).not.toMatch(/\{moodSamples\.length\}|\{entryCount\}/);
 	});
 });
@@ -291,13 +276,11 @@ const weekBlock = route.slice(
 );
 
 describe('veckoöverblicken', () => {
-	it('ligger före kurvan och analysen i dokumentordning', () => {
-		const week = route.indexOf('data-testid="week-summary"');
-		const chart = route.indexOf('data-testid="mood-history"');
-		const analysis = route.indexOf('data-testid="mood-analysis"');
-		expect(week).toBeGreaterThan(-1);
-		expect(chart).toBeGreaterThan(week);
-		expect(analysis).toBeGreaterThan(chart);
+	it('ligger under Min utveckling, skilt från kurvan och analysen', () => {
+		const development = route.slice(route.indexOf('id="progress-panel-development"'));
+		expect(development).toContain('data-testid="week-summary"');
+		expect(development).not.toContain('data-testid="mood-history"');
+		expect(development).not.toContain('data-testid="mood-analysis"');
 	});
 
 	it('bygger texten i den testade modulen i stället för i markupen', () => {

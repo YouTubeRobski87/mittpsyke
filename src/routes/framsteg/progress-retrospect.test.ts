@@ -41,7 +41,7 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	});
 
 	it('märker förhandsvisade källor och länkar frågan till dess utdrag', () => {
-		expect(card).toContain('Välj ett utdrag för AI-frågan');
+		expect(card).toContain('<legend>Välj ett utdrag</legend>');
 		expect(card).toContain('diaryEntryHref(item.entryId)');
 		expect(card).toContain("'#ai-question-source-' + summary.sourceRef");
 		expect(card).toContain('{summary.question}');
@@ -49,15 +49,13 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 });
 
 describe('kortet "Det här verkar hjälpa mig"', () => {
-	it('visar frågeknappen under det öppna temats utdrag', () => {
-		const render = card.indexOf('{@render aiQuestion()}');
-		expect(render).toBeGreaterThan(card.indexOf('<blockquote>{item.excerpt}</blockquote>'));
-		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if selectedSnapshot}');
-		expect(card.match(/\{@render aiQuestion\(\)\}/g)).toHaveLength(1);
+	it('samlar utdragsval och frågeknapp i det personliga reflektionskortet', () => {
+		const reflection = card.slice(card.indexOf('<section class="card personal-reflection-card"'), card.indexOf('<section class="card lighter-days"'));
+		expect(reflection).toContain('Din personliga reflektion');
+		expect(reflection).toContain('{#if selectedSnapshot}');
+		expect(reflection).toContain('Skapa min reflektionsfråga');
 		expect(card.match(/data-testid="lighter-days-ai-button"/g)).toHaveLength(1);
-		// Knappen startar fortfarande sammanfattningen - inget körs av sig självt.
-		expect(card).toContain('onclick={() => runSummary()} data-testid="lighter-days-ai-button"');
-		expect(card).not.toMatch(/\$effect\([^)]*\{[^}]*runSummary\(/);
+		expect(card.slice(card.indexOf('class="lighter-days-evidence"'))).not.toContain('type="radio"');
 	});
 
 	it('har den nya rubriken och ingen gammal', () => {

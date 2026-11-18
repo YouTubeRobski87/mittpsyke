@@ -11,6 +11,8 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import type { HelpfulReminderState } from '$lib/progress-helpful-reminders';
 	import HelpfulReminders from '$lib/components/progress/HelpfulReminders.svelte';
+	import ProgressTabs, { type ProgressTab } from '$lib/components/progress/ProgressTabs.svelte';
+	import ProgressPeriodPicker from '$lib/components/ProgressPeriodPicker.svelte';
 	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
 	import RecurringThemesCard from '$lib/components/progress/RecurringThemesCard.svelte';
@@ -490,6 +492,7 @@
 	let loadedHeatmapData = $state<Record<string, number>>({});
 	let loadedMoodSamples = $state<MoodSample[]>([]);
 	let moodTimelineLoading = $state(false);
+	let activeTab = $state<ProgressTab>('insights');
 	let selectedPeriod = $state<PeriodDays>(30);
 	let selectedMoodPoint = $state<ChartPoint | null>(null);
 	let heatmapError = $state('');
@@ -813,12 +816,17 @@
 	}
 
 	function changePeriod(period: PeriodDays) {
+		if (period === selectedPeriod) return;
 		selectedPeriod = period;
 		selectedMoodPoint = null;
 		openAnalysisInsights = {};
 		supportRotation = 0;
 		if (!isAnonymous && hasSensitiveDataConsent && insightsVisible) void loadInsights();
 	}
+
+	const emptyProgress = $derived(
+		!isAnonymous && entryCount === 0 && (data.eveningPatternRows?.length ?? 0) === 0 && creativeMomentCount === 0
+	);
 
 	let loading = $derived(progressLoading && !progressLoaded);
 	let error = $derived(progressError);
@@ -1219,24 +1227,54 @@
 						{entriesRetrying ? 'Hämtar…' : LOAD_RETRY_LABEL}
 					</button>
 				</section>
-			{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}
-				<div class="progress-content">
-					<section class="card empty-state" aria-labelledby="progress-empty-heading">
-						<h2 id="progress-empty-heading">Din utveckling börjar här</h2>
-						<p>
-							När du sparar stunder i dagboken kan förändringar och sådant som återkommer börja
-							synas här. Återvänd när det hjälper dig — det finns inget att hålla igång.
-						</p>
-						<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
-					</section>
-					{@render helpfulReminders()}
-					{@render creativeMomentsCard()}
-				</div>
 			{:else}
-				<div class="progress-content">
+				{#if !isAnonymous && !emptyProgress}
+					<ProgressPeriodPicker period={selectedPeriod} onSelect={changePeriod} />
+				{/if}
+				<ProgressTabs active={activeTab} onSelect={(tab) => (activeTab = tab)} />
+
+				<div
+					class="progress-tab-panel"
+					id="progress-panel-insights"
+					role="tabpanel"
+					aria-labelledby="progress-tab-insights"
+					tabindex="0"
+					hidden={activeTab !== 'insights'}
+				>
+					{#if isAnonymous}
+						<ProgressExamplePreview />
+						<AccountTeaser variant="progress" />
+					{:else if emptyProgress}
+						<section class="card empty-state" aria-labelledby="progress-empty-heading">
+							<h2 id="progress-empty-heading">Din utveckling börjar här</h2>
+							<p>
+								När du sparar stunder i dagboken kan förändringar och sådant som återkommer börja
+								synas här. Återvänd när det hjälper dig — det finns inget att hålla igång.
+							</p>
+							<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
+						</section>
+					{:else if hasSensitiveDataConsent}
+						<LighterDaysCard
+							view={lighterDaysView?.periodDays === selectedPeriod ? lighterDaysView : null}
+							comparisonLimited={Boolean(progressAnalysis?.coverage.truncated)}
+							loading={insightsLoading}
+							failed={Boolean(insightsError)}
+							active={activeTab === 'insights'}
+							onChanged={loadInsights}
+						/>
+					{:else}
+						<section class="card reflection-card" aria-labelledby="personal-reflection-heading">
+							<h2 id="personal-reflection-heading">Din personliga reflektion</h2>
+							<p class="reflection-copy">Välj ett utdrag ur din dagbok och låt AI hjälpa dig att hitta en fråga att fundera över.</p>
+							<ConsentGate
+								title="Se analys av dina mönster"
+								dataLabel="Dina sparade texter och humörvärden"
+								serviceLabel="MittPsykes regelbaserade mönsteranalys"
+								onAccept={acceptSensitiveDataConsent}
+							/>
+						</section>
+					{/if}
 					{#if showLowDataOverview}
-						<!-- Vid tunt underlag kommer den sakliga förklaringen först. Scenen
-						     finns kvar som en lugn fortsättning, inte som huvudfeedback. -->
 						<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
 							<div class="card-header">
 								<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
@@ -1246,567 +1284,561 @@
 							<p class="reflection-copy" data-testid="low-data-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
 						</section>
 					{/if}
+					{#if showRecurringThemes && progressAnalysis}
+						<section class="card reflection-card recurring-themes-card" aria-labelledby="recurring-themes-heading" data-testid="recurring-themes">
+							<RecurringThemesCard themes={recurringThemes} periodLabel={progressAnalysis.periodLabel} />
+						</section>
+					{/if}
+				</div>
+				<div
+					class="progress-tab-panel"
+					id="progress-panel-place"
+					role="tabpanel"
+					aria-labelledby="progress-tab-place"
+					tabindex="0"
+					hidden={activeTab !== 'place'}
+				>
 					<section
 						class="companion-banner"
 						aria-label={`Sjöscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
 						data-low-data-secondary={showLowDataOverview}
 					>
-			<div
-				class="companion-media"
-				bind:this={sceneEl}
-				data-season={season}
-				data-time={sceneTransition.visibleBand}
-				style={progressSceneStyle}
-			>
-				<!-- width/height ger proportionerna innan bilden laddats så scenen
-					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
-					<!-- Samma responsiva sjöscen används genom dygnet. Den synliga
-						 bilden behålls tills nästa responsiva asset är klar, så scenen
-						 aldrig blir tom under följeslagare eller world marks. -->
-					{#if sceneTransition.outgoingBand}
-						{@const outgoingSceneSources = sceneSources[sceneTransition.outgoingBand]}
-						<img
-							class="companion-world-scene companion-world-scene--outgoing"
-							srcset={outgoingSceneSources.srcset}
-							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
-							src={outgoingSceneSources.fallback}
-							alt=""
-							aria-hidden="true"
-							width="1672"
-							height="941"
-							decoding="async"
-						/>
-					{/if}
-					{#key sceneTransition.visibleBand}
-						<img
-							class:companion-world-scene--crossfading={sceneTransition.outgoingBand !== null}
-							class="companion-world-scene companion-world-scene--visible"
-							srcset={visibleSceneSources.srcset}
-							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
-							src={visibleSceneSources.fallback}
-							alt={isAnonymous
-								? 'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'
-								: 'Vid sjön finns stugan och lägerelden i närheten.'}
-							width="1672"
-							height="941"
-							fetchpriority="high"
-							loading="eager"
-							decoding="async"
-						/>
-					{/key}
-					{#if sceneTransition.pendingBand}
-						{#each [sceneTransition.pendingBand] as pendingBand (pendingBand)}
-							{@const pendingSceneSources = sceneSources[pendingBand]}
-							<img
-								class="companion-world-scene companion-world-scene--preload"
-								srcset={pendingSceneSources.srcset}
-								sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
-								src={pendingSceneSources.fallback}
-								alt=""
-								aria-hidden="true"
-								width="1672"
-								height="941"
-								loading="eager"
-								decoding="async"
-								onload={() => revealPreparedScene(pendingBand)}
-							/>
-						{/each}
-					{/if}
-					{#if !isAnonymous}
-						<img
-							class="progress-human-layer"
-							src={humanPose.src}
-							alt=""
-							aria-hidden="true"
-							data-pose={humanPose.id}
-							style={humanPoseStyle}
-							width={humanPose.canvasWidth}
-							height={humanPose.canvasHeight}
-							decoding="async"
-							draggable="false"
-						/>
-					{/if}
-				<!-- Stugans fönsterljus andas svagt på kväll och natt. Eget, osynligt
-					 lager i bildens procent - rör aldrig klickytan nedan. -->
-				<span class="progress-cabin-light" aria-hidden="true"></span>
-				{#if cabinPlacement}
-					<!-- Stugan leder direkt in för inloggade. Gamla /dashboard gav gästen
-						 en levande förhandsvisning, men den ytan avvecklas - så gästen
-						 leds i stället till startsidan, som redan förklarar Mitt Hem och
-						 Kvällstugan utan att kräva inloggning. -->
-					<a
-						class="progress-cabin-link"
-						href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}
-						aria-label={isAnonymous ? 'Gå till Mitt Hem' : 'Gå in i Kvällstugan'}
-						data-testid="progress-cabin-link"
-					></a>
-				{/if}
-				{#if !isAnonymous}
-					<!-- Den inloggades egen följeslagare ligger bara på den artneutrala bilden. -->
-					<CompanionPose
-						class="progress-companion-pose"
-						basePose={scenePose}
-						companionId={sceneCompanionId}
-						scene="progress"
-						behaviourProfile="quiet"
-						decorative
-					/>
-				{/if}
-				<AmbientWorld
-					scene={livingWorldScene}
-					class="progress-living-world"
-					relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
-					recurringFauna
-					faunaPhase={sceneTransition.visibleBand}
-				/>
-				<WorldReturnTraces class="progress-return-traces" traces={returnTraces} seed={visitSeed} />
-				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
-				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
-				<span class="progress-scene-tone" aria-hidden="true"></span>
-				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
-				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
-				{#if returnTraces.includes('still-water-ring')}
-					<!-- Förgängligt återkomsttecken: en tredje, långsammare ring på samma vatten. -->
-					<span class="progress-ripple progress-ripple--three" aria-hidden="true" data-return-trace="still-water-ring"></span>
-				{/if}
-			</div>
-			<div class="companion-copy">
-				<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
-				{#if showLowDataOverview}
-					<h2>Din plats finns kvar</h2>
-					<p>Världen finns här som ett lugnt lager runt det du sparar och reflekterar över.</p>
-					<p class="companion-reflection">Du behöver inte hålla något igång för att platsen ska finnas kvar.</p>
-				{:else}
-					<h2>Din plats idag</h2>
-					<p>
-						{isAnonymous
-							? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
-							: sceneSpot.presence}
-					</p>
-					<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
-				{/if}
-				{#if !isAnonymous}
-					<a class="cabin-entry-link" href="/dashboard/kvallsstugan">Kvällstugan</a>
-				{/if}
-			</div>
-					</section>
-	<div class="framsteg-layout framsteg-layout-v2">
-		<div class="framsteg-main">
-			{#if isAnonymous}
-				<!-- Utloggad vy: ett tydligt märkt, påhittat exempel i stället för
-				     suddiga kort. Inga av användarens kort renderas utan data. -->
-				<ProgressExamplePreview />
-				<AccountTeaser variant="progress" />
-			{:else}
-			<!-- Den personliga återblicken ligger direkt under scenen: teman ur
-			     användarens egna texter och, längst ned i kortet, den frivilliga
-			     AI-sammanfattningen. Kortet låg tidigare efter analysen och var
-			     svårt att hitta. Det är samma komponent med samma villkor - bara
-			     platsen är ändrad. AI körs fortfarande först när användaren själv
-			     trycker på knappen och har samtyckt. -->
-			{#if !isAnonymous && hasSensitiveDataConsent}
-				<section class="card reflection-card lighter-days-card" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
-					<p class="auth-eyebrow">Din personliga återblick</p>
-					<LighterDaysCard
-						view={lighterDaysView?.periodDays === selectedPeriod ? lighterDaysView : null}
-						comparisonLimited={Boolean(progressAnalysis?.coverage.truncated)}
-						loading={insightsLoading}
-						failed={Boolean(insightsError)}
-						onChanged={loadInsights}
-					/>
-				</section>
-			{/if}
-
-			{@render helpfulReminders()}
-
-			<!-- Veckoöverblicken ska gå att läsa på några sekunder och svarar på
-			     "hur har den senaste tiden sett ut?". Kurvan och analysen under är
-			     fördjupningen. Inget här är beroende av AI eller samtycke - det
-			     räknas fram ur humörvärden som redan är hämtade. -->
-			<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
-				<div class="card-header">
-					<div class="icon-badge heat"><Calendar size={24} /></div>
-					<h2 id="week-summary-heading">Den senaste veckan</h2>
-				</div>
-				<p class="week-summary-lead">{weekSummary.summary}</p>
-				{#if weekSummary.comparisonText}
-					<p class="week-summary-comparison">{weekSummary.comparisonText}</p>
-				{:else if !weekSummary.insufficient}
-					<p class="week-summary-note">
-						Veckan innan har för få registreringar för en jämförelse.
-					</p>
-				{/if}
-			</section>
-
-			<!-- Egna ord före humörkurvan: det som återkommer i det användaren själv
-			     skrivit, med datum och ordagranna utdrag. Visas bara när servern
-			     skickat teman som klarat trösklarna. -->
-			{#if showRecurringThemes && progressAnalysis}
-				<section class="card reflection-card recurring-themes-card" aria-labelledby="recurring-themes-heading" data-testid="recurring-themes">
-					<RecurringThemesCard themes={recurringThemes} periodLabel={progressAnalysis.periodLabel} />
-				</section>
-			{/if}
-
-			{@render creativeMomentsCard()}
-
-			<section class="card recent-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="mood-history-heading" data-testid="mood-history">
-				<div class="card-header">
-					<div class="icon-badge heat"><TrendingUp size={24} /></div>
-					<h2 id="mood-history-heading">Senaste tiden</h2>
-				</div>
-				<p class="recent-intro">Här syns bara de humörvärden du själv har satt i dagboken. Välj en punkt för att se den i sitt sammanhang.</p>
-				{#if moodTimelineLoading}
-					<p class="reflection-copy">Laddar dina sparade humörvärden.</p>
-				{:else}
-					<RecentPeriodChart
-						points={moodTimeline.points}
-						period={selectedPeriod}
-						onSelectPeriod={changePeriod}
-						selectedPointKey={selectedMoodPoint?.key}
-						onSelectPoint={chooseMoodPoint}
-						textAlternative={moodTimeline.textAlternative}
-						hasChart={moodTimeline.hasChart}
-						fallbackText={EMPTY_MOOD_COPY}
-					/>
-					{#if moodTimeline.hasChart && analysisPeriodSummary}
-						<p class="recent-summary">{analysisPeriodSummary}</p>
-					{/if}
-					{#if selectedMoodPoint}
-						<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
-							<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
-							{#if selectedMoodDifference !== null}
-								<span>
-									{selectedMoodDifference >= 0 ? '+' : ''}{selectedMoodDifference.toFixed(1).replace('.', ',')} jämfört med genomsnittet i tidslinjen.
-								</span>
-							{/if}
-							<small>{selectedMoodPoint.count} {selectedMoodPoint.count === 1 ? 'registrering' : 'registreringar'} ligger bakom punkten.</small>
-						</section>
-					{/if}
-				{/if}
-			</section>
-
-			<section class="card reflection-card analysis-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="analysis-heading" data-testid="mood-analysis">
-				<div class="card-header">
-					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2 id="analysis-heading">Humör och mönster över tid</h2>
-				</div>
-				<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
-				{#if progressAnalysis?.lowConfidence && !insightsLoading && !insightsError && (isAnonymous || hasSensitiveDataConsent)}
-					<p class="analysis-low-confidence" data-testid="analysis-low-confidence">
-						<strong>Låg säkerhet.</strong> Perioden har {progressAnalysis.relevantEntryCount ?? 0} inlägg med både text och humör. Med färre än 10 är underlaget litet.
-					</p>
-				{/if}
-				{#if !isAnonymous && !hasSensitiveDataConsent}
-					<ConsentGate
-						title="Se analys av dina mönster"
-						dataLabel="Dina sparade texter och humörvärden"
-						serviceLabel="MittPsykes regelbaserade mönsteranalys"
-						onAccept={acceptSensitiveDataConsent}
-					/>
-				{:else if insightsLoading}
-					<p class="reflection-copy">Räknar bara på sådant som har tillräckligt underlag.</p>
-				{:else if insightsError}
-					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
-				{:else if progressAnalysis}
-					{#if progressAnalysis.coverage.truncated}
-						<p class="analysis-coverage-note">Analysen bygger på en begränsad del av periodens anteckningar.</p>
-					{/if}
-					{#if primaryInsight}
-						<section class="analysis-primary-insight" aria-labelledby="primary-insight-heading">
-							<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>
-							<p class="analysis-primary-title">{primaryInsight.title}</p>
-							<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
-							<button
-								type="button"
-								class="analysis-more"
-								aria-expanded={openAnalysisInsights[primaryInsight.id] === true}
-								onclick={() => toggleAnalysisInsight(primaryInsight.id)}
+							<div
+								class="companion-media"
+								bind:this={sceneEl}
+								data-season={season}
+								data-time={sceneTransition.visibleBand}
+								style={progressSceneStyle}
 							>
-								{openAnalysisInsights[primaryInsight.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
-							</button>
-							{#if openAnalysisInsights[primaryInsight.id]}
-								<dl class="analysis-details">
-									<dt>Så är observationen räknad</dt>
-									<dd>{primaryInsight.evidence}</dd>
-								</dl>
-							{/if}
-						</section>
-					{/if}
-					{#if selectedPeriod === 180 && halfYear}
-						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
-							<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>
-							<div class="half-year-reflection">
-								{#each halfYear.reflection.sentences as sentence}
-									<p>{sentence}</p>
-								{/each}
-							</div>
-							{#if halfYear.reflection.highlights.length > 0}
-								<section class="half-year-highlights" aria-labelledby="half-year-highlights-heading">
-									<h4 id="half-year-highlights-heading">Det som sticker ut</h4>
-									<ul>
-										{#each halfYear.reflection.highlights as highlight}
-											<li>{highlight}</li>
-										{/each}
-									</ul>
-								</section>
-							{/if}
-							<!-- Fakta-korten ligger efter reflektionen: de ger detaljer utan att
-							     användaren först behöver tolka siffrorna själv. -->
-							<dl class="half-year-stats">
-								{#each halfYear.stats as stat (stat.id)}
-									<div class="half-year-stat">
-										<dt>{stat.label}</dt>
-										<dd>{stat.value}</dd>
-										<p>{stat.note}</p>
-									</div>
-								{/each}
-							</dl>
-						</section>
-						<section class="analysis-section" aria-labelledby="monthly-analysis-heading">
-							<h3 id="monthly-analysis-heading">Månad för månad</h3>
-							<ul class="monthly-analysis-list">
-								{#each halfYear.months as month (month.month)}
-									<li class:thin={month.status !== 'sufficient'}>
-										<strong>{month.shortLabel}</strong>
-										{#if month.status === 'sufficient' && month.mean !== null}
-											<span>Snitt {month.mean.toFixed(1).replace('.', ',')} · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
-											<!-- Lägesmarkering mot användarens eget halvårssnitt. Samma
-											     dämpade stil för alla tre lägen: ingen bra/dålig-signal. -->
-											{#if month.relativeText}<span class="month-relative">{month.relativeText}</span>{/if}
-										{:else if month.status === 'thin'}
-											<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
-										{:else}
-											<span>Inget mående registrerat</span>
-										{/if}
-									</li>
-								{/each}
-							</ul>
-							{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
-						</section>
-					{/if}
-					{#if moodInsights.length === 0 && showRecurringThemes}
-						<p class="reflection-copy">Utöver temana ovan syns inget tydligt mönster i registreringarna ännu. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
-					{:else if moodInsights.length === 0}
-						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
-					{:else if remainingInsights.length > 0}
-						<ul class="analysis-grid">
-							{#each remainingInsights as item (item.id)}
-								<li class="analysis-tile" data-card={item.category}>
-								<h3>{item.title}</h3>
-								<p class="analysis-tile-conclusion">{item.description}</p>
-								<button
-									type="button"
-									class="analysis-more"
-									aria-expanded={openAnalysisInsights[item.id] === true}
-									onclick={() => toggleAnalysisInsight(item.id)}
-								>
-									{openAnalysisInsights[item.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
-								</button>
-								{#if openAnalysisInsights[item.id]}
-									<dl class="analysis-details">
-										<dt>Så är observationen räknad</dt>
-										<dd>{item.evidence}</dd>
-									</dl>
-								{/if}
-								</li>
-							{/each}
-						</ul>
-					{/if}
-
-					{#if recurringThemes.length === 0}
-						<!-- Utan återkommande teman: en lugn förklaring av när de kan synas,
-						     med samma trösklar som analysen. Ingen uppmaning att skriva mer. -->
-						<p class="analysis-coverage-note" data-testid="analysis-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
-					{/if}
-
-					<button
-						type="button"
-						class="analysis-more analysis-basis-toggle"
-						aria-expanded={analysisBasisOpen}
-						onclick={() => (analysisBasisOpen = !analysisBasisOpen)}
-					>
-						{analysisBasisOpen ? 'Dölj datagrunden' : 'Vad bygger det här på?'}
-					</button>
-					{#if analysisBasisOpen}
-						<p class="analysis-basis">
-							Analysen bygger på {progressAnalysis.coverage.entryCount} {progressAnalysis.coverage.entryCount === 1 ? 'anteckning' : 'anteckningar'}, varav {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
-							{#if progressAnalysis.moodSummary.mean !== null && progressAnalysis.moodSummary.median !== null}
-								Ditt snitt är {progressAnalysis.moodSummary.mean.toFixed(1).replace('.', ',')} och medianen {progressAnalysis.moodSummary.median.toFixed(1).replace('.', ',')} på skalan. Registreringarna ligger mellan {progressAnalysis.moodSummary.min} och {progressAnalysis.moodSummary.max}.
-							{/if}
-							{#if progressAnalysis.coverage.truncated} Analysen kan vara begränsad eftersom perioden innehåller fler registreringar än den säkra läsgränsen just nu. {/if}
-						</p>
-						{#if halfYear}
-							<!-- Halvårets eget underlag: vilka månader som jämförts, hur många
-							     registreringar de bygger på, och varför en slutsats kan eller
-							     inte kan dras. -->
-							<p class="analysis-basis">{halfYear.basis}</p>
-						{/if}
-					{/if}
-				{:else}
-					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
-				{/if}
-			</section>
-
-			{#if showSupportCard}
-				<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
-					<div class="card-header">
-						<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-						<h2 id="support-heading">Kanske värt att prova</h2>
-					</div>
-					<p class="analysis-intro">{SUPPORT_INTRO_COPY}</p>
-
-					{#if insightsLoading}
-						<p class="reflection-copy">Letar efter något som har täckning i din egen historik.</p>
-					{:else if supportView.learning || supportSuggestions.length === 0}
-						<p class="reflection-copy">{SUPPORT_LEARNING_COPY}</p>
-						<p class="reflection-copy">{SUPPORT_LEARNING_DETAIL}</p>
-					{:else}
-						<ul class="support-suggestions">
-							{#each supportSuggestions as suggestion (suggestion.id)}
-								<li class="support-suggestion">
-									<strong>{suggestion.title}</strong>
-									<span>{suggestion.body}</span>
-									<small>{suggestion.evidence}</small>
-									{#if supportResponses[suggestion.id]}
-										<p class="support-receipt" aria-live="polite">
-											{supportResponses[suggestion.id] === 'fits'
-												? 'Noterat som något som kan passa. Det påverkar inte din måendehistorik.'
-												: 'Okej. Det här får vila resten av dagen.'}
-										</p>
-									{:else}
-										<div class="support-actions">
-											<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'fits')}>
-												Det här passar idag
-											</button>
-											<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'not-today')}>
-												Inte idag
-											</button>
-										</div>
+								<!-- width/height ger proportionerna innan bilden laddats så scenen
+									 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
+									<!-- Samma responsiva sjöscen används genom dygnet. Den synliga
+										 bilden behålls tills nästa responsiva asset är klar, så scenen
+										 aldrig blir tom under följeslagare eller world marks. -->
+									{#if sceneTransition.outgoingBand}
+										{@const outgoingSceneSources = sceneSources[sceneTransition.outgoingBand]}
+										<img
+											class="companion-world-scene companion-world-scene--outgoing"
+											srcset={outgoingSceneSources.srcset}
+											sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
+											src={outgoingSceneSources.fallback}
+											alt=""
+											aria-hidden="true"
+											width="1672"
+											height="941"
+											decoding="async"
+										/>
 									{/if}
-								</li>
-							{/each}
-						</ul>
+									{#key sceneTransition.visibleBand}
+										<img
+											class:companion-world-scene--crossfading={sceneTransition.outgoingBand !== null}
+											class="companion-world-scene companion-world-scene--visible"
+											srcset={visibleSceneSources.srcset}
+											sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
+											src={visibleSceneSources.fallback}
+											alt={isAnonymous
+												? 'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'
+												: 'Vid sjön finns stugan och lägerelden i närheten.'}
+											width="1672"
+											height="941"
+											fetchpriority="high"
+											loading="eager"
+											decoding="async"
+										/>
+									{/key}
+									{#if sceneTransition.pendingBand}
+										{#each [sceneTransition.pendingBand] as pendingBand (pendingBand)}
+											{@const pendingSceneSources = sceneSources[pendingBand]}
+											<img
+												class="companion-world-scene companion-world-scene--preload"
+												srcset={pendingSceneSources.srcset}
+												sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
+												src={pendingSceneSources.fallback}
+												alt=""
+												aria-hidden="true"
+												width="1672"
+												height="941"
+												loading="eager"
+												decoding="async"
+												onload={() => revealPreparedScene(pendingBand)}
+											/>
+										{/each}
+									{/if}
+									{#if !isAnonymous}
+										<img
+											class="progress-human-layer"
+											src={humanPose.src}
+											alt=""
+											aria-hidden="true"
+											data-pose={humanPose.id}
+											style={humanPoseStyle}
+											width={humanPose.canvasWidth}
+											height={humanPose.canvasHeight}
+											decoding="async"
+											draggable="false"
+										/>
+									{/if}
+								<!-- Stugans fönsterljus andas svagt på kväll och natt. Eget, osynligt
+									 lager i bildens procent - rör aldrig klickytan nedan. -->
+								<span class="progress-cabin-light" aria-hidden="true"></span>
+								{#if cabinPlacement}
+									<!-- Stugan leder direkt in för inloggade. Gamla /dashboard gav gästen
+										 en levande förhandsvisning, men den ytan avvecklas - så gästen
+										 leds i stället till startsidan, som redan förklarar Mitt Hem och
+										 Kvällstugan utan att kräva inloggning. -->
+									<a
+										class="progress-cabin-link"
+										href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}
+										aria-label={isAnonymous ? 'Gå till Mitt Hem' : 'Gå in i Kvällstugan'}
+										data-testid="progress-cabin-link"
+									></a>
+								{/if}
+								{#if !isAnonymous}
+									<!-- Den inloggades egen följeslagare ligger bara på den artneutrala bilden. -->
+									<CompanionPose
+										class="progress-companion-pose"
+										basePose={scenePose}
+										companionId={sceneCompanionId}
+										scene="progress"
+										behaviourProfile="quiet"
+										decorative
+									/>
+								{/if}
+								<AmbientWorld
+									scene={livingWorldScene}
+									class="progress-living-world"
+									relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
+									recurringFauna
+									faunaPhase={sceneTransition.visibleBand}
+								/>
+								<WorldReturnTraces class="progress-return-traces" traces={returnTraces} seed={visitSeed} />
+								<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
+								<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
+								<span class="progress-scene-tone" aria-hidden="true"></span>
+								<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
+								<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
+								{#if returnTraces.includes('still-water-ring')}
+									<!-- Förgängligt återkomsttecken: en tredje, långsammare ring på samma vatten. -->
+									<span class="progress-ripple progress-ripple--three" aria-hidden="true" data-return-trace="still-water-ring"></span>
+								{/if}
+							</div>
+							<div class="companion-copy">
+								<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
+								{#if showLowDataOverview}
+									<h2>Din plats finns kvar</h2>
+									<p>Världen finns här som ett lugnt lager runt det du sparar och reflekterar över.</p>
+									<p class="companion-reflection">Du behöver inte hålla något igång för att platsen ska finnas kvar.</p>
+								{:else}
+									<h2>Din plats idag</h2>
+									<p>
+										{isAnonymous
+											? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
+											: sceneSpot.presence}
+									</p>
+									<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
+								{/if}
+								{#if !isAnonymous}
+									<a class="cabin-entry-link" href="/dashboard/kvallsstugan">Kvällstugan</a>
+								{/if}
+							</div>
+					</section>
+				</div>
+				<div
+					class="progress-tab-panel"
+					id="progress-panel-mood"
+					role="tabpanel"
+					aria-labelledby="progress-tab-mood"
+					tabindex="0"
+					hidden={activeTab !== 'mood'}
+				>
+					{#if isAnonymous || emptyProgress}
+						<p class="reflection-copy">Här visas humörvärden som du själv sparar i dagboken.</p>
+					{:else if showLowDataOverview}
+						<p class="reflection-copy">Det finns ännu för lite underlag för att visa humör och mönster under den valda perioden.</p>
+					{:else}
+						<section class="card recent-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="mood-history-heading" data-testid="mood-history">
+							<div class="card-header">
+								<div class="icon-badge heat"><TrendingUp size={24} /></div>
+								<h2 id="mood-history-heading">Senaste tiden</h2>
+							</div>
+							<p class="recent-intro">Här syns bara de humörvärden du själv har satt i dagboken. Välj en punkt för att se den i sitt sammanhang.</p>
+							{#if moodTimelineLoading}
+								<p class="reflection-copy">Laddar dina sparade humörvärden.</p>
+							{:else}
+								<RecentPeriodChart
+									points={moodTimeline.points}
+									period={selectedPeriod}
+									onSelectPeriod={changePeriod}
+									options={[]}
+									selectedPointKey={selectedMoodPoint?.key}
+									onSelectPoint={chooseMoodPoint}
+									textAlternative={moodTimeline.textAlternative}
+									hasChart={moodTimeline.hasChart}
+									fallbackText={EMPTY_MOOD_COPY}
+								/>
+								{#if moodTimeline.hasChart && analysisPeriodSummary}
+									<p class="recent-summary">{analysisPeriodSummary}</p>
+								{/if}
+								{#if selectedMoodPoint}
+									<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
+										<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
+										{#if selectedMoodDifference !== null}
+											<span>
+												{selectedMoodDifference >= 0 ? '+' : ''}{selectedMoodDifference.toFixed(1).replace('.', ',')} jämfört med genomsnittet i tidslinjen.
+											</span>
+										{/if}
+										<small>{selectedMoodPoint.count} {selectedMoodPoint.count === 1 ? 'registrering' : 'registreringar'} ligger bakom punkten.</small>
+									</section>
+								{/if}
+							{/if}
+						</section>
 
-						{#if supportView.suggestions.length > supportSuggestions.length}
-							<button type="button" class="support-link" onclick={showAnotherSuggestion}>Visa något annat</button>
-						{/if}
-
-						{#if supportView.breathingRoom.length > 0}
-							<div class="analysis-section">
-								<h3>Teman under dagar med högre registrerat mående</h3>
-								<ul class="support-topics">
-									{#each supportView.breathingRoom as topic}
-										<li>
+						<section class="card reflection-card analysis-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="analysis-heading" data-testid="mood-analysis">
+							<div class="card-header">
+								<div class="icon-badge insight"><Lightbulb size={24} /></div>
+								<h2 id="analysis-heading">Humör och mönster över tid</h2>
+							</div>
+							<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
+							{#if progressAnalysis?.lowConfidence && !insightsLoading && !insightsError && (isAnonymous || hasSensitiveDataConsent)}
+								<p class="analysis-low-confidence" data-testid="analysis-low-confidence">
+									<strong>Låg säkerhet.</strong> Perioden har {progressAnalysis.relevantEntryCount ?? 0} inlägg med både text och humör. Med färre än 10 är underlaget litet.
+								</p>
+							{/if}
+							{#if !isAnonymous && !hasSensitiveDataConsent}
+								<p class="reflection-copy">Du kan välja om du vill visa analysen under Mina insikter.</p>
+							{:else if insightsLoading}
+								<p class="reflection-copy">Räknar bara på sådant som har tillräckligt underlag.</p>
+							{:else if insightsError}
+								<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
+							{:else if progressAnalysis}
+								{#if progressAnalysis.coverage.truncated}
+									<p class="analysis-coverage-note">Analysen bygger på en begränsad del av periodens anteckningar.</p>
+								{/if}
+								{#if primaryInsight}
+									<section class="analysis-primary-insight" aria-labelledby="primary-insight-heading">
+										<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>
+										<p class="analysis-primary-title">{primaryInsight.title}</p>
+										<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
+										<button
+											type="button"
+											class="analysis-more"
+											aria-expanded={openAnalysisInsights[primaryInsight.id] === true}
+											onclick={() => toggleAnalysisInsight(primaryInsight.id)}
+										>
+											{openAnalysisInsights[primaryInsight.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
+										</button>
+										{#if openAnalysisInsights[primaryInsight.id]}
+											<dl class="analysis-details">
+												<dt>Så är observationen räknad</dt>
+												<dd>{primaryInsight.evidence}</dd>
+											</dl>
+										{/if}
+									</section>
+								{/if}
+								{#if selectedPeriod === 180 && halfYear}
+									<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
+										<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>
+										<div class="half-year-reflection">
+											{#each halfYear.reflection.sentences as sentence}
+												<p>{sentence}</p>
+											{/each}
+										</div>
+										{#if halfYear.reflection.highlights.length > 0}
+											<section class="half-year-highlights" aria-labelledby="half-year-highlights-heading">
+												<h4 id="half-year-highlights-heading">Det som sticker ut</h4>
+												<ul>
+													{#each halfYear.reflection.highlights as highlight}
+														<li>{highlight}</li>
+													{/each}
+												</ul>
+											</section>
+										{/if}
+										<!-- Fakta-korten ligger efter reflektionen: de ger detaljer utan att
+										     användaren först behöver tolka siffrorna själv. -->
+										<dl class="half-year-stats">
+											{#each halfYear.stats as stat (stat.id)}
+												<div class="half-year-stat">
+													<dt>{stat.label}</dt>
+													<dd>{stat.value}</dd>
+													<p>{stat.note}</p>
+												</div>
+											{/each}
+										</dl>
+									</section>
+									<section class="analysis-section" aria-labelledby="monthly-analysis-heading">
+										<h3 id="monthly-analysis-heading">Månad för månad</h3>
+										<ul class="monthly-analysis-list">
+											{#each halfYear.months as month (month.month)}
+												<li class:thin={month.status !== 'sufficient'}>
+													<strong>{month.shortLabel}</strong>
+													{#if month.status === 'sufficient' && month.mean !== null}
+														<span>Snitt {month.mean.toFixed(1).replace('.', ',')} · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
+														<!-- Lägesmarkering mot användarens eget halvårssnitt. Samma
+														     dämpade stil för alla tre lägen: ingen bra/dålig-signal. -->
+														{#if month.relativeText}<span class="month-relative">{month.relativeText}</span>{/if}
+													{:else if month.status === 'thin'}
+														<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
+													{:else}
+														<span>Inget mående registrerat</span>
+													{/if}
+												</li>
+											{/each}
+										</ul>
+										{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
+									</section>
+								{/if}
+								{#if moodInsights.length === 0 && showRecurringThemes}
+									<p class="reflection-copy">Utöver temana under Mina insikter syns inget tydligt mönster i registreringarna ännu. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
+								{:else if moodInsights.length === 0}
+									<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
+								{:else if remainingInsights.length > 0}
+									<ul class="analysis-grid">
+										{#each remainingInsights as item (item.id)}
+											<li class="analysis-tile" data-card={item.category}>
+											<h3>{item.title}</h3>
+											<p class="analysis-tile-conclusion">{item.description}</p>
 											<button
 												type="button"
-												class="support-chip"
-												aria-pressed={supportExamplesOpen && supportSelectedTopic === topic}
-												onclick={() => chooseSupportTopic(topic)}
+												class="analysis-more"
+												aria-expanded={openAnalysisInsights[item.id] === true}
+												onclick={() => toggleAnalysisInsight(item.id)}
 											>
-												{topic.toLocaleLowerCase('sv-SE')}
+												{openAnalysisInsights[item.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
 											</button>
-										</li>
-									{/each}
-								</ul>
-							</div>
-						{/if}
-
-						{#if supportExampleTopics.length > 0}
-							<button
-								type="button"
-								class="support-link"
-								aria-expanded={supportExamplesOpen}
-								onclick={toggleSupportExamples}
-							>
-								{supportExamplesOpen ? 'Dölj tidigare anteckningar' : 'Utforska vad du har skrivit tidigare'}
-							</button>
-							{#if supportExamplesOpen}
-								{#if supportExamples.length > 0}
-									<ul class="evidence-observations support-examples">
-										{#each supportExamples as example (`${example.topicLabel}-${example.date}-${example.summary}`)}
-											<li>
-												<strong>{example.date}</strong>
-												{#if example.quote}
-													<span>”{example.quote}”</span>
-												{/if}
-												<small>{example.summary}</small>
+											{#if openAnalysisInsights[item.id]}
+												<dl class="analysis-details">
+													<dt>Så är observationen räknad</dt>
+													<dd>{item.evidence}</dd>
+												</dl>
+											{/if}
 											</li>
 										{/each}
 									</ul>
-								{:else}
-									<p class="reflection-copy">Det finns inga sparade rader att visa för det temat än.</p>
 								{/if}
+
+								{#if recurringThemes.length === 0}
+									<!-- Utan återkommande teman: en lugn förklaring av när de kan synas,
+									     med samma trösklar som analysen. Ingen uppmaning att skriva mer. -->
+									<p class="analysis-coverage-note" data-testid="analysis-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
+								{/if}
+
+								<button
+									type="button"
+									class="analysis-more analysis-basis-toggle"
+									aria-expanded={analysisBasisOpen}
+									onclick={() => (analysisBasisOpen = !analysisBasisOpen)}
+								>
+									{analysisBasisOpen ? 'Dölj datagrunden' : 'Vad bygger det här på?'}
+								</button>
+								{#if analysisBasisOpen}
+									<p class="analysis-basis">
+										Analysen bygger på {progressAnalysis.coverage.entryCount} {progressAnalysis.coverage.entryCount === 1 ? 'anteckning' : 'anteckningar'}, varav {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
+										{#if progressAnalysis.moodSummary.mean !== null && progressAnalysis.moodSummary.median !== null}
+											Ditt snitt är {progressAnalysis.moodSummary.mean.toFixed(1).replace('.', ',')} och medianen {progressAnalysis.moodSummary.median.toFixed(1).replace('.', ',')} på skalan. Registreringarna ligger mellan {progressAnalysis.moodSummary.min} och {progressAnalysis.moodSummary.max}.
+										{/if}
+										{#if progressAnalysis.coverage.truncated} Analysen kan vara begränsad eftersom perioden innehåller fler registreringar än den säkra läsgränsen just nu. {/if}
+									</p>
+									{#if halfYear}
+										<!-- Halvårets eget underlag: vilka månader som jämförts, hur många
+										     registreringar de bygger på, och varför en slutsats kan eller
+										     inte kan dras. -->
+										<p class="analysis-basis">{halfYear.basis}</p>
+									{/if}
+								{/if}
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
 							{/if}
+						</section>
+					{/if}
+				</div>
+				<div
+					class="progress-tab-panel"
+					id="progress-panel-development"
+					role="tabpanel"
+					aria-labelledby="progress-tab-development"
+					tabindex="0"
+					hidden={activeTab !== 'development'}
+				>
+					{#if isAnonymous}
+						<p class="reflection-copy">Här samlas dina påminnelser och sparade stunder när du har ett konto.</p>
+					{:else}
+						{@render helpfulReminders()}
+						{#if !emptyProgress}
+							<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
+								<div class="card-header">
+									<div class="icon-badge heat"><Calendar size={24} /></div>
+									<h2 id="week-summary-heading">Den senaste veckan</h2>
+								</div>
+								<p class="week-summary-lead">{weekSummary.summary}</p>
+								{#if weekSummary.comparisonText}
+									<p class="week-summary-comparison">{weekSummary.comparisonText}</p>
+								{:else if !weekSummary.insufficient}
+									<p class="week-summary-note">
+										Veckan innan har för få registreringar för en jämförelse.
+									</p>
+								{/if}
+							</section>
+						{/if}
+						{@render creativeMomentsCard()}
+						{#if !emptyProgress}
+							{#if showSupportCard}
+								<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
+									<div class="card-header">
+										<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+										<h2 id="support-heading">Kanske värt att prova</h2>
+									</div>
+									<p class="analysis-intro">{SUPPORT_INTRO_COPY}</p>
+
+									{#if insightsLoading}
+										<p class="reflection-copy">Letar efter något som har täckning i din egen historik.</p>
+									{:else if supportView.learning || supportSuggestions.length === 0}
+										<p class="reflection-copy">{SUPPORT_LEARNING_COPY}</p>
+										<p class="reflection-copy">{SUPPORT_LEARNING_DETAIL}</p>
+									{:else}
+										<ul class="support-suggestions">
+											{#each supportSuggestions as suggestion (suggestion.id)}
+												<li class="support-suggestion">
+													<strong>{suggestion.title}</strong>
+													<span>{suggestion.body}</span>
+													<small>{suggestion.evidence}</small>
+													{#if supportResponses[suggestion.id]}
+														<p class="support-receipt" aria-live="polite">
+															{supportResponses[suggestion.id] === 'fits'
+																? 'Noterat som något som kan passa. Det påverkar inte din måendehistorik.'
+																: 'Okej. Det här får vila resten av dagen.'}
+														</p>
+													{:else}
+														<div class="support-actions">
+															<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'fits')}>
+																Det här passar idag
+															</button>
+															<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'not-today')}>
+																Inte idag
+															</button>
+														</div>
+													{/if}
+												</li>
+											{/each}
+										</ul>
+
+										{#if supportView.suggestions.length > supportSuggestions.length}
+											<button type="button" class="support-link" onclick={showAnotherSuggestion}>Visa något annat</button>
+										{/if}
+
+										{#if supportView.breathingRoom.length > 0}
+											<div class="analysis-section">
+												<h3>Teman under dagar med högre registrerat mående</h3>
+												<ul class="support-topics">
+													{#each supportView.breathingRoom as topic}
+														<li>
+															<button
+																type="button"
+																class="support-chip"
+																aria-pressed={supportExamplesOpen && supportSelectedTopic === topic}
+																onclick={() => chooseSupportTopic(topic)}
+															>
+																{topic.toLocaleLowerCase('sv-SE')}
+															</button>
+														</li>
+													{/each}
+												</ul>
+											</div>
+										{/if}
+
+										{#if supportExampleTopics.length > 0}
+											<button
+												type="button"
+												class="support-link"
+												aria-expanded={supportExamplesOpen}
+												onclick={toggleSupportExamples}
+											>
+												{supportExamplesOpen ? 'Dölj tidigare anteckningar' : 'Utforska vad du har skrivit tidigare'}
+											</button>
+											{#if supportExamplesOpen}
+												{#if supportExamples.length > 0}
+													<ul class="evidence-observations support-examples">
+														{#each supportExamples as example (`${example.topicLabel}-${example.date}-${example.summary}`)}
+															<li>
+																<strong>{example.date}</strong>
+																{#if example.quote}
+																	<span>”{example.quote}”</span>
+																{/if}
+																<small>{example.summary}</small>
+															</li>
+														{/each}
+													</ul>
+												{:else}
+													<p class="reflection-copy">Det finns inga sparade rader att visa för det temat än.</p>
+												{/if}
+											{/if}
+										{/if}
+									{/if}
+								</section>
+							{/if}
+
+							{#if !isAnonymous}
+								<!-- Kvällsincheckningens egen återblick. Strukturen i kvällarna, aldrig
+								     tanken användaren skrev och aldrig ihopvägd med dagbokens humör -
+								     en kväll har inget siffervärde för mående (se evening-patterns.ts). -->
+								<section class="card reflection-card evening-patterns-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="evening-patterns-heading" data-testid="evening-patterns">
+									<div class="card-header">
+										<div class="icon-badge milestone-leaf"><Moon size={24} /></div>
+										<h2 id="evening-patterns-heading">Kvällar över tid</h2>
+									</div>
+									<p class="reflection-copy">{eveningPatterns.intro}</p>
+									{#if eveningPatterns.observations.length > 0}
+										{#each eveningPatterns.observations as observation (observation.id)}
+											<p class="reflection-copy">{observation.text}</p>
+										{/each}
+									{:else if eveningPatterns.level !== 'empty'}
+										<p class="reflection-copy">{EVENING_THIN_COPY}</p>
+									{/if}
+								</section>
+							{/if}
+							<section class="card garden-presence-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="garden-presence-heading">
+								<div class="card-header">
+									<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+									<h2 id="garden-presence-heading">Vad det här bygger på</h2>
+								</div>
+								<!-- Korten ovan säger vad som går att se. Det här säger hur mycket
+								     material observationerna vilar på, så att användaren kan väga dem
+								     själv. Det är underlag - inte ett resultat, och inte ett mått på
+								     hur mycket appen har använts (docs/NORTH_STAR.md, "Ingen skuld"). -->
+								{#if hasHistoryMaterial}
+									<p class="reflection-copy">
+										{moodSamples.length}
+										{moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen och
+										{entryCount}
+										{entryCount === 1 ? 'sparat dagboksinlägg' : 'sparade dagboksinlägg'} totalt.
+									</p>
+									<p class="reflection-copy">
+										Registreringarna i den valda perioden är spridda över {historyActivity.activeDays}
+										{historyActivity.activeDays === 1 ? 'dag' : 'dagar'} och {historyActivity.activeWeeks}
+										{historyActivity.activeWeeks === 1 ? 'vecka' : 'veckor'}.
+									</p>
+									<p class="reflection-copy history-missing-note">
+										Dagar utan registrering räknas som att det saknas data — inte som sämre mående.
+									</p>
+								{:else}
+									<p class="reflection-copy">
+										Här samlas underlaget som återblicken vilar på. Det fylls på av det du själv väljer att
+										spara i dagboken.
+									</p>
+								{/if}
+								<!-- Kvällarna räknas för sig och står utanför valet ovan: den som bara
+								     gjort kvällsincheckningar ska också se sitt underlag. Raden utelämnas
+								     helt vid noll kvällar - en nolla här vore bara en tom påminnelse. -->
+								{#if eveningPatterns.eveningCount > 0}
+									<p class="reflection-copy">
+										Kvällar över tid bygger på {eveningPatterns.eveningCount}
+										{eveningPatterns.eveningCount === 1 ? 'sparad kvällsincheckning' : 'sparade kvällsincheckningar'}
+										i den valda perioden. De räknas för sig, skilt från dagbokens inlägg och humörvärden.
+									</p>
+								{/if}
+							</section>
+							<FramstegComprehensionCard enabled={!isAnonymous} />
 						{/if}
 					{/if}
-				</section>
-			{/if}
-
-			{#if !isAnonymous}
-				<!-- Kvällsincheckningens egen återblick. Strukturen i kvällarna, aldrig
-				     tanken användaren skrev och aldrig ihopvägd med dagbokens humör -
-				     en kväll har inget siffervärde för mående (se evening-patterns.ts). -->
-				<section class="card reflection-card evening-patterns-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="evening-patterns-heading" data-testid="evening-patterns">
-					<div class="card-header">
-						<div class="icon-badge milestone-leaf"><Moon size={24} /></div>
-						<h2 id="evening-patterns-heading">Kvällar över tid</h2>
-					</div>
-					<p class="reflection-copy">{eveningPatterns.intro}</p>
-					{#if eveningPatterns.observations.length > 0}
-						{#each eveningPatterns.observations as observation (observation.id)}
-							<p class="reflection-copy">{observation.text}</p>
-						{/each}
-					{:else if eveningPatterns.level !== 'empty'}
-						<p class="reflection-copy">{EVENING_THIN_COPY}</p>
-					{/if}
-				</section>
-			{/if}
-
-			<section class="card garden-presence-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="garden-presence-heading">
-				<div class="card-header">
-					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-					<h2 id="garden-presence-heading">Vad det här bygger på</h2>
-				</div>
-				<!-- Korten ovan säger vad som går att se. Det här säger hur mycket
-				     material observationerna vilar på, så att användaren kan väga dem
-				     själv. Det är underlag - inte ett resultat, och inte ett mått på
-				     hur mycket appen har använts (docs/NORTH_STAR.md, "Ingen skuld"). -->
-				{#if hasHistoryMaterial}
-					<p class="reflection-copy">
-						{moodSamples.length}
-						{moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen och
-						{entryCount}
-						{entryCount === 1 ? 'sparat dagboksinlägg' : 'sparade dagboksinlägg'} totalt.
-					</p>
-					<p class="reflection-copy">
-						Registreringarna i den valda perioden är spridda över {historyActivity.activeDays}
-						{historyActivity.activeDays === 1 ? 'dag' : 'dagar'} och {historyActivity.activeWeeks}
-						{historyActivity.activeWeeks === 1 ? 'vecka' : 'veckor'}.
-					</p>
-					<p class="reflection-copy history-missing-note">
-						Dagar utan registrering räknas som att det saknas data — inte som sämre mående.
-					</p>
-				{:else}
-					<p class="reflection-copy">
-						Här samlas underlaget som korten ovan vilar på. Det fylls på av det du själv väljer att
-						spara i dagboken.
-					</p>
-				{/if}
-				<!-- Kvällarna räknas för sig och står utanför valet ovan: den som bara
-				     gjort kvällsincheckningar ska också se sitt underlag. Raden utelämnas
-				     helt vid noll kvällar - en nolla här vore bara en tom påminnelse. -->
-				{#if eveningPatterns.eveningCount > 0}
-					<p class="reflection-copy">
-						Kvällar över tid bygger på {eveningPatterns.eveningCount}
-						{eveningPatterns.eveningCount === 1 ? 'sparad kvällsincheckning' : 'sparade kvällsincheckningar'}
-						i den valda perioden. De räknas för sig, skilt från dagbokens inlägg och humörvärden.
-					</p>
-				{/if}
-			</section>
-			<FramstegComprehensionCard enabled={!isAnonymous} />
-			{/if}
-		</div>
-	</div>
 				</div>
 			{/if}
 		</div>
@@ -1853,9 +1885,20 @@
 		text-underline-offset: 0.18em;
 	}
 
-	.progress-content {
+	.journey-container,
+	.progress-tab-panel {
+		min-width: 0;
+	}
+
+	.progress-tab-panel:not([hidden]) {
 		display: grid;
-		gap: 20px;
+		gap: 1rem;
+	}
+
+	.progress-tab-panel:focus-visible {
+		outline: 2px solid hsl(var(--ring, var(--primary)));
+		outline-offset: 4px;
+		border-radius: var(--radius-card);
 	}
 
 	.framsteg-shell {
@@ -1881,17 +1924,7 @@
 		color: var(--color-dashboard-text-muted);
 	}
 
-	.framsteg-layout {
-		display: grid;
-		grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
-		gap: 20px;
-		align-items: start;
-	}
 
-	.framsteg-layout-v2 {
-		grid-template-columns: minmax(0, 1fr);
-		max-width: none;
-	}
 
 	.reflection-card,
 	.garden-presence-card {
@@ -2454,11 +2487,6 @@
 		font-style: italic;
 	}
 
-	.framsteg-main {
-		display: grid;
-		gap: 1rem;
-		min-width: 0;
-	}
 
 	.companion-banner {
 		position: relative;
@@ -3026,9 +3054,6 @@
 			padding: 24px 22px 20px;
 		}
 
-		.framsteg-layout {
-			grid-template-columns: 1fr;
-		}
 
 		.companion-media::after {
 			display: none;
@@ -3068,7 +3093,9 @@
 	.error-state small { display: block; margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem; }
 
 	/* Cards base */
-	.card {
+	.card,
+	.progress-tab-panel :global(.personal-reflection-card),
+	.progress-tab-panel :global(.lighter-days) {
 		background: hsl(var(--surface));
 		border-radius: var(--radius-card);
 		padding: 2.5rem;
@@ -3187,7 +3214,9 @@
 			margin-top: 20px;
 		}
 
-		.card { padding: 1.5rem; }
+		.card,
+		.progress-tab-panel :global(.personal-reflection-card),
+		.progress-tab-panel :global(.lighter-days) { padding: 1.5rem; }
 		.companion-media::after { height: 62%; }
 		/* Samma långsamma vattenrörelse, men mjukare och mindre tydlig på den
 		   smalare beskärningen så reflexerna läser som ljus i vattnet. */

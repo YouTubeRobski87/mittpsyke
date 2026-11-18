@@ -41,7 +41,7 @@ describe('Framstegsanalysens endpointkontrakt', () => {
 		expect(source).toContain('buildProgressAnalysis(rows, period');
 		expect(source).toContain('buildLighterDaysView(rows, period, themeOverrides)');
 		expect(source).toContain('buildSupportView(filterProgressRows(rows, period)');
-		expect(source).toContain('return json({\n\t\t\tanalysis,\n\t\t\tlighterDays,\n\t\t\tsupport\n\t\t});');
+		expect(source).toMatch(/return json\(\{\s*analysis,\s*lighterDays,\s*support\s*\}\);/);
 		expect(source).not.toMatch(/openai|anthropic|generateAIText/i);
 	});
 

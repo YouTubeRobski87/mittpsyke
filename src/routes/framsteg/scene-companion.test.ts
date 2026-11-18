@@ -10,7 +10,7 @@ import {
 const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 const scene = route.slice(
 	route.indexOf('class="companion-media"'),
-	route.indexOf('class="framsteg-layout')
+	route.indexOf('id="progress-panel-mood"')
 );
 
 describe('Framstegs scen och följeslagare', () => {
@@ -142,7 +142,7 @@ describe('Framstegs scen och följeslagare', () => {
 		// Scenrutan finns inte i onMount för inloggade (den ligger bakom
 		// laddningsläget). Observern måste därför kopplas i en effekt som följer
 		// sceneEl, annars ligger Balder kvar på gamla mått när telefonen vrids.
-		const mount = route.slice(route.indexOf('onMount('), route.indexOf('return cleanupSceneWatchers;\n\t});'));
+		const mount = route.slice(route.indexOf('onMount('), route.indexOf('// Ytan mäts om'));
 		expect(mount).not.toContain('new ResizeObserver');
 		expect(route).toMatch(
 			/\$effect\(\(\) => \{\s*const renderedSceneEl = sceneEl;[\s\S]{0,160}new ResizeObserver\(\(\) => updateProgressScenePlacement\(renderedSceneEl\)\)[\s\S]{0,120}observer\.disconnect\(\)/

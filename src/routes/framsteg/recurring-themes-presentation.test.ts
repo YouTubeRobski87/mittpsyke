@@ -152,34 +152,19 @@ describe('kortets dataflöde', () => {
 });
 
 describe('Framstegs ordning med egna ord först', () => {
-	const main = route.slice(route.indexOf('<div class="framsteg-layout framsteg-layout-v2">'));
+	const main = route.slice(route.indexOf('id="progress-panel-insights"'));
+	const insights = main.slice(0, main.indexOf('id="progress-panel-place"'));
 
-	it('visar temana efter den lugna överblicken och före humörkurvan och analysen', () => {
-		const intro = main.indexOf('data-testid="week-summary"');
-		const themes = main.indexOf('data-testid="recurring-themes"');
-		const moodHistory = main.indexOf('data-testid="mood-history"');
-		const analysis = main.indexOf('data-testid="mood-analysis"');
-		const lighterDays = main.indexOf('data-testid="lighter-days"');
-
-		expect(intro).toBeGreaterThan(-1);
-		expect(themes).toBeGreaterThan(intro);
-		expect(moodHistory).toBeGreaterThan(themes);
-		expect(analysis).toBeGreaterThan(moodHistory);
-		// Den personliga återblicken (med den frivilliga AI-sammanfattningen)
-		// låg tidigare efter analysen. Den ligger nu först under scenen, före
-		// veckoöverblicken, så att den går att hitta.
-		expect(lighterDays).toBeGreaterThan(-1);
-		expect(lighterDays).toBeLessThan(intro);
+	it('samlar hjälpsamma mönster och återkommande teman under Mina insikter', () => {
+		expect(insights).toContain('<LighterDaysCard');
+		expect(insights).toContain('data-testid="recurring-themes"');
+		expect(insights).not.toContain('data-testid="mood-history"');
+		expect(insights).not.toContain('data-testid="week-summary"');
 	});
 
-	it('har den personliga återblicken en enda gång, med samma villkor som förut', () => {
+	it('visar återblicken en gång, bakom analyssamtycke', () => {
 		expect(route.match(/<LighterDaysCard/g)).toHaveLength(1);
-		expect(route.match(/data-testid="lighter-days"/g)).toHaveLength(1);
-		const before = route.slice(0, route.indexOf('data-testid="lighter-days"'));
-		expect(before.slice(before.lastIndexOf('{#if'))).toContain(
-			'{#if !isAnonymous && hasSensitiveDataConsent}'
-		);
-		expect(route).toContain('<p class="auth-eyebrow">Din personliga återblick</p>');
+		expect(insights).toMatch(/\{:else if hasSensitiveDataConsent\}\s*<LighterDaysCard/);
 	});
 
 	it('visar temakortet bara inloggad, med samtycke och när servern skickat teman', () => {
