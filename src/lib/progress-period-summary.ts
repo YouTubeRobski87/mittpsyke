@@ -4,6 +4,10 @@
 
 /** Färre anteckningar med text än så ger ingen text. */
 export const MIN_PERIOD_SUMMARY_ENTRIES = 5;
+/** Färre ord än så utan humörvärde räknas som en testanteckning och hoppas över. */
+export const MIN_PERIOD_SUMMARY_ENTRY_WORDS = 3;
+/** Fler ord än så räknas som inklistrad text och hoppas över. */
+export const MAX_PERIOD_SUMMARY_SOURCE_WORDS = 400;
 /** Högst så många anteckningar skickas, spridda över hela tiden. */
 export const MAX_PERIOD_SUMMARY_ENTRIES = 40;
 /** Högst så många ord skickas sammanlagt. */
@@ -19,6 +23,8 @@ export type PeriodSummaryBasis = {
 	availableCount: number;
 	/** Anteckningar som inte skickas eftersom krisvakten flaggade dem. */
 	excludedCount: number;
+	/** Anteckningar som hoppas över för att de är mycket korta eller ser inklistrade ut. */
+	skippedCount: number;
 	/** Sant när inte alla anteckningar ryms och ett urval spritt över tiden skickas. */
 	capped: boolean;
 	/** Sant när dagboken har fler rader än som läses, så de äldsta inte är med alls. */

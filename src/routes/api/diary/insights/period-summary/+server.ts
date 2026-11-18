@@ -5,6 +5,7 @@ import { generateAIText } from '$lib/server/ai/text-generation';
 import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import {
 	buildPeriodSummaryRequest,
+	omitPeriodSummaryEntries,
 	parsePeriodSummary,
 	periodSummarySnapshotId,
 	selectPeriodSummaryEntries
@@ -109,6 +110,10 @@ const handle: RequestHandler = async ({ request }) => {
 	// och godkänna urvalet. Det är kontots egna anteckningar; inget skickas vidare.
 	if (preview) return respond({ ...selection.basis, snapshotId, entries: selection.entries });
 	if (!service || input?.snapshotId !== snapshotId) return respond({ reason: 'changed' }, 409);
+	// Det användaren valde bort i granskningen skickas aldrig.
+	const approved = omitPeriodSummaryEntries(selection, input.omit ?? []);
+	if (!approved) return respond({}, 400);
+	if (approved.entries.length < MIN_PERIOD_SUMMARY_ENTRIES) return respond({ reason: 'too-few-selected' }, 422);
 
 	// Kontrolleras igen efter läsningen, innan AI-tjänsten ser något.
 	if (!(await hasDiaryAiConsent(service, user.id))) return aiConsentRequired();
@@ -118,7 +123,7 @@ const handle: RequestHandler = async ({ request }) => {
 	if (limit !== 'ok') return respond({ reason: limit }, 429);
 
 	try {
-		const { text } = await generateAIText(buildPeriodSummaryRequest(selection.entries));
+		const { text } = await generateAIText(buildPeriodSummaryRequest(approved.entries));
 		if (request.signal.aborted) return respond({}, 408);
 		// Underlaget får inte ha ändrats medan modellen arbetade.
 		const current = await readSelection();
@@ -129,7 +134,8 @@ const handle: RequestHandler = async ({ request }) => {
 		if (!(await hasCurrentHealthConsent())) return healthConsentRequired();
 		if (request.signal.aborted) return respond({}, 408);
 
-		const parsed = parsePeriodSummary(text, current);
+		// Svaret kontrolleras bara mot det som faktiskt skickades.
+		const parsed = parsePeriodSummary(text, approved);
 		if (parsed.status === 'ok') return respond(parsed.result);
 		return parsed.status === 'withheld'
 			? respond({ reason: 'withheld' }, 422)

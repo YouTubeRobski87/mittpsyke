@@ -168,6 +168,27 @@ describe('sammanfattning', () => {
 		expect(request.messages[0].content).not.toContain(userId());
 	});
 
+	it('skickar aldrig anteckningar som valts bort och kontrollerar svaret mot resten', async () => {
+		const extra = { id: 'entry-5', created_at: '2026-11-15T12:00:00Z', mood: 6, text: 'Läste en stund innan jag somnade.' };
+		mocks.rows.mockResolvedValue({ rows: [...rows, extra], truncated: false, error: null });
+		const { input } = await preview();
+		const response = await call('POST', { ...input, omit: ['entry-1'] });
+		expect(response.status).toBe(200);
+		const sent = JSON.parse(mocks.generate.mock.calls[0][0].messages[0].content);
+		expect(sent.map((entry: { text: string }) => entry.text)).toEqual([texts[0], texts[2], texts[3], texts[4], extra.text]);
+		expect(JSON.stringify(sent)).not.toContain(texts[1]);
+		expect((await response.json()).basis.entryCount).toBe(sent.length);
+	});
+
+	it('avvisar okända bortval och för få kvar', async () => {
+		const { input } = await preview();
+		expect((await call('POST', { ...input, omit: ['okänd'] })).status).toBe(400);
+		const response = await call('POST', { ...input, omit: ['entry-0', 'entry-1'] });
+		expect(response.status).toBe(422);
+		expect(await response.json()).toEqual({ reason: 'too-few-selected' });
+		expect(mocks.generate).not.toHaveBeenCalled();
+	});
+
 	it('binder ögonblicksbilden till kontot', async () => {
 		const { input } = await preview();
 		mocks.user.mockResolvedValue(auth(createHealthConsentRecord(), 'someone-else'));

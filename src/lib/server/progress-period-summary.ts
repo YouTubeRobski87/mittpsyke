@@ -1,9 +1,13 @@
 // "Det du har skrivit": urval, AI-förfrågan och kontroll av svaret.
 //
-// Urvalet: anteckningar med text från hela dagboken. Ryms inte alla väljs ett
-// jämnt spritt urval från den första till den senaste, så att både gamla och
-// nya anteckningar kommer med. Anteckningar som den befintliga krisvakten
+// Urvalet: anteckningar med egna ord från hela dagboken. Ryms inte alla väljs
+// ett jämnt spritt urval från den första till den senaste, så att både gamla
+// och nya anteckningar kommer med. Anteckningar som den befintliga krisvakten
 // flaggar skickas aldrig. Krisvakten används som den är och ändras inte här.
+// MittPsykes egna reflektioner i incheckningar tas bort, och testanteckningar
+// och långa inklistrade texter hoppas över, så att texten bygger på det
+// användaren själv har skrivit. Användaren kan dessutom välja bort enskilda
+// anteckningar innan något skickas.
 //
 // Kontrollen: varje stycke måste hänvisa till anteckningar som skickades, och
 // varje citat måste stå ordagrant i en av anteckningarna stycket hänvisar
@@ -12,9 +16,12 @@
 
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import { containsSensitiveContentPhrase } from '$lib/ai/crisis-keywords';
+import { CHECKIN_REFLECTION_HEADING } from '$lib/checkin-diary-content';
 import { diaryEntryHref } from '$lib/diary-entry-link';
 import {
 	MAX_PERIOD_SUMMARY_ENTRIES,
+	MAX_PERIOD_SUMMARY_SOURCE_WORDS,
+	MIN_PERIOD_SUMMARY_ENTRY_WORDS,
 	MAX_PERIOD_SUMMARY_ENTRY_WORDS,
 	MAX_PERIOD_SUMMARY_WORDS,
 	type PeriodSummaryBasis,
@@ -70,6 +77,27 @@ export function trimEntryText(text: string, maxWords = MAX_PERIOD_SUMMARY_ENTRY_
 	return (kept || text.split(/\s+/).slice(0, maxWords).join(' ')).trim();
 }
 
+/**
+ * Tar bort MittPsykes reflektion ur en guidad incheckning. Den sparas alltid
+ * sist under en fast rubrik, så allt från rubriken och framåt är AI-text.
+ */
+export function stripCheckinReflection(text: string): string {
+	const lines = text.split('\n');
+	const index = lines.findIndex((line) => line.trim() === CHECKIN_REFLECTION_HEADING);
+	return (index === -1 ? text : lines.slice(0, index).join('\n')).trim();
+}
+
+/**
+ * Text som ser inklistrad ut snarare än skriven i stunden: mycket lång, med
+ * rapportrubriker eller avdelare, eller med flera rader som bara är adresser.
+ */
+export function looksPasted(text: string): boolean {
+	if (wordCount(text) > MAX_PERIOD_SUMMARY_SOURCE_WORDS) return true;
+	if (/[═]{3,}|^#{1,6}\s|^\*\*[^*\n]+\*\*\s*$/m.test(text)) return true;
+	const addressLines = text.split('\n').filter((line) => /^\s*(?:\/[\w-]|https?:\/\/)/.test(line)).length;
+	return addressLines >= 3;
+}
+
 /** Väljer count poster jämnt spridda från den första till den sista, båda inräknade. */
 export function spreadIndexes(length: number, count: number): number[] {
 	if (count >= length) return Array.from({ length }, (_, index) => index);
@@ -89,21 +117,31 @@ export function selectPeriodSummaryEntries(
 ): PeriodSummarySelection {
 	const candidates: Candidate[] = [];
 	let excludedCount = 0;
+	let skippedCount = 0;
 
 	for (const row of rows) {
-		const original = row.text?.trim() ?? '';
+		const stored = row.text?.trim() ?? '';
 		const entryId = toEntryId(row.id);
 		const date = toStockholmDateKey(row.created_at);
-		if (!original || !entryId || !diaryEntryHref(entryId) || !date) continue;
-		// Krisvakten avgör, som överallt annars innan en AI-tjänst ser texten.
-		if (resolveDeterministicRiskGuard(original)) {
+		if (!stored || !entryId || !diaryEntryHref(entryId) || !date) continue;
+		// Krisvakten avgör, som överallt annars innan en AI-tjänst ser texten,
+		// och läser hela den sparade texten.
+		if (resolveDeterministicRiskGuard(stored)) {
 			excludedCount += 1;
+			continue;
+		}
+		const original = stripCheckinReflection(stored);
+		const mood = parseMood(row.mood);
+		// "trött" med ett humörvärde är en äkta anteckning, "aaa" utan är ett test.
+		const tooShort = wordCount(original) < MIN_PERIOD_SUMMARY_ENTRY_WORDS && mood === null;
+		if (!original || tooShort || looksPasted(original)) {
+			skippedCount += 1;
 			continue;
 		}
 		candidates.push({
 			entryId,
 			date,
-			mood: parseMood(row.mood),
+			mood,
 			original,
 			createdAt: row.created_at ?? '',
 			id: String(row.id ?? '')
@@ -126,9 +164,34 @@ export function selectPeriodSummaryEntries(
 			entryCount: entries.length,
 			availableCount: candidates.length,
 			excludedCount,
+			skippedCount,
 			capped: candidates.length > entries.length,
 			// Hämtningen kan ha kapat de äldsta raderna. Det redovisas för sig.
 			truncated,
+			firstDate: entries[0]?.date ?? null,
+			lastDate: entries.at(-1)?.date ?? null
+		}
+	};
+}
+
+/**
+ * Tar bort de anteckningar användaren valt bort i granskningen. Returnerar
+ * null om listan är ogiltig: okända eller upprepade id:n.
+ */
+export function omitPeriodSummaryEntries(
+	selection: PeriodSummarySelection,
+	omit: unknown
+): PeriodSummarySelection | null {
+	if (!Array.isArray(omit) || omit.length > selection.entries.length) return null;
+	const ids = new Set(selection.entries.map(({ entryId }) => entryId));
+	if (!omit.every((id) => typeof id === 'string' && ids.has(id)) || new Set(omit).size !== omit.length) return null;
+	const omitted = new Set(omit as string[]);
+	const entries = selection.entries.filter(({ entryId }) => !omitted.has(entryId));
+	return {
+		entries,
+		basis: {
+			...selection.basis,
+			entryCount: entries.length,
 			firstDate: entries[0]?.date ?? null,
 			lastDate: entries.at(-1)?.date ?? null
 		}
