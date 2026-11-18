@@ -56,21 +56,18 @@ export type LighterDaysView = {
 };
 
 export type SummarySource = {
-	/** Numret modellen refererar till, 1-baserat. */
+	/** Utdragets lokala nummer i temats tillåtna urval, 1-baserat. */
 	ref: number;
 	entryId: string | null;
 	date: string;
 	dateLabel: string;
-	themeLabel: string;
+	evidenceIndex: number;
 	excerpt: string;
 };
 
-export type SummaryStatement = {
-	text: string;
-	sources: SummarySource[];
-};
-
 export type SummaryResponse = {
-	statements: SummaryStatement[];
-	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'no-traceable-statements' | null;
+	question: string | null;
+	sourceRef?: number;
+	questionOrigin?: 'ai' | 'mittpsyke';
+	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'invalid-response' | null;
 };
