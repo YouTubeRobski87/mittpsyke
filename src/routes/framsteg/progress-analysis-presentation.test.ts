@@ -40,8 +40,12 @@ describe('Framstegs första blick', () => {
 		expect(route).toContain("[data-low-data-hidden='true']");
 	});
 
-	it('visar tunt underlag i standardfliken och scenen under Min plats', () => {
-		expect(route).toContain("activeTab = $state<ProgressTab>('insights')");
+	it('öppnar Min plats som standard och läser uttryckliga flikval från länken', () => {
+		expect(route).toContain("page.url.searchParams.get('tab')");
+		expect(route).toMatch(/linkedTab === 'insights' \|\| linkedTab === 'mood' \|\| linkedTab === 'development'\s*\? linkedTab\s*: 'place'/);
+	});
+
+	it('visar tunt underlag under Mina insikter och scenen under Min plats', () => {
 		expect(insightsPanel).toContain('data-testid="low-data-overview"');
 		expect(insightsPanel).not.toContain('class="companion-banner"');
 		expect(route.slice(route.indexOf('id="progress-panel-place"'), route.indexOf('id="progress-panel-mood"')))
