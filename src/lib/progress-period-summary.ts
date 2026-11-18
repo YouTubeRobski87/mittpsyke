@@ -27,7 +27,20 @@ export type PeriodSummaryBasis = {
 	lastDate: string | null;
 };
 
-export type PeriodSummaryPreview = PeriodSummaryBasis & { snapshotId: string };
+/** En anteckning precis som den skickas till AI, så att användaren kan granska urvalet. */
+export type PeriodSummaryPreviewEntry = {
+	ref: number;
+	entryId: string;
+	date: string;
+	mood: number | null;
+	text: string;
+};
+
+export type PeriodSummaryPreview = PeriodSummaryBasis & {
+	snapshotId: string;
+	/** Exakt det som skickas, i kronologisk ordning. Visas bara för kontots ägare. */
+	entries: PeriodSummaryPreviewEntry[];
+};
 
 export type PeriodSummarySource = { ref: number; entryId: string; date: string };
 
