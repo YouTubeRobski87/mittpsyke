@@ -9,7 +9,7 @@
 	//   ordningen i chatten routes/api/chat/+server.ts (spärr före lagring,
 	//                      rate limit och AI-anrop)
 	//   stödpanelerna      $lib/ai/safety.ts, ChatWindow.svelte
-	//   dagboken           routes/api/diary/{reflect,checkin-reflection,insights/summary}
+	//   dagboken           routes/api/diary/{reflect,checkin-reflection,insights/period-summary}
 	//   chatthistoriken    ChatWindow.svelte (persistHistory: localStorage och
 	//                      chat_history för inloggade, inget för gäster)
 	// Ändras spärren ska sidan ändras i samma PR. Se crisis-page.test.ts.

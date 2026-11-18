@@ -4,7 +4,7 @@
 // förslagen i "Kanske värt att prova" (diary-support-suggestions). Allt här är
 // deterministiskt. Den äldre berättande analysen, som skrev om texten med en
 // språkmodell utan att användaren bett om det, är borttagen: AI körs nu bara
-// efter ett aktivt val (se /api/diary/insights/summary).
+// efter ett aktivt val (se /api/diary/insights/period-summary).
 
 import { toStockholmDateKey } from '$lib/stockholm-date';
 
