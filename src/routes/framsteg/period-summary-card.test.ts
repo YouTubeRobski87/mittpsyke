@@ -1,7 +1,7 @@
-// "Din period i ord" i Mina insikter. Flödet provas i webbläsare i PR:en;
+// "Det du har skrivit" i Mina insikter. Flödet provas i webbläsare i PR:en;
 // här låses de regler som aldrig får glida: inget AI-anrop utan godkännande,
-// inget gammalt resultat efter periodbyte eller ändrat urval, och att de
-// befintliga AI-funktionerna finns kvar i det här steget.
+// inget gammalt resultat efter ändrat urval eller återkallat samtycke, och att
+// de befintliga AI-funktionerna finns kvar.
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -11,18 +11,19 @@ const card = read('src/lib/components/progress/PeriodSummaryCard.svelte');
 const route = read('src/routes/framsteg/+page.svelte');
 const insightsPanel = route.slice(route.indexOf('id="progress-panel-insights"'), route.indexOf('id="progress-panel-place"'));
 
-describe('kortet Din period i ord', () => {
-	it('har specens rubrik, ingress och knapp', () => {
-		expect(card).toContain('<h2 id="period-summary-heading">Din period i ord</h2>');
-		expect(card).toContain('Se vad som återkommer i dina anteckningar, vilka skillnader du själv beskrivit och vilka stunder du vill');
+describe('kortet Det du har skrivit', () => {
+	it('har rubrik, ingress och knapp', () => {
+		expect(card).toContain('<h2 id="period-summary-heading">Det du har skrivit</h2>');
+		expect(card).toContain('En sammanhängande text om allt du har skrivit i dagboken');
 		expect(card).toContain("'Sammanfatta mina anteckningar'");
 	});
 
-	it('ligger överst i Mina insikter för inloggade med anteckningar och monteras om vid periodbyte', () => {
+	it('ligger överst i Mina insikter för inloggade med anteckningar och gäller hela dagboken', () => {
 		expect(insightsPanel.indexOf('<PeriodSummaryCard')).toBeGreaterThan(-1);
 		expect(insightsPanel.indexOf('<PeriodSummaryCard')).toBeLessThan(insightsPanel.indexOf('<LighterDaysCard'));
-		expect(insightsPanel).toContain('{#if !isAnonymous && !emptyProgress && isPeriodSummaryPeriod(selectedPeriod)}');
-		expect(insightsPanel).toMatch(/\{#key selectedPeriod\}\s*<PeriodSummaryCard period=\{selectedPeriod\} \/>/);
+		expect(insightsPanel).toContain('{#if !isAnonymous && !emptyProgress}');
+		expect(insightsPanel).toContain('<PeriodSummaryCard />');
+		expect(card).not.toContain('period=');
 	});
 
 	it('anropar AI bara efter granskat och godkänt urval', () => {
@@ -52,19 +53,19 @@ describe('kortet Din period i ord', () => {
 
 	it('sparar aldrig resultatet', () => {
 		expect(card).not.toMatch(/localStorage\.setItem|sessionStorage\.setItem/);
-		expect(card).toContain('Sammanfattningen');
-		expect(card).toContain('sparas inte');
+		expect(card).toContain('Texten sparas inte.');
 	});
 
-	it('länkar varje del till originalanteckningen', () => {
+	it('visar löptext med hänvisningar som länkar till originalanteckningen', () => {
+		expect(card).toContain('{#each result.paragraphs as paragraph');
+		expect(card).toContain('{@render sourceLinks(segment.sources)}');
 		expect(card).toContain('diaryEntryHref(source.entryId)');
-		expect(card).toContain('{@render sourceLinks(theme.sources)}');
-		expect(card).toContain('{@render sourceLinks(change.sources)}');
-		expect(card).toContain('{@render sourceLinks([moment.source])}');
+		// Resultatet visar inga siffror eller listor av teman.
+		expect(card).not.toContain('result.themes');
 	});
 });
 
-describe('avgränsning i det här steget', () => {
+describe('avgränsning', () => {
 	it('behåller de befintliga AI-funktionerna och statistiken', () => {
 		expect(insightsPanel).toContain('<LighterDaysCard');
 		expect(insightsPanel).toContain('<RecurringThemesCard');

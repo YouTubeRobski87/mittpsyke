@@ -56,3 +56,29 @@ export async function loadProgressRows(
 		.sort((first, second) => (first.created_at ?? '').localeCompare(second.created_at ?? ''));
 	return { rows, truncated: (count ?? data?.length ?? 0) > INSIGHTS_ROW_LIMIT, error: null };
 }
+
+/** Så många av de senaste raderna läses när hela dagboken sammanfattas. */
+export const SUMMARY_ROW_LIMIT = 1000;
+
+/**
+ * Hela dagbokens rader för "Det du har skrivit", oberoende av vald period.
+ * Har kontot fler rader än taket läses de senaste, och truncated blir sant.
+ */
+export async function loadSummaryRows(
+	supabase: SupabaseClient,
+	userId: string
+): Promise<{ rows: LighterDaysRow[]; truncated: boolean; error: string | null }> {
+	const { data, error, count } = await supabase
+		.from('diary')
+		.select('id, created_at, mood, text', { count: 'exact' })
+		.eq('user_id', userId)
+		.order('created_at', { ascending: false })
+		.limit(SUMMARY_ROW_LIMIT);
+
+	if (error) return { rows: [], truncated: false, error: error.message };
+	return {
+		rows: (data ?? []) as LighterDaysRow[],
+		truncated: (count ?? data?.length ?? 0) > SUMMARY_ROW_LIMIT,
+		error: null
+	};
+}

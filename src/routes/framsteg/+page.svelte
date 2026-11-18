@@ -13,7 +13,6 @@
 	import type { HelpfulReminderState } from '$lib/progress-helpful-reminders';
 	import PersonalRetrospect from '$lib/components/progress/PersonalRetrospect.svelte';
 	import PeriodSummaryCard from '$lib/components/progress/PeriodSummaryCard.svelte';
-	import { isPeriodSummaryPeriod } from '$lib/progress-period-summary';
 	import HelpfulReminders from '$lib/components/progress/HelpfulReminders.svelte';
 	import ProgressTabs, { type ProgressTab } from '$lib/components/progress/ProgressTabs.svelte';
 	import ProgressPeriodPicker from '$lib/components/ProgressPeriodPicker.svelte';
@@ -1288,13 +1287,10 @@
 					tabindex="0"
 					hidden={activeTab !== 'insights'}
 				>
-					{#if !isAnonymous && !emptyProgress && isPeriodSummaryPeriod(selectedPeriod)}
-						<!-- Nytt huvudkort. Monteras om vid periodbyte så att inget gammalt
-						     urval eller resultat någonsin visas för en annan period. -->
+					{#if !isAnonymous && !emptyProgress}
+						<!-- Huvudkort: en text om hela dagboken, oberoende av vald period. -->
 						<section class="card reflection-card period-summary-card" aria-labelledby="period-summary-heading">
-							{#key selectedPeriod}
-								<PeriodSummaryCard period={selectedPeriod} />
-							{/key}
+							<PeriodSummaryCard />
 						</section>
 					{/if}
 					{#if isAnonymous}

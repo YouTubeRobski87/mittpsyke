@@ -1,11 +1,11 @@
 <script lang="ts">
-	// "Din period i ord": en AI-sammanfattning av periodens anteckningar.
+	// "Det du har skrivit": en sammanhängande AI-text om hela dagboken, med
+	// klickbara hänvisningar till anteckningarna den bygger på.
 	//
-	// Flödet är alltid: granska urvalet -> godkänn uttryckligen -> sammanfatta.
+	// Flödet är alltid: granska urvalet -> godkänn uttryckligen -> skriv texten.
 	// Inget AI-anrop görs utan godkännandet, och servern kontrollerar samtyckena
-	// igen. Resultatet lever bara i den här komponenten och sparas aldrig. Byts
-	// perioden monteras komponenten om (se {#key} i Framsteg), och ändrat urval
-	// eller återkallat samtycke tömmer allt som visas.
+	// igen. Resultatet lever bara i den här komponenten och sparas aldrig.
+	// Ändrat urval eller återkallat samtycke tömmer allt som visas.
 	import { onDestroy, onMount } from 'svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
@@ -18,23 +18,15 @@
 	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import {
 		MIN_PERIOD_SUMMARY_ENTRIES,
-		type PeriodSummaryPeriod,
 		type PeriodSummaryPreview,
 		type PeriodSummaryResult,
 		type PeriodSummarySource
 	} from '$lib/progress-period-summary';
 	import { supabase } from '$lib/supabase';
 
-	let { period }: { period: PeriodSummaryPeriod } = $props();
-
 	type Step = 'idle' | 'preview' | 'review' | 'generate' | 'result';
 
 	const ENDPOINT = '/api/diary/insights/period-summary';
-	const PERIOD_LABELS: Record<PeriodSummaryPeriod, string> = {
-		30: 'de senaste 30 dagarna',
-		90: 'de senaste tre månaderna',
-		180: 'de senaste sex månaderna'
-	};
 
 	let step = $state<Step>('idle');
 	let preview = $state<PeriodSummaryPreview | null>(null);
@@ -50,9 +42,13 @@
 
 	const longDate = new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 	const shortDate = new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+	const shortDateWithYear = new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+	const currentYear = String(new Date().getFullYear());
 	const toDate = (date: string) => new Date(`${date}T12:00:00Z`);
 	const formatLong = (date: string | null) => (date ? longDate.format(toDate(date)) : '');
-	const formatShort = (date: string) => shortDate.format(toDate(date));
+	// Året visas bara när anteckningen är från ett annat år än i år.
+	const formatShort = (date: string) =>
+		(date.startsWith(currentYear) ? shortDate : shortDateWithYear).format(toDate(date));
 	const formatMood = (mood: number) => mood.toLocaleString('sv-SE', { maximumFractionDigits: 1 });
 	const noteWord = (count: number) => (count === 1 ? 'anteckning' : 'anteckningar');
 
@@ -114,15 +110,15 @@
 	function describeFailure(reason: unknown): string {
 		switch (reason) {
 			case 'rate-limit':
-				return 'Vänta en minut innan du ber om en ny sammanfattning.';
+				return 'Vänta en minut innan du ber om en ny text.';
 			case 'daily-limit':
-				return 'Du har bett om fem sammanfattningar i dag. Du kan göra en ny i morgon.';
+				return 'Du har bett om fem texter i dag. Du kan göra en ny i morgon.';
 			case 'withheld':
-				return 'En sammanfattning kan inte visas för de här anteckningarna. Dina anteckningar finns kvar i dagboken.';
+				return 'En text kan inte visas för de här anteckningarna. Dina anteckningar finns kvar i dagboken.';
 			case 'invalid-response':
-				return 'Det gick inte att ta fram en sammanfattning som kunde kontrolleras mot dina anteckningar. Du kan försöka igen om en stund.';
+				return 'Det gick inte att ta fram en text som kunde kontrolleras mot dina anteckningar. Du kan försöka igen om en stund.';
 			default:
-				return 'Det gick inte att ta fram sammanfattningen just nu. Försök igen om en stund.';
+				return 'Det gick inte att ta fram texten just nu. Försök igen om en stund.';
 		}
 	}
 
@@ -137,7 +133,7 @@
 			const headers = await authHeaders();
 			if (controller.signal.aborted) return;
 			if (!headers) throw new Error();
-			const response = await fetch(`${ENDPOINT}?period=${period}`, {
+			const response = await fetch(ENDPOINT, {
 				headers,
 				signal: controller.signal,
 				cache: 'no-store'
@@ -180,7 +176,7 @@
 			const response = await fetch(ENDPOINT, {
 				method: 'POST',
 				headers: { ...headers, 'Content-Type': 'application/json' },
-				body: JSON.stringify({ period, snapshotId: preview.snapshotId, confirmed: true }),
+				body: JSON.stringify({ snapshotId: preview.snapshotId, confirmed: true }),
 				signal: controller.signal
 			});
 			const payload = await response.json().catch(() => ({}));
@@ -197,7 +193,7 @@
 			if (response.status === 409) {
 				// Urvalet är inte längre det användaren godkände. Inget gammalt får synas.
 				reset();
-				message = 'Dina anteckningar har ändrats sedan du granskade dem. Granska urvalet igen innan du sammanfattar.';
+				message = 'Dina anteckningar har ändrats sedan du granskade dem. Granska urvalet igen innan du fortsätter.';
 				return;
 			}
 			if (response.status === 422 && payload.reason === 'insufficient-data') {
@@ -205,7 +201,7 @@
 				insufficient = true;
 				return;
 			}
-			if (!response.ok || !Array.isArray(payload.themes)) {
+			if (!response.ok || !Array.isArray(payload.paragraphs)) {
 				step = 'review';
 				message = describeFailure(payload.reason);
 				return;
@@ -241,7 +237,7 @@
 		const response = await fetch('/api/consent/diary-ai', { method: 'POST', headers });
 		if (!response.ok) throw new Error();
 		needsAiConsent = false;
-		message = 'Samtycket är sparat. Tryck på Skapa sammanfattningen för att fortsätta.';
+		message = 'Samtycket är sparat. Tryck på Skriv texten för att fortsätta.';
 	}
 
 	function hideSummary() {
@@ -251,14 +247,11 @@
 </script>
 
 {#snippet sourceLinks(sources: PeriodSummarySource[])}
-	<span class="period-summary-sources">
-		{#each sources as source (source.ref)}
-			{@const href = diaryEntryHref(source.entryId)}
-			{#if href}
-				<a {href} aria-label={`Läs anteckningen från ${formatLong(source.date)}`}>{formatShort(source.date)}</a>
-			{/if}
-		{/each}
-	</span>
+	<span class="period-summary-sources"
+		>({#each sources as source, index (source.ref)}{@const href = diaryEntryHref(source.entryId)}{#if index > 0}{', '}{/if}{#if href}<a {href} aria-label={`Läs anteckningen från ${formatLong(source.date)}`}
+					>{formatShort(source.date)}</a
+				>{:else}{formatShort(source.date)}{/if}{/each})</span
+	>
 {/snippet}
 
 {#snippet entryList(entries: PeriodSummaryPreview['entries'], labelledBy: string)}
@@ -276,10 +269,10 @@
 {/snippet}
 
 <div class="period-summary" data-testid="period-summary">
-	<h2 id="period-summary-heading">Din period i ord</h2>
+	<h2 id="period-summary-heading">Det du har skrivit</h2>
 	<p class="period-summary-lead">
-		Se vad som återkommer i dina anteckningar, vilka skillnader du själv beskrivit och vilka stunder du vill
-		ta med dig.
+		En sammanhängande text om allt du har skrivit i dagboken: det som återkommer, det som har förändrats och
+		det du själv lyft fram. Varje del länkar till anteckningarna den bygger på.
 	</p>
 
 	{#if needsHealthConsent}
@@ -287,61 +280,32 @@
 			idPrefix="period-summary-health-consent"
 			title="Innan MittPsyke visar dina anteckningar"
 			dataLabel="Dina sparade dagbokstexter"
-			serviceLabel="MittPsyke för att visa urvalet till sammanfattningen"
+			serviceLabel="MittPsyke för att visa urvalet till texten"
 			requireExplicitConfirmation
 			onAccept={saveHealthConsent}
 		/>
 	{:else if step === 'result' && result}
 		<section class="period-summary-result" aria-labelledby="period-summary-result-heading">
-			<h3 id="period-summary-result-heading" tabindex="-1" bind:this={resultHeading}>
-				Så här har du skrivit under {PERIOD_LABELS[period]}
-			</h3>
+			<h3 id="period-summary-result-heading" tabindex="-1" bind:this={resultHeading}>Så här har du skrivit</h3>
 
-			{#if result.themes.length > 0}
-				<section class="period-summary-part" aria-labelledby="period-summary-themes">
-					<h4 id="period-summary-themes">Det du skrev mest om</h4>
-					<ul>
-						{#each result.themes as theme, index (index)}
-							<li>{theme.text} {@render sourceLinks(theme.sources)}</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
-
-			{#if result.changes.length > 0}
-				<section class="period-summary-part" aria-labelledby="period-summary-changes">
-					<h4 id="period-summary-changes">Möjliga förändringar</h4>
-					<ul>
-						{#each result.changes as change, index (index)}
-							<li>{change.text} {@render sourceLinks(change.sources)}</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
-
-			{#if result.moments.length > 0}
-				<section class="period-summary-part" aria-labelledby="period-summary-moments">
-					<h4 id="period-summary-moments">Stunder att ta med dig</h4>
-					<ul class="period-summary-moments">
-						{#each result.moments as moment (moment.source.ref)}
-							<li>
-								<blockquote>{moment.quote}</blockquote>
-								{@render sourceLinks([moment.source])}
-							</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
+			<div class="period-summary-prose">
+				{#each result.paragraphs as paragraph, index (index)}
+					<p>
+						{#each paragraph as segment, part (part)}{#if 'sources' in segment}
+								{@render sourceLinks(segment.sources)}{:else}{segment.text}{/if}{/each}
+					</p>
+				{/each}
+			</div>
 
 			{#if result.question}
 				<p class="period-summary-question">{result.question}</p>
 			{/if}
 
 			<p class="period-summary-note">
-				AI-text som bygger på ett begränsat urval: {result.basis.entryCount}
+				AI-text som bygger på {result.basis.entryCount}
 				{noteWord(result.basis.entryCount)} från {formatLong(result.basis.firstDate)} till
-				{formatLong(result.basis.lastDate)}. Varje del länkar till anteckningarna den bygger på. Läs dem gärna själv. Sammanfattningen
-				sparas inte.
+				{formatLong(result.basis.lastDate)}. Datumen i texten länkar till anteckningarna. Läs dem gärna själv,
+				det är du som vet vad de betyder. Texten sparas inte.
 			</p>
 
 			<div class="period-summary-actions">
@@ -354,11 +318,11 @@
 				>
 					{basisOpen ? 'Dölj underlaget' : 'Visa underlaget'}
 				</button>
-				<button type="button" class="auth-button" onclick={hideSummary}>Dölj sammanfattningen</button>
+				<button type="button" class="auth-button" onclick={hideSummary}>Dölj texten</button>
 			</div>
 			<div id="period-summary-basis" hidden={!basisOpen}>
 				{#if basisOpen && preview}
-					<h4 id="period-summary-basis-heading">Anteckningarna som sammanfattningen bygger på</h4>
+					<h4 id="period-summary-basis-heading">Anteckningarna som texten bygger på</h4>
 					{@render entryList(preview.entries, 'period-summary-basis-heading')}
 				{/if}
 			</div>
@@ -370,12 +334,12 @@
 				Texten i {preview.entryCount} {noteWord(preview.entryCount)} från {formatLong(preview.firstDate)} till
 				{formatLong(preview.lastDate)}, med datum och humörvärden. OpenAI har sitt säte i USA. Ditt kontonamn
 				och din e-postadress skickas inte, men texterna skickas precis som du skrev dem, även namn och
-				andra uppgifter som står i dem. Sammanfattningen sparas inte.
+				andra uppgifter som står i dem. Texten sparas inte.
 			</p>
 			{#if preview.capped}
 				<p class="period-summary-note">
-					Det här är ett begränsat urval: de senaste anteckningarna under perioden, upp till taket för en
-					sammanfattning.
+					Alla {preview.availableCount} anteckningar ryms inte. Därför skickas {preview.entryCount} som är
+					jämnt spridda från den första till den senaste, och långa anteckningar kortas.
 				</p>
 			{/if}
 			{#if preview.excludedCount > 0}
@@ -390,9 +354,9 @@
 			{#if needsAiConsent}
 				<ConsentGate
 					idPrefix="period-summary-ai-consent"
-					title="Innan AI sammanfattar dina anteckningar"
+					title="Innan AI skriver om dina anteckningar"
 					dataLabel={`De ${preview.entryCount} anteckningar du precis har granskat`}
-					serviceLabel="OpenAI för att skriva sammanfattningen"
+					serviceLabel="OpenAI för att skriva texten"
 					requireExplicitConfirmation
 					onAccept={saveAiConsent}
 				/>
@@ -400,7 +364,7 @@
 				<label class="period-summary-confirmation">
 					<input type="checkbox" bind:checked={confirmed} disabled={step === 'generate'} />
 					Jag har granskat urvalet och godkänner att OpenAI behandlar just de här anteckningarna för att skriva
-					sammanfattningen.
+					texten.
 				</label>
 				<div class="period-summary-actions">
 					<button
@@ -410,23 +374,22 @@
 						disabled={!confirmed || step === 'generate'}
 						onclick={generate}
 					>
-						{step === 'generate' ? 'Skriver sammanfattningen…' : 'Skapa sammanfattningen'}
+						{step === 'generate' ? 'Skriver texten…' : 'Skriv texten'}
 					</button>
 					<button type="button" class="auth-button" disabled={step === 'generate'} onclick={hideSummary}>
 						Avbryt
 					</button>
 				</div>
 				{#if step === 'generate'}
-					<p class="period-summary-note" role="status">Skriver sammanfattningen. Det kan ta upp till en halv minut.</p>
+					<p class="period-summary-note" role="status">Skriver texten. Det kan ta upp till en halv minut.</p>
 				{/if}
 			{/if}
 		</section>
 	{:else}
 		{#if insufficient}
 			<p class="period-summary-note" data-testid="period-summary-insufficient">
-				En sammanfattning blir möjlig när det finns minst {MIN_PERIOD_SUMMARY_ENTRIES} anteckningar med text under
-				{PERIOD_LABELS[period]}. Det finns inget du behöver hålla igång. Du kan också välja en längre period
-				ovan.
+				En text blir möjlig när det finns minst {MIN_PERIOD_SUMMARY_ENTRIES} anteckningar med text i dagboken.
+				Det finns inget du behöver hålla igång.
 			</p>
 		{/if}
 		<button
@@ -439,8 +402,8 @@
 			{step === 'preview' ? 'Hämtar dina anteckningar…' : 'Sammanfatta mina anteckningar'}
 		</button>
 		<p class="period-summary-note">
-			Gäller {PERIOD_LABELS[period]}. Du får först se exakt vilka anteckningar som skulle skickas, och inget
-			skickas förrän du har godkänt dem.
+			Gäller allt du har skrivit, oavsett vald period. Du får först se exakt vilka anteckningar som skulle
+			skickas, och inget skickas förrän du har godkänt dem.
 		</p>
 	{/if}
 
@@ -450,8 +413,7 @@
 <style>
 	.period-summary,
 	.period-summary-review,
-	.period-summary-result,
-	.period-summary-part {
+	.period-summary-result {
 		display: grid;
 		gap: 0.85rem;
 	}
@@ -460,8 +422,6 @@
 	h3,
 	h4,
 	p,
-	blockquote,
-	ul,
 	ol {
 		margin: 0;
 	}
@@ -497,21 +457,14 @@
 		line-height: 1.65;
 	}
 
-	.period-summary-part ul {
+	.period-summary-prose {
 		display: grid;
-		gap: 0.6rem;
-		padding-inline-start: 1.2rem;
+		gap: 0.9rem;
+		font-size: 1.02rem;
+		line-height: 1.75;
 	}
 
-	.period-summary-moments {
-		list-style: none;
-		padding-inline-start: 0 !important;
-	}
-
-	blockquote {
-		border-inline-start: 2px solid hsl(var(--border));
-		padding-inline-start: 0.75rem;
-		font-style: italic;
+	.period-summary-prose p {
 		overflow-wrap: anywhere;
 	}
 
@@ -520,19 +473,18 @@
 	}
 
 	.period-summary-sources {
-		display: inline-flex;
-		flex-wrap: wrap;
-		gap: 0.25rem 0.6rem;
-		vertical-align: baseline;
+		margin-inline-start: 0.25em;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.9em;
 	}
 
+	/* Tryckytan förstoras utan att radavståndet i löptexten ändras. */
 	.period-summary-sources a {
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-		padding-inline: 0.15rem;
+		display: inline-block;
+		white-space: nowrap;
+		padding-block: 0.6rem;
+		margin-block: -0.6rem;
 		color: inherit;
-		font-size: 0.9rem;
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
 	}
