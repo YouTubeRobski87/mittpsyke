@@ -126,8 +126,9 @@ export function selectPeriodSummaryEntries(
 			entryCount: entries.length,
 			availableCount: candidates.length,
 			excludedCount,
-			// Hämtningen kan redan ha kapat de äldsta raderna.
-			capped: truncated || candidates.length > entries.length,
+			capped: candidates.length > entries.length,
+			// Hämtningen kan ha kapat de äldsta raderna. Det redovisas för sig.
+			truncated,
 			firstDate: entries[0]?.date ?? null,
 			lastDate: entries.at(-1)?.date ?? null
 		}

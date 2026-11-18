@@ -42,6 +42,7 @@ describe('selectPeriodSummaryEntries', () => {
 			availableCount: 5,
 			excludedCount: 0,
 			capped: false,
+			truncated: false,
 			firstDate: result.entries[0].date,
 			lastDate: result.entries[4].date
 		});
@@ -76,8 +77,9 @@ describe('selectPeriodSummaryEntries', () => {
 		expect(words).toBeLessThanOrEqual(MAX_PERIOD_SUMMARY_WORDS);
 	});
 
-	it('markerar urvalet som begränsat när hämtningen kapades', () => {
-		expect(selectPeriodSummaryEntries(baseRows, { truncated: true }).basis.capped).toBe(true);
+	it('redovisar en kapad hämtning för sig, skild från spridningen', () => {
+		const { basis } = selectPeriodSummaryEntries(baseRows, { truncated: true });
+		expect(basis).toMatchObject({ truncated: true, capped: false, entryCount: 5 });
 	});
 });
 

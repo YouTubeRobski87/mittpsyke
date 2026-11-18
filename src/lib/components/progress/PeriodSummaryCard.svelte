@@ -27,6 +27,8 @@
 	type Step = 'idle' | 'preview' | 'review' | 'generate' | 'result';
 
 	const ENDPOINT = '/api/diary/insights/period-summary';
+	/** Samma tak som servern läser (SUMMARY_ROW_LIMIT). */
+	const SUMMARY_ROW_LIMIT_LABEL = '1 000';
 
 	let step = $state<Step>('idle');
 	let preview = $state<PeriodSummaryPreview | null>(null);
@@ -340,6 +342,12 @@
 				<p class="period-summary-note">
 					Alla {preview.availableCount} anteckningar ryms inte. Därför skickas {preview.entryCount} som är
 					jämnt spridda från den första till den senaste, och långa anteckningar kortas.
+				</p>
+			{/if}
+			{#if preview.truncated}
+				<p class="period-summary-note">
+					Dagboken har fler än {SUMMARY_ROW_LIMIT_LABEL} anteckningar. Bara de senaste {SUMMARY_ROW_LIMIT_LABEL}
+					är med i urvalet, så de allra äldsta kommer inte med.
 				</p>
 			{/if}
 			{#if preview.excludedCount > 0}
