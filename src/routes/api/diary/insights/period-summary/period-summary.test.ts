@@ -111,7 +111,7 @@ describe('förhandsvisning', () => {
 	it('redovisar ett begränsat urval när hämtningen kapats', async () => {
 		mocks.rows.mockResolvedValue({ rows, truncated: true, error: null });
 		const { data } = await preview();
-		expect(data.capped).toBe(true);
+		expect(data).toMatchObject({ truncated: true, capped: false });
 	});
 
 	it('svarar 503 vid läsfel', async () => {

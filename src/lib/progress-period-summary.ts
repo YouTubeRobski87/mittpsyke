@@ -21,6 +21,8 @@ export type PeriodSummaryBasis = {
 	excludedCount: number;
 	/** Sant när inte alla anteckningar ryms och ett urval spritt över tiden skickas. */
 	capped: boolean;
+	/** Sant när dagboken har fler rader än som läses, så de äldsta inte är med alls. */
+	truncated: boolean;
 	/** Första och sista datum (YYYY-MM-DD) bland anteckningarna som skickas. */
 	firstDate: string | null;
 	lastDate: string | null;
