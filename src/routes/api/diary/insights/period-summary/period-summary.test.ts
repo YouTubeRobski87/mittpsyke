@@ -1,4 +1,4 @@
-// Endpointen för "Sammanfatta mina anteckningar": samtycken, ögonblicksbild,
+// Endpointen för "Det du har skrivit": samtycken, ögonblicksbild,
 // begränsning och kontroll av svaret.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,7 +13,7 @@ vi.mock('$lib/server/supabase-admin', () => ({
 }));
 vi.mock('$lib/server/diary-ai-consent', () => ({ hasDiaryAiConsent: mocks.consent }));
 vi.mock('$lib/server/ai/text-generation', () => ({ generateAIText: mocks.generate }));
-vi.mock('$lib/server/progress-rows', () => ({ loadProgressRows: mocks.rows }));
+vi.mock('$lib/server/progress-rows', () => ({ loadSummaryRows: mocks.rows }));
 
 // Varje test får ett eget konto, så begränsningen per konto inte läcker mellan testerna.
 let sequence = 0;
@@ -37,18 +37,16 @@ const rows = texts.map((text, index) => ({
 }));
 
 const goodAnswer = {
-	themes: [{ text: 'Du skriver om sömn.', refs: [1, 3] }],
-	changes: [],
-	moments: [{ ref: 5, quote: 'Jag vill komma ihåg stunden vid sjön.' }],
+	paragraphs: ['Du skriver om sömn [1, 3].', 'Du skrev ”Jag vill komma ihåg stunden vid sjön” [5].'],
 	question: 'Vad gör stunderna vid sjön för dig?'
 };
 
 function call(
 	method: 'GET' | 'POST',
 	body?: unknown,
-	{ health = true, period = 30 }: { health?: boolean; period?: number } = {}
+	{ health = true }: { health?: boolean } = {}
 ) {
-	const url = new URL(`http://localhost/api/diary/insights/period-summary?period=${period}`);
+	const url = new URL('http://localhost/api/diary/insights/period-summary');
 	const headers = new Headers({ Authorization: 'Bearer test-token' });
 	if (health) headers.set(SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION);
 	const handler = method === 'GET' ? GET : POST;
@@ -63,7 +61,7 @@ async function preview() {
 	expect(response.status).toBe(200);
 	expect(response.headers.get('Cache-Control')).toContain('no-store');
 	const data = (await response.json()) as PeriodSummaryPreview;
-	return { data, input: { period: 30, snapshotId: data.snapshotId, confirmed: true } };
+	return { data, input: { snapshotId: data.snapshotId, confirmed: true } };
 }
 
 beforeEach(() => {
@@ -81,7 +79,7 @@ afterEach(() => vi.useRealTimers());
 describe('förhandsvisning', () => {
 	it('visar omfånget och exakt de texter som skulle skickas, utan AI-anrop', async () => {
 		const { data } = await preview();
-		expect(data).toMatchObject({ period: 30, entryCount: 5, excludedCount: 0, capped: false, firstDate: '2026-11-10', lastDate: '2026-11-14' });
+		expect(data).toMatchObject({ entryCount: 5, availableCount: 5, excludedCount: 0, capped: false, firstDate: '2026-11-10', lastDate: '2026-11-14' });
 		expect(data.entries.map(({ text }) => text)).toEqual(texts);
 		expect(data.entries[0]).toEqual({ ref: 1, entryId: 'entry-0', date: '2026-11-10', mood: 5, text: texts[0] });
 		expect(mocks.generate).not.toHaveBeenCalled();
@@ -116,8 +114,7 @@ describe('förhandsvisning', () => {
 		expect(data.capped).toBe(true);
 	});
 
-	it('avvisar okända perioder och läsfel', async () => {
-		expect((await call('GET', undefined, { period: 7 })).status).toBe(400);
+	it('svarar 503 vid läsfel', async () => {
 		mocks.rows.mockResolvedValue({ rows: [], truncated: false, error: 'boom' });
 		expect((await call('GET')).status).toBe(503);
 	});
@@ -152,14 +149,18 @@ describe('sammanfattning', () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get('Cache-Control')).toContain('no-store');
 		const result = await response.json();
-		expect(result.themes[0]).toEqual({
-			text: 'Du skriver om sömn.',
-			sources: [
-				{ ref: 1, entryId: 'entry-0', date: '2026-11-10' },
-				{ ref: 3, entryId: 'entry-2', date: '2026-11-12' }
-			]
-		});
-		expect(result.moments[0].source.entryId).toBe('entry-4');
+		expect(result.paragraphs[0]).toEqual([
+			{ text: 'Du skriver om sömn' },
+			{
+				sources: [
+					{ ref: 1, entryId: 'entry-0', date: '2026-11-10' },
+					{ ref: 3, entryId: 'entry-2', date: '2026-11-12' }
+				]
+			},
+			{ text: '.' }
+		]);
+		expect(result.paragraphs[1][1].sources[0].entryId).toBe('entry-4');
+		expect(result.question).toBe('Vad gör stunderna vid sjön för dig?');
 		expect(result.basis.entryCount).toBe(5);
 		const [request] = mocks.generate.mock.calls[0];
 		const sent = JSON.parse(request.messages[0].content);
@@ -167,9 +168,8 @@ describe('sammanfattning', () => {
 		expect(request.messages[0].content).not.toContain(userId());
 	});
 
-	it('binder ögonblicksbilden till kontot och perioden', async () => {
+	it('binder ögonblicksbilden till kontot', async () => {
 		const { input } = await preview();
-		expect((await call('POST', { ...input, period: 90 })).status).toBe(409);
 		mocks.user.mockResolvedValue(auth(createHealthConsentRecord(), 'someone-else'));
 		expect((await call('POST', input)).status).toBe(409);
 		expect(mocks.generate).not.toHaveBeenCalled();
@@ -229,7 +229,7 @@ describe('sammanfattning', () => {
 	it('visar ingenting när krisvakten flaggar svaret och säger till när svaret inte håller', async () => {
 		const { input } = await preview();
 		mocks.generate.mockResolvedValue({
-			text: JSON.stringify({ themes: [{ text: 'Du vill ta livet av dig.', refs: [1, 2] }] })
+			text: JSON.stringify({ paragraphs: ['Du vill ta livet av dig [1, 2].'] })
 		});
 		let response = await call('POST', input);
 		expect(response.status).toBe(422);

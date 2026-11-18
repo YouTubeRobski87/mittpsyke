@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { hasHealthConsentRecord, hasSensitiveConsentHeader } from '$lib/consent';
-import { isPeriodSummaryPeriod, MIN_PERIOD_SUMMARY_ENTRIES } from '$lib/progress-period-summary';
+import { MIN_PERIOD_SUMMARY_ENTRIES } from '$lib/progress-period-summary';
 import { generateAIText } from '$lib/server/ai/text-generation';
 import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import {
@@ -9,12 +9,12 @@ import {
 	periodSummarySnapshotId,
 	selectPeriodSummaryEntries
 } from '$lib/server/progress-period-summary';
-import { loadProgressRows } from '$lib/server/progress-rows';
+import { loadSummaryRows } from '$lib/server/progress-rows';
 import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
 import { stockholmTodayKey } from '$lib/stockholm-date';
 import type { RequestHandler } from './$types';
 
-// "Sammanfatta mina anteckningar" i Framsteg.
+// "Det du har skrivit" i Framsteg: en sammanhängande text om hela dagboken.
 //
 // GET visar urvalet för granskning: omfånget, exakt de texter som skulle
 // skickas och en ögonblicksbild. Ingen AI-tjänst anropas.
@@ -51,7 +51,7 @@ function takeRateLimit(userId: string, now: number): 'ok' | 'rate-limit' | 'dail
 	return 'ok';
 }
 
-const handle: RequestHandler = async ({ request, url }) => {
+const handle: RequestHandler = async ({ request }) => {
 	if (!hasSensitiveConsentHeader(request)) return healthConsentRequired();
 	const token = request.headers.get('authorization')?.match(/^Bearer (\S+)$/i)?.[1];
 	if (!token) return respond({}, 401);
@@ -83,16 +83,10 @@ const handle: RequestHandler = async ({ request, url }) => {
 	};
 
 	const preview = request.method === 'GET';
-	const input = preview
-		? { period: Number(url.searchParams.get('period')) }
-		: ((await request.json().catch(() => null)) as Record<string, unknown> | null);
-	const period = input?.period;
+	const input = preview ? null : ((await request.json().catch(() => null)) as Record<string, unknown> | null);
 	if (
-		!isPeriodSummaryPeriod(period) ||
-		(!preview &&
-			(input?.confirmed !== true ||
-				typeof input.snapshotId !== 'string' ||
-				!/^[a-f0-9]{64}$/.test(input.snapshotId)))
+		!preview &&
+		(input?.confirmed !== true || typeof input.snapshotId !== 'string' || !/^[a-f0-9]{64}$/.test(input.snapshotId))
 	) {
 		return respond({}, 400);
 	}
@@ -102,8 +96,8 @@ const handle: RequestHandler = async ({ request, url }) => {
 	if (service && !(await hasDiaryAiConsent(service, user.id))) return aiConsentRequired();
 
 	const readSelection = async () => {
-		const { rows, truncated, error } = await loadProgressRows(supabase, user.id, period);
-		return error ? null : selectPeriodSummaryEntries(rows, period, new Date(), { truncated });
+		const { rows, truncated, error } = await loadSummaryRows(supabase, user.id);
+		return error ? null : selectPeriodSummaryEntries(rows, { truncated });
 	};
 	const selection = await readSelection();
 	if (!selection) return respond({}, 503);
