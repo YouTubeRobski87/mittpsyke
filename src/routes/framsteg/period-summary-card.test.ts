@@ -28,18 +28,21 @@ describe('kortet Det du har skrivit', () => {
 
 	it('anropar AI bara efter granskat och godkänt urval', () => {
 		const generate = card.slice(card.indexOf('async function generate()'), card.indexOf('async function saveHealthConsent'));
-		expect(generate).toContain('if (request || !preview || !confirmed) return;');
+		expect(generate).toContain('if (request || !preview || !confirmed || includedEntries.length < MIN_PERIOD_SUMMARY_ENTRIES) return;');
 		expect(generate).toContain("method: 'POST'");
-		expect(generate).toContain('snapshotId: preview.snapshotId, confirmed: true');
+		expect(generate).toContain('snapshotId: preview.snapshotId, confirmed: true, omit: omitted');
 		// Förhandsvisningen är ett GET utan body och kan aldrig nå AI.
 		const loadPreview = card.slice(card.indexOf('async function loadPreview()'), card.indexOf('async function generate()'));
 		expect(loadPreview).not.toContain("method: 'POST'");
-		expect(card).toContain('disabled={!confirmed || step === \'generate\'}');
+		expect(card).toContain("disabled={!confirmed || step === 'generate' || includedEntries.length < MIN_PERIOD_SUMMARY_ENTRIES}");
+		// Ett ändrat urval kräver ett nytt godkännande.
+		const toggle = card.slice(card.indexOf('function toggleEntry'), card.indexOf('function hideSummary'));
+		expect(toggle).toContain('confirmed = false;');
 	});
 
 	it('visar exakt det som skickas innan godkännandet', () => {
 		expect(card).toContain('Det här skickas till OpenAI');
-		expect(card).toContain('{@render entryList(preview.entries, \'period-summary-review-heading\')}');
+		expect(card).toContain("{@render entryList(preview.entries, 'period-summary-review-heading', true)}");
 		expect(card).toContain('<p class="period-summary-entry-text">{entry.text}</p>');
 	});
 
@@ -48,7 +51,7 @@ describe('kortet Det du har skrivit', () => {
 		expect(card).toContain('clearForHealthConsent();');
 		expect(card).toContain("if (event === 'SIGNED_OUT') reset();");
 		const reset = card.slice(card.indexOf('function reset()'), card.indexOf('function clearForHealthConsent'));
-		for (const field of ['preview = null', 'result = null', 'confirmed = false']) expect(reset).toContain(field);
+		for (const field of ['preview = null', 'result = null', 'confirmed = false', 'omitted = []']) expect(reset).toContain(field);
 	});
 
 	it('sparar aldrig resultatet', () => {

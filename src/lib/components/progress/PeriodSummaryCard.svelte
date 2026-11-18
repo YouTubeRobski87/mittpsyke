@@ -34,6 +34,9 @@
 	let preview = $state<PeriodSummaryPreview | null>(null);
 	let result = $state<PeriodSummaryResult | null>(null);
 	let confirmed = $state(false);
+	/** Anteckningar användaren valt bort i granskningen. Skickas aldrig. */
+	let omitted = $state<string[]>([]);
+	const includedEntries = $derived(preview ? preview.entries.filter(({ entryId }) => !omitted.includes(entryId)) : []);
 	let needsHealthConsent = $state(false);
 	let needsAiConsent = $state(false);
 	let basisOpen = $state(false);
@@ -62,6 +65,7 @@
 		preview = null;
 		result = null;
 		confirmed = false;
+		omitted = [];
 		needsAiConsent = false;
 		basisOpen = false;
 		insufficient = false;
@@ -154,6 +158,7 @@
 			if (!response.ok || !Array.isArray(payload.entries)) throw new Error();
 			preview = payload as PeriodSummaryPreview;
 			confirmed = false;
+			omitted = [];
 			step = 'review';
 		} catch {
 			if (!controller.signal.aborted) {
@@ -166,7 +171,7 @@
 	}
 
 	async function generate() {
-		if (request || !preview || !confirmed) return;
+		if (request || !preview || !confirmed || includedEntries.length < MIN_PERIOD_SUMMARY_ENTRIES) return;
 		const controller = new AbortController();
 		request = controller;
 		step = 'generate';
@@ -178,7 +183,7 @@
 			const response = await fetch(ENDPOINT, {
 				method: 'POST',
 				headers: { ...headers, 'Content-Type': 'application/json' },
-				body: JSON.stringify({ snapshotId: preview.snapshotId, confirmed: true }),
+				body: JSON.stringify({ snapshotId: preview.snapshotId, confirmed: true, omit: omitted }),
 				signal: controller.signal
 			});
 			const payload = await response.json().catch(() => ({}));
@@ -201,6 +206,12 @@
 			if (response.status === 422 && payload.reason === 'insufficient-data') {
 				reset();
 				insufficient = true;
+				return;
+			}
+			if (response.status === 422 && payload.reason === 'too-few-selected') {
+				confirmed = false;
+				step = 'review';
+				message = `Välj minst ${MIN_PERIOD_SUMMARY_ENTRIES} anteckningar att ta med.`;
 				return;
 			}
 			if (!response.ok || !Array.isArray(payload.paragraphs)) {
@@ -242,6 +253,12 @@
 		message = 'Samtycket är sparat. Tryck på Skriv texten för att fortsätta.';
 	}
 
+	/** Ett ändrat urval kräver ett nytt godkännande, så godkännandet alltid gäller exakt det som skickas. */
+	function toggleEntry(entryId: string, include: boolean) {
+		omitted = include ? omitted.filter((id) => id !== entryId) : [...omitted, entryId];
+		confirmed = false;
+	}
+
 	function hideSummary() {
 		reset();
 		message = '';
@@ -249,21 +266,34 @@
 </script>
 
 {#snippet sourceLinks(sources: PeriodSummarySource[])}
-	<span class="period-summary-sources"
+	{' '}<span class="period-summary-sources"
 		>({#each sources as source, index (source.ref)}{@const href = diaryEntryHref(source.entryId)}{#if index > 0}{', '}{/if}{#if href}<a {href} aria-label={`Läs anteckningen från ${formatLong(source.date)}`}
 					>{formatShort(source.date)}</a
 				>{:else}{formatShort(source.date)}{/if}{/each})</span
 	>
 {/snippet}
 
-{#snippet entryList(entries: PeriodSummaryPreview['entries'], labelledBy: string)}
+{#snippet entryList(entries: PeriodSummaryPreview['entries'], labelledBy: string, selectable = false)}
 	<ol class="period-summary-entries" aria-labelledby={labelledBy}>
 		{#each entries as entry (entry.ref)}
-			<li>
+			{@const included = !omitted.includes(entry.entryId)}
+			<li class:period-summary-entry-omitted={selectable && !included}>
 				<p class="period-summary-entry-meta">
 					<time datetime={entry.date}>{formatLong(entry.date)}</time>
 					{#if entry.mood !== null}<span>· humör {formatMood(entry.mood)} av 10</span>{/if}
 				</p>
+				{#if selectable}
+					<label class="period-summary-entry-toggle">
+						<input
+							type="checkbox"
+							checked={included}
+							disabled={step === 'generate'}
+							onchange={(event) => toggleEntry(entry.entryId, event.currentTarget.checked)}
+							aria-label={`Ta med anteckningen från ${formatLong(entry.date)}`}
+						/>
+						Ta med
+					</label>
+				{/if}
 				<p class="period-summary-entry-text">{entry.text}</p>
 			</li>
 		{/each}
@@ -325,7 +355,7 @@
 			<div id="period-summary-basis" hidden={!basisOpen}>
 				{#if basisOpen && preview}
 					<h4 id="period-summary-basis-heading">Anteckningarna som texten bygger på</h4>
-					{@render entryList(preview.entries, 'period-summary-basis-heading')}
+					{@render entryList(includedEntries, 'period-summary-basis-heading')}
 				{/if}
 			</div>
 		</section>
@@ -333,7 +363,7 @@
 		<section class="period-summary-review" aria-labelledby="period-summary-review-heading">
 			<h3 id="period-summary-review-heading">Det här skickas till OpenAI</h3>
 			<p id="period-summary-processing">
-				Texten i {preview.entryCount} {noteWord(preview.entryCount)} från {formatLong(preview.firstDate)} till
+				Texten i de anteckningar du markerar nedan, från {formatLong(preview.firstDate)} till
 				{formatLong(preview.lastDate)}, med datum och humörvärden. OpenAI har sitt säte i USA. Ditt kontonamn
 				och din e-postadress skickas inte, men texterna skickas precis som du skrev dem, även namn och
 				andra uppgifter som står i dem. Texten sparas inte.
@@ -356,14 +386,24 @@
 					som de är i dagboken.
 				</p>
 			{/if}
+			{#if preview.skippedCount > 0}
+				<p class="period-summary-note">
+					{preview.skippedCount} {noteWord(preview.skippedCount)} hoppas över eftersom de är mycket korta eller ser
+					ut som inklistrad text. MittPsykes egna reflektioner i incheckningar skickas inte heller.
+				</p>
+			{/if}
+			<p class="period-summary-note">
+				Ta bort bocken vid sådant du inte vill att texten ska bygga på, till exempel tester eller text du klistrat
+				in. {includedEntries.length} av {preview.entries.length} är med.
+			</p>
 
-			{@render entryList(preview.entries, 'period-summary-review-heading')}
+			{@render entryList(preview.entries, 'period-summary-review-heading', true)}
 
 			{#if needsAiConsent}
 				<ConsentGate
 					idPrefix="period-summary-ai-consent"
 					title="Innan AI skriver om dina anteckningar"
-					dataLabel={`De ${preview.entryCount} anteckningar du precis har granskat`}
+					dataLabel={`De ${includedEntries.length} anteckningar du precis har granskat`}
 					serviceLabel="OpenAI för att skriva texten"
 					requireExplicitConfirmation
 					onAccept={saveAiConsent}
@@ -371,15 +411,15 @@
 			{:else}
 				<label class="period-summary-confirmation">
 					<input type="checkbox" bind:checked={confirmed} disabled={step === 'generate'} />
-					Jag har granskat urvalet och godkänner att OpenAI behandlar just de här anteckningarna för att skriva
-					texten.
+					Jag har granskat urvalet och godkänner att OpenAI behandlar just de {includedEntries.length} markerade
+					anteckningarna för att skriva texten.
 				</label>
 				<div class="period-summary-actions">
 					<button
 						type="button"
 						class="auth-button primary"
 						aria-describedby="period-summary-processing"
-						disabled={!confirmed || step === 'generate'}
+						disabled={!confirmed || step === 'generate' || includedEntries.length < MIN_PERIOD_SUMMARY_ENTRIES}
 						onclick={generate}
 					>
 						{step === 'generate' ? 'Skriver texten…' : 'Skriv texten'}
@@ -481,7 +521,6 @@
 	}
 
 	.period-summary-sources {
-		margin-inline-start: 0.25em;
 		color: hsl(var(--muted-foreground));
 		font-size: 0.9em;
 	}
@@ -515,6 +554,24 @@
 	.period-summary-entries li + li {
 		padding-top: 0.75rem;
 		border-top: 1px solid hsl(var(--border));
+	}
+
+	.period-summary-entry-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		min-height: 44px;
+		font-size: 0.9rem;
+	}
+
+	.period-summary-entry-toggle input {
+		width: 1.15rem;
+		height: 1.15rem;
+	}
+
+	.period-summary-entry-omitted .period-summary-entry-text {
+		opacity: 0.45;
+		text-decoration: line-through;
 	}
 
 	.period-summary-entry-text {

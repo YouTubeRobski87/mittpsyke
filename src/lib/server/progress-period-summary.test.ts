@@ -4,10 +4,13 @@ import { describe, expect, it } from 'vitest';
 import { MAX_PERIOD_SUMMARY_ENTRIES, MAX_PERIOD_SUMMARY_WORDS, type PeriodSummarySegment } from '$lib/progress-period-summary';
 import {
 	buildPeriodSummaryRequest,
+	looksPasted,
+	omitPeriodSummaryEntries,
 	parsePeriodSummary,
 	periodSummarySnapshotId,
 	selectPeriodSummaryEntries,
 	spreadIndexes,
+	stripCheckinReflection,
 	trimEntryText
 } from './progress-period-summary';
 
@@ -41,11 +44,28 @@ describe('selectPeriodSummaryEntries', () => {
 			entryCount: 5,
 			availableCount: 5,
 			excludedCount: 0,
+			skippedCount: 0,
 			capped: false,
 			truncated: false,
 			firstDate: result.entries[0].date,
 			lastDate: result.entries[4].date
 		});
+	});
+
+	it('hoppar över testanteckningar men behåller korta anteckningar med humör', () => {
+		const result = selectPeriodSummaryEntries([...baseRows, row(2, 'aaa', null), row(3, 'test test', null), row(4, 'trött', 3)]);
+		expect(result.basis).toMatchObject({ entryCount: 6, skippedCount: 2 });
+		expect(result.entries.some(({ text }) => text === 'trött')).toBe(true);
+	});
+
+	it('hoppar över långa inklistrade texter och tar bort MittPsykes reflektion', () => {
+		const report = 'MittPsyke – Lägesrapport\n\n' + 'Plattformen har tagit flera steg framåt. '.repeat(70);
+		const checkin = 'Guidad incheckning\n\nHur jag mår just nu:\n- Rastlös\n\nMittPsyke-reflektion:\nRastlösheten kan verkligen tära.';
+		const result = selectPeriodSummaryEntries([...baseRows, row(2, report, null), row(3, checkin, null)]);
+		expect(result.basis.skippedCount).toBe(1);
+		const entry = result.entries.find(({ text }) => text.startsWith('Guidad incheckning'));
+		expect(entry?.text).toBe('Guidad incheckning\n\nHur jag mår just nu:\n- Rastlös');
+		expect(JSON.stringify(result.entries)).not.toContain('Rastlösheten kan');
 	});
 
 	it('hoppar över tomma rader och rader utan id', () => {
@@ -69,7 +89,7 @@ describe('selectPeriodSummaryEntries', () => {
 	});
 
 	it('delar ordtaket lika så att långa anteckningar inte tränger undan resten', () => {
-		const long = Array.from({ length: 80 }, (_, index) => `Mening ${index} med några fler ord.`).join(' ');
+		const long = Array.from({ length: 60 }, (_, index) => `Mening ${index} med några fler ord.`).join(' ');
 		const rows = Array.from({ length: 60 }, (_, index) => row(600 - index, long));
 		const result = selectPeriodSummaryEntries(rows);
 		const words = result.entries.reduce((sum, { text }) => sum + text.split(/\s+/).length, 0);
@@ -80,6 +100,42 @@ describe('selectPeriodSummaryEntries', () => {
 	it('redovisar en kapad hämtning för sig, skild från spridningen', () => {
 		const { basis } = selectPeriodSummaryEntries(baseRows, { truncated: true });
 		expect(basis).toMatchObject({ truncated: true, capped: false, entryCount: 5 });
+	});
+});
+
+describe('stripCheckinReflection och looksPasted', () => {
+	it('lämnar text utan reflektion orörd', () => {
+		expect(stripCheckinReflection('Bara mina ord.')).toBe('Bara mina ord.');
+		expect(stripCheckinReflection('Guidad incheckning\nMittPsyke-reflektion:\nAI')).toBe('Guidad incheckning');
+	});
+
+	it('känner igen rapporter, avdelare och adresslistor men inte vanliga anteckningar', () => {
+		expect(looksPasted('═══════\nDAGLIG RAPPORT')).toBe(true);
+		expect(looksPasted('## Rubrik\nText')).toBe(true);
+		expect(looksPasted('Sidor:\n/psykiskt-stod\n/hjalp-vid-angest\n/stod-vid-stress')).toBe(true);
+		expect(looksPasted('Guidad incheckning\n\nHur jag mår just nu:\n- Rastlös\n- Orolig i kroppen')).toBe(false);
+		expect(
+			looksPasted('https://a.se/somn hjälpte mig.\nhttps://a.se/vila påminde mig.\nhttps://a.se/gå gav mig lust.')
+		).toBe(false);
+		expect(looksPasted('Precis varit på Liseberg med mina bästa töser, så underbart.')).toBe(false);
+	});
+});
+
+describe('omitPeriodSummaryEntries', () => {
+	it('tar bort valda anteckningar och uppdaterar omfånget', () => {
+		const omit = [selection.entries[0].entryId];
+		const result = omitPeriodSummaryEntries(selection, omit);
+		expect(result?.entries.map(({ ref }) => ref)).toEqual([2, 3, 4, 5]);
+		expect(result?.basis).toMatchObject({ entryCount: 4, firstDate: selection.entries[1].date });
+		expect(omitPeriodSummaryEntries(selection, [])?.entries).toHaveLength(5);
+	});
+
+	it('avvisar okända, upprepade eller felaktiga id:n', () => {
+		expect(omitPeriodSummaryEntries(selection, ['okänd'])).toBeNull();
+		const id = selection.entries[0].entryId;
+		expect(omitPeriodSummaryEntries(selection, [id, id])).toBeNull();
+		expect(omitPeriodSummaryEntries(selection, 'x')).toBeNull();
+		expect(omitPeriodSummaryEntries(selection, [1])).toBeNull();
 	});
 });
 
