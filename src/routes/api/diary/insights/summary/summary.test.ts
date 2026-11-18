@@ -38,12 +38,15 @@ const view: LighterDaysView = {
 		evidence: [{
 			entryId: 'entry-1', date: '2026-06-01', dateLabel: '1 juni', mood: 8,
 			excerpt: 'Jag sov länge i går.'
+		}, {
+			entryId: 'entry-2', date: '2026-06-10', dateLabel: '10 juni', mood: 8,
+			excerpt: 'I natt vaknade jag flera gånger.'
 		}]
 	}]
 };
 
 view.helpfulPatterns = { ready: true, themes: view.themes };
-const visibleSnapshot = getLighterDaysSummaryView(view, false)!;
+const visibleSnapshot = getLighterDaysSummaryView(view, false, 'Sömn')!;
 
 async function summarize(snapshot = visibleSnapshot, { authenticated = true, sensitiveConsent = true } = {}) {
 	const headers = new Headers({ 'Content-Type': 'application/json' });
@@ -53,18 +56,22 @@ async function summarize(snapshot = visibleSnapshot, { authenticated = true, sen
 		request: new Request('http://localhost/api/diary/insights/summary', {
 			method: 'POST',
 			headers,
-			body: JSON.stringify({ period: snapshot.periodDays, snapshotId: await getSummarySnapshotId(snapshot) })
+			body: JSON.stringify({ period: snapshot.periodDays, themeId: snapshot.themeId, snapshotId: await getSummarySnapshotId(snapshot) })
 		})
 	} as Parameters<typeof POST>[0]);
 }
 
+let userSequence = 0;
+
 beforeEach(() => {
 	vi.resetAllMocks();
-	mocks.user.mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null });
+	mocks.user.mockResolvedValue({ data: { user: { id: `test-user-${++userSequence}` } }, error: null });
 	mocks.consent.mockResolvedValue(true);
 	mocks.rows.mockResolvedValue({ rows: [], truncated: false, error: null });
 	mocks.view.mockReturnValue(view);
-	mocks.generate.mockResolvedValue({ text: '{"factIds":[1]}' });
+	mocks.generate.mockResolvedValue({ text: JSON.stringify({
+		selection: { ref: 2, span: 'vaknade jag flera gånger', kind: 'notice' }
+	}) });
 });
 
 describe('Framstegs sammanfattningsendpoint', () => {
@@ -91,17 +98,17 @@ describe('Framstegs sammanfattningsendpoint', () => {
 	it('hoppar över modellen vid tomt, tunt eller avkortat underlag', async () => {
 		const thin = { ...view, lowConfidence: true, relevantEntryCount: 4 };
 		mocks.view.mockReturnValue(thin);
-		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'insufficient-data' });
+		expect(await (await summarize()).json()).toEqual({ question: null, reason: 'insufficient-data' });
 		const empty = { ...view, helpfulPatterns: { ready: true, themes: [] } };
 		mocks.view.mockReturnValue(empty);
-		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'no-sources' });
+		expect(await (await summarize()).json()).toEqual({ question: null, reason: 'no-sources' });
 		mocks.view.mockReturnValue(view);
 		mocks.rows.mockResolvedValue({ rows: [], truncated: true, error: null });
-		expect(await (await summarize()).json()).toEqual({ statements: [], reason: 'insufficient-data' });
+		expect(await (await summarize()).json()).toEqual({ question: null, reason: 'insufficient-data' });
 		expect(mocks.generate).not.toHaveBeenCalled();
 	});
 
-	it('returnerar serverns verifierbara text och dess källor vid ett giltigt urval', async () => {
+	it('returnerar en verifierad reflektion och skickar bara lokalt numrerade, synliga utdrag', async () => {
 		mocks.view.mockReturnValue({
 			...view,
 			themes: [...view.themes, { ...view.themes[0], id: 'Motion', label: 'Motion',
@@ -109,16 +116,73 @@ describe('Framstegs sammanfattningsendpoint', () => {
 		});
 		const response = await summarize();
 		expect(response.status).toBe(200);
+		expect(response.headers.get('Cache-Control')).toBe('no-store');
 		expect(await response.json()).toMatchObject({
-			statements: [{ text: 'Sömn fanns med i 3 av 4. I övriga inlägg: 1 av 6.', sources: [{ entryId: 'entry-1' }] }],
+			sourceRef: 2,
+			question: 'Vad lägger du märke till när du läser ”vaknade jag flera gånger” igen?',
 			reason: null
 		});
 		expect(mocks.generate).toHaveBeenCalledTimes(1);
 		const request = mocks.generate.mock.calls[0][0];
-		expect(JSON.parse(request.messages[0].content)).toEqual([{
-			id: 1,
-			observation: 'Sömn fanns med i 3 av 4. I övriga inlägg: 1 av 6.',
-			utdrag: ['Jag sov länge i går.']
-		}]);
+		expect(JSON.parse(request.messages[0].content)).toEqual([
+			{ ref: 1, excerpt: 'Jag sov länge i går.' },
+			{ ref: 2, excerpt: 'I natt vaknade jag flera gånger.' }
+		]);
+	});
+
+	it('ger besked om otillräckligt underlag när modellen avstår', async () => {
+		mocks.generate.mockResolvedValue({ text: '{"selection":null}' });
+		expect(await (await summarize()).json()).toEqual({ question: null, reason: 'insufficient-data' });
+	});
+
+	it('lämnar inget AI-innehåll om samtycket återkallas medan modellen arbetar', async () => {
+		mocks.consent.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+		const response = await summarize();
+		expect(mocks.generate).toHaveBeenCalledOnce();
+		expect(response.status).toBe(403);
+		expect(await response.json()).toEqual({
+			error: 'Consent required for sensitive diary AI features.',
+			reason: 'ai-consent'
+		});
+	});
+
+	it('avvisar ett förhandsvisat utdrag som har ändrats före anropet', async () => {
+		const theme = view.themes[0];
+		mocks.view.mockReturnValue({ ...view, helpfulPatterns: { ready: true, themes: [{
+			...theme,
+			evidence: [{ ...theme.evidence[0], excerpt: 'Jag läste tills jag blev sömnig.' }, theme.evidence[1]]
+		}] } });
+		expect((await summarize()).status).toBe(409);
+		expect(mocks.generate).not.toHaveBeenCalled();
+	});
+
+	it('tar inte emot ett tema som saknas i den aktuella vyn', async () => {
+		const response = await summarize({ ...visibleSnapshot, themeId: 'Annat tema' });
+		expect(await response.json()).toEqual({ question: null, reason: 'no-sources' });
+		expect(mocks.generate).not.toHaveBeenCalled();
+	});
+
+	it('hanterar felaktigt modellformat utan att visa modellens text', async () => {
+		mocks.generate.mockResolvedValue({ text: '{"selection":{"question":"Egen fråga?"}}' });
+		const response = await summarize();
+		expect(await response.json()).toEqual({ question: null, reason: 'invalid-response' });
+		expect(response.headers.get('Cache-Control')).toBe('no-store');
+	});
+
+	it('låter krisspärren stoppa hela anropet före modellen', async () => {
+		const unsafe = {
+			...view,
+			helpfulPatterns: { ready: true, themes: [{
+				...view.themes[0],
+				evidence: [
+					{ ...view.themes[0].evidence[0], excerpt: 'Jag vill ta livet av mig.' },
+					view.themes[0].evidence[1]
+				]
+			}] }
+		};
+		mocks.view.mockReturnValue(unsafe);
+		const response = await summarize(getLighterDaysSummaryView(unsafe, false, 'Sömn')!);
+		expect(await response.json()).toEqual({ question: null, reason: 'withheld' });
+		expect(mocks.generate).not.toHaveBeenCalled();
 	});
 });

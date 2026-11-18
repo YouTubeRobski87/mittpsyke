@@ -1,7 +1,7 @@
 import { render } from 'svelte/server';
 import { describe, expect, it, vi } from 'vitest';
 import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
-import { getLighterDaysSummaryView, getVisibleComparisonThemes, MAX_SUMMARY_SOURCES } from '$lib/progress-summary-request';
+import { getLighterDaysSummaryView } from '$lib/progress-summary-request';
 import { generateAIText, type AITextProvider } from './ai/text-generation';
 import { buildLighterDaysView, type LighterDaysRow } from './progress-lighter-days';
 import {
@@ -27,27 +27,22 @@ const rows: LighterDaysRow[] = [
 ];
 
 const view = buildLighterDaysView(rows, 30, {}, NOW);
-const facts = getLighterDaysSummaryView(view, false)!.facts;
+const themeId = 'Motion';
+const snapshot = getLighterDaysSummaryView(view, false, themeId)!;
 
 describe('AI-sammanfattningens underlag', () => {
-	it('binder varje observation till serverns siffror och ordagranna utdrag från samma tema', () => {
-		expect(facts).toHaveLength(1);
-		const [fact] = facts;
-		expect(fact.text).toBe(`${view.helpfulPatterns!.themes[0].note} ${view.helpfulPatterns!.themes[0].comparison}`);
-		expect(fact.sources.map((source) => source.entryId).sort()).toEqual(['e1', 'e2', 'e3']);
-		for (const source of fact.sources) {
-			expect(rows.find((row) => row.id === source.entryId)?.text).toContain(source.excerpt);
-		}
-		const request = buildLighterDaysSummaryRequest(facts);
-		const prompt = request.messages[0].content;
-		expect(prompt).toContain(fact.text);
-		expect(prompt).not.toContain('Vanlig dag hemma.');
+	it('skickar ett redan synligt utdrag utan datum, ID eller temastatistik', () => {
+		expect(snapshot.sources).toHaveLength(1);
+		const [source] = snapshot.sources;
+		expect(source.excerpt).toBe(rows[0].text);
+		const request = buildLighterDaysSummaryRequest(snapshot.sources);
+		expect(JSON.parse(request.messages[0].content)).toEqual([{ ref: 1, excerpt: source.excerpt }]);
 		expect(request.outputFormat).toBe('json_object');
 	});
 
 	it('erbjuder ingen observation från ett dolt tema eller ett tema utan tillåtna utdrag', () => {
 		const hidden = buildLighterDaysView(rows, 30, { [view.themes[0].id]: { hidden: true } }, NOW);
-		expect(getLighterDaysSummaryView(hidden, false)).toBeNull();
+		expect(getLighterDaysSummaryView(hidden, false, themeId)).toBeNull();
 		const withoutExcerpts = {
 			...view,
 			helpfulPatterns: { ready: true, themes: view.helpfulPatterns!.themes.map((theme) => ({
@@ -55,7 +50,7 @@ describe('AI-sammanfattningens underlag', () => {
 				evidence: theme.evidence.map((item) => ({ ...item, excerpt: null }))
 			})) }
 		};
-		expect(getLighterDaysSummaryView(withoutExcerpts, false)).toBeNull();
+		expect(getLighterDaysSummaryView(withoutExcerpts, false, themeId)).toBeNull();
 		expect(render(LighterDaysCard, { props: { view: withoutExcerpts } }).body)
 			.not.toContain('lighter-days-ai-button');
 	});
@@ -67,7 +62,7 @@ describe('AI-sammanfattningens underlag', () => {
 		const oldOnly = buildLighterDaysView(oldOnlyRows, 30, {}, NOW);
 		expect(oldOnly.themes.map((theme) => theme.id)).toContain('Motion');
 		expect(oldOnly.helpfulPatterns).toEqual({ ready: true, themes: [] });
-		expect(getLighterDaysSummaryView(oldOnly, false)).toBeNull();
+		expect(getLighterDaysSummaryView(oldOnly, false, themeId)).toBeNull();
 		const { body } = render(LighterDaysCard, { props: { view: oldOnly } });
 		expect(body).not.toContain('lighter-days-ai-button');
 		expect(body).not.toContain('Visa underlaget');
@@ -82,71 +77,96 @@ describe('AI-sammanfattningens underlag', () => {
 		];
 		const comparison = buildLighterDaysView(closeShares, 30, {}, NOW);
 		expect(comparison.themes).toMatchObject([{ id: 'Motion', count: 3, base: 4, otherCount: 6, otherBase: 9 }]);
-		expect(getLighterDaysSummaryView(comparison, false)).toBeNull();
+		expect(getLighterDaysSummaryView(comparison, false, themeId)).toBeNull();
 		expect(render(LighterDaysCard, { props: { view: comparison } }).body).not.toContain('lighter-days-ai-button');
 	});
 
 	it('använder samma spärr för avkortat underlag i vyn och sammanfattningen', () => {
 		const { body: full } = render(LighterDaysCard, { props: { view } });
-		expect(full).toContain('lighter-days-ai-button');
-		expect(full).toContain('antalet inlägg med temat och det totala antalet inlägg i varje grupp');
-		expect(full).toContain('skickas till OpenAI');
+		expect(full).toContain('Visa underlaget');
+		expect(full).not.toContain('lighter-days-ai-button');
 		const { body: limited } = render(LighterDaysCard, { props: { view, comparisonLimited: true } });
 		expect(limited).not.toContain('lighter-days-ai-button');
 		expect(limited).not.toContain('Visa underlaget');
-		expect(getLighterDaysSummaryView(view, true)).toBeNull();
+		expect(getLighterDaysSummaryView(view, true, themeId)).toBeNull();
 	});
 
-	it('begränsar utdragen till synliga teman och samma maximala antal', () => {
+	it('markerar samma högst tre användbara utdrag och hämtar inget från andra teman', () => {
 		const theme = view.helpfulPatterns!.themes[0];
-		const themes = ['Motion', 'Natur', 'Sömn'].map((label) => ({
-			...theme,
-			id: label,
-			label,
-			note: label + ' förekom i jämförelsen.',
-			evidence: Array.from({ length: 8 }, (_, index) => ({
-				...theme.evidence[0],
-				excerpt: label + ' utdrag ' + (index + 1)
-			}))
-		}));
-		const comparison = { ...view, helpfulPatterns: { ready: true, themes } };
-		expect(getVisibleComparisonThemes(comparison, false)).toEqual(themes);
-		const snapshot = getLighterDaysSummaryView(comparison, false)!;
-		expect(snapshot.facts.flatMap((fact) => fact.sources)).toHaveLength(MAX_SUMMARY_SOURCES);
-		expect(snapshot.facts.map((fact) => fact.sources.length)).toEqual([8, 8, 4]);
-		const payload = buildLighterDaysSummaryRequest(snapshot.facts).messages[0].content;
-		expect(payload).not.toContain('Sömn utdrag 5');
-		expect(payload).not.toContain(theme.evidence[0].entryId);
+		const evidence = ['En promenad.', null, 'Jag gick en runda för att få frisk luft.',
+			'Jag gick en runda för att få frisk luft.', 'Jag gick en längre sväng före middag.',
+			'Jag valde den lugna vägen längs vattnet.', 'Jag tog en annan väg tillbaka till huset.']
+			.map((excerpt, index) => ({ ...theme.evidence[0], entryId: 'e-' + index, excerpt }));
+		const comparison = { ...view, helpfulPatterns: { ready: true, themes: [
+			{ ...theme, evidence }, { ...theme, id: 'Natur', evidence: [{ ...evidence[2], excerpt: 'Jag satt vid ån och lyssnade.' }] }
+		] } };
+		const selected = getLighterDaysSummaryView(comparison, false, themeId)!;
+		expect(selected.sources.map(({ evidenceIndex }) => evidenceIndex)).toEqual([2, 4, 5]);
+		const payload = JSON.parse(buildLighterDaysSummaryRequest(selected.sources).messages[0].content);
+		expect(payload).toEqual([2, 4, 5].map((index, i) => ({ ref: i + 1, excerpt: evidence[index].excerpt })));
+	});
+
+	it('gömmer frågan när bara korta notiser finns', () => {
+		const theme = view.helpfulPatterns!.themes[0];
+		const thin = { ...view, helpfulPatterns: { ready: true, themes: [{
+			...theme, evidence: theme.evidence.map((item) => ({ ...item, excerpt: 'Promenad före frukost.' }))
+		}] } };
+		expect(getLighterDaysSummaryView(thin, false, themeId)).toBeNull();
 	});
 });
 
-describe('modellen får enbart välja serverns observationer', () => {
-	it('återger endast serverns text och källor, utan dubletter', () => {
-		expect(parseLighterDaysSummary('{"factIds":[1,1]}', facts)).toEqual(facts);
+const first = 'Jag valde att stanna kvar ett ögonblick.';
+const selection = { ref: 1, span: 'stanna kvar ett ögonblick', kind: 'meaning' };
+const sources = [{ ...snapshot.sources[0], excerpt: first }];
+
+function parse(value: unknown, input = sources) {
+	return parseLighterDaysSummary(JSON.stringify(value), input);
+}
+
+describe('serverstyrd reflektionsfråga', () => {
+	it('gör en öppen fråga från ett enda verifierat utdrag', () => {
+		expect(parse({ selection })).toEqual({
+			question: 'Vad betyder orden ”stanna kvar ett ögonblick” för dig när du läser dem nu?',
+			sourceRef: 1,
+			reason: null
+		});
 	});
 
 	it.each([
-		['ogiltigt nummer', { factIds: [99] }],
-		['ogiltigt nummer bland giltiga', { factIds: [1, 99] }],
-		['felaktigt påstående med giltig källa', { statements: [{ text: 'Arbete förekom.', sources: [1] }] }],
-		['påhittat citat med giltigt val', { factIds: [1], quote: 'Jag sprang ett maraton.' }],
-		['påhittad siffra med giltigt val', { factIds: [{ id: 1, count: 99 }] }],
-		['tomt urval', { factIds: [] }]
-	])('visar inget för %s', (_name, reply) => {
-		expect(parseLighterDaysSummary(JSON.stringify(reply), facts)).toEqual([]);
+		['Jag kände mig inte lugn när jag kom dit.', 'lugn när jag kom dit'],
+		['Om jag får tid stannar jag en stund.', 'stannar jag en stund'],
+		['Jag ville gå hem men valde att stanna.', 'valde att stanna']
+	])('förankrar frågan i hela källan när ett klipp kan tappa förbehållet i %s', (excerpt, span) => {
+		const result = parse({ selection: { ref: 1, span, kind: 'notice' } }, [{ ...sources[0], excerpt }]);
+		expect(result).toEqual({
+			question: 'Vad lägger du märke till när du läser hela utdraget igen?',
+			sourceRef: 1,
+			reason: null
+		});
+		expect(result?.question).not.toContain(span);
 	});
 
-	it('visar inget vid trasigt JSON eller tomt serverunderlag', () => {
-		expect(parseLighterDaysSummary('inte json', facts)).toEqual([]);
-		expect(parseLighterDaysSummary('{"factIds":[1]}', [])).toEqual([]);
+	it.each([
+		{ ...selection, ref: 2 },
+		{ ...selection, span: 'stannade kvar ett ögonblick' },
+		{ ...selection, span: 'tanna kvar ett ögonblick' },
+		{ ...selection, kind: 'egen fråga' },
+		{ ...selection, question: 'Varför mår du bättre?' },
+		[selection]
+	])('avvisar ogiltigt källnummer, citat eller format (%#)', (invalid) => {
+		expect(parse({ selection: invalid })).toBeNull();
+	});
+
+	it('godtar att AI avstår och avvisar trasig JSON eller tidigare svarskontrakt', () => {
+		expect(parse({ selection: null })).toEqual({ question: null, reason: 'insufficient-data' });
+		expect(parseLighterDaysSummary('{"selection":', sources)).toBeNull();
+		expect(parse({ observation: null })).toBeNull();
 	});
 
 	it('går genom den gemensamma, injicerbara AI-tjänsten', async () => {
-		const provider: AITextProvider = {
-			generate: vi.fn().mockResolvedValue('{"factIds":[1]}')
-		};
-		const result = await generateAIText(buildLighterDaysSummaryRequest(facts), provider);
+		const provider: AITextProvider = { generate: vi.fn().mockResolvedValue(JSON.stringify({ selection })) };
+		const result = await generateAIText(buildLighterDaysSummaryRequest(sources), provider);
 		expect(provider.generate).toHaveBeenCalledWith(expect.objectContaining({ purpose: 'diary-narrative' }));
-		expect(parseLighterDaysSummary(result.text, facts)).toEqual(facts);
+		expect(parseLighterDaysSummary(result.text, sources)?.sourceRef).toBe(1);
 	});
 });

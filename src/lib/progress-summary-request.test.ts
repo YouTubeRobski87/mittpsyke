@@ -5,7 +5,7 @@ import { createSummaryRequests, getLighterDaysSummaryView, getSummarySnapshotId 
 const theme: LighterDaysTheme = {
 	id: 'Sömn', label: 'Sömn', renamed: false, count: 3, base: 4, otherCount: 1, otherBase: 6,
 	weekCount: 2, note: 'Sömn nämndes.', comparison: 'I övriga inlägg: 1 av 6.', evidence: [
-		{ entryId: 'entry-1', date: '2026-06-01', dateLabel: '1 juni', mood: 8, excerpt: 'Jag sov länge.' }
+		{ entryId: 'entry-1', date: '2026-06-01', dateLabel: '1 juni', mood: 8, excerpt: 'Jag sov länge efter en lugn kväll.' }
 	]
 };
 const view: LighterDaysView = {
@@ -13,7 +13,7 @@ const view: LighterDaysView = {
 	lowConfidence: false, themes: [theme], helpfulPatterns: { ready: true, themes: [theme] }, hiddenThemes: [], basis: '10 inlägg'
 };
 
-const snapshot = getLighterDaysSummaryView(view, false)!;
+const snapshot = getLighterDaysSummaryView(view, false, theme.id)!;
 
 describe('ett svar hör till det underlag som var aktuellt vid klicket', () => {
 	it.each([
@@ -24,10 +24,22 @@ describe('ett svar hör till det underlag som var aktuellt vid klicket', () => {
 	])('ignorerar ett sent svar vid %s och känner igen ändringen på servern', async (_name, next) => {
 		const requests = createSummaryRequests();
 		const pending = requests.start(snapshot);
-		const nextSnapshot = getLighterDaysSummaryView(next, false);
+		const nextSnapshot = getLighterDaysSummaryView(next, false, theme.id);
 		expect(pending.isCurrent(snapshot)).toBe(true);
 		expect(pending.isCurrent(nextSnapshot)).toBe(false);
 		if (nextSnapshot) expect(await getSummarySnapshotId(nextSnapshot)).not.toBe(await getSummarySnapshotId(snapshot));
+	});
+
+	it('binder en pågående fråga till det valda temat även om utdragen är identiska', async () => {
+		const otherTheme = { ...theme, id: 'Vila' };
+		const currentView = { ...view, helpfulPatterns: { ready: true, themes: [theme, otherTheme] } };
+		const next = getLighterDaysSummaryView(currentView, false, otherTheme.id)!;
+		const requests = createSummaryRequests();
+		const pending = requests.start(snapshot);
+		expect(pending.isCurrent(next)).toBe(false);
+		expect(await getSummarySnapshotId(next)).not.toBe(await getSummarySnapshotId(snapshot));
+		requests.cancel();
+		expect(pending.signal.aborted).toBe(true);
 	});
 
 	it('visar bara det senaste svaret när två svar för samma vy kommer i omvänd ordning', async () => {

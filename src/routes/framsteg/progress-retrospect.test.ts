@@ -30,7 +30,7 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	it('anropas bara från knappens klickhanterare, aldrig vid laddning', () => {
 		const calls = card.match(/fetch\('\/api\/diary\/insights\/summary'/g) ?? [];
 		expect(calls).toHaveLength(1);
-		const runSummary = card.slice(card.indexOf('async function runSummary('), card.indexOf('async function grantAiConsentAndSummarize()'));
+		const runSummary = card.slice(card.indexOf('async function runSummary('), card.indexOf('async function grantAiConsentAndAsk()'));
 		expect(runSummary).toContain("fetch('/api/diary/insights/summary'");
 		expect(card).toContain('onclick={() => runSummary()}');
 		// Ingen effekt eller mount-hook startar sammanfattningen.
@@ -40,20 +40,20 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 		expect(route).not.toContain('/api/diary/insights/summary');
 	});
 
-	it('visar vilka inlägg varje mening bygger på', () => {
-		expect(card).toContain('Underlag: {statement.sources.map((source) => source.dateLabel)');
+	it('märker förhandsvisade källor och länkar frågan till dess utdrag', () => {
+		expect(card).toContain('Ingår i AI-frågan');
+		expect(card).toContain('diaryEntryHref(item.entryId)');
+		expect(card).toContain("'#ai-question-source-' + summary.sourceRef");
+		expect(card).toContain('{summary.question}');
 	});
 });
 
 describe('kortet "Det här verkar hjälpa mig"', () => {
-	it('ritar AI-delen överst i kortet, en gång, och bara när det finns teman', () => {
-		// AI-delen låg sist i kortet, under alla teman. Den ritas nu före
-		// temalistan så att knappen går att hitta. Markupen är densamma.
-		const render = card.indexOf('{@render aiSummary()}');
-		expect(render).toBeGreaterThan(-1);
-		expect(render).toBeLessThan(card.indexOf('<ul class="lighter-days-list">'));
+	it('visar frågeknappen under det öppna temats utdrag', () => {
+		const render = card.indexOf('{@render aiQuestion()}');
+		expect(render).toBeGreaterThan(card.indexOf('<blockquote>{item.excerpt}</blockquote>'));
 		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if summaryView}');
-		expect(card.match(/\{@render aiSummary\(\)\}/g)).toHaveLength(1);
+		expect(card.match(/\{@render aiQuestion\(\)\}/g)).toHaveLength(1);
 		expect(card.match(/data-testid="lighter-days-ai-button"/g)).toHaveLength(1);
 		// Knappen startar fortfarande sammanfattningen - inget körs av sig självt.
 		expect(card).toContain('onclick={() => runSummary()} data-testid="lighter-days-ai-button"');

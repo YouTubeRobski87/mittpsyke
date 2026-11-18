@@ -61,16 +61,12 @@ export type SummarySource = {
 	entryId: string | null;
 	date: string;
 	dateLabel: string;
-	themeLabel: string;
+	evidenceIndex: number;
 	excerpt: string;
 };
 
-export type SummaryStatement = {
-	text: string;
-	sources: SummarySource[];
-};
-
 export type SummaryResponse = {
-	statements: SummaryStatement[];
-	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'no-traceable-statements' | null;
+	question: string | null;
+	sourceRef?: number;
+	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'invalid-response' | null;
 };

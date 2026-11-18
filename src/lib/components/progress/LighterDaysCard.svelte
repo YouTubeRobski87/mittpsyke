@@ -7,15 +7,14 @@
 	// ett tema eller ta bort det ur återblicken. Korrigeringen sparas i
 	// user_metadata och rör aldrig dagboksinläggen.
 	//
-	// AI-sammanfattningen körs bara när användaren trycker på knappen.
+	// AI-frågan begärs från det öppna temats markerade utdrag.
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { supabase } from '$lib/supabase';
 	import {
 		createSummaryRequests,
 		getLighterDaysSummaryView,
 		getSummarySnapshotId,
-		getVisibleComparisonThemes,
-		MAX_SUMMARY_SOURCES
+		getVisibleComparisonThemes
 	} from '$lib/progress-summary-request';
 	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
@@ -30,8 +29,7 @@
 	import type {
 		LighterDaysTheme,
 		LighterDaysView,
-		SummaryResponse,
-		SummaryStatement
+		SummaryResponse
 	} from '$lib/progress-lighter-days-types';
 
 	let {
@@ -49,7 +47,7 @@
 		onChanged?: () => void | Promise<void>;
 	} = $props();
 
-	let openEvidence = $state<Record<string, boolean>>({});
+	let openThemeId = $state<string | null>(null);
 	let renaming = $state<string | null>(null);
 	let renameValue = $state('');
 	let saving = $state(false);
@@ -60,13 +58,13 @@
 		| { status: 'idle' }
 		| { status: 'loading' }
 		| { status: 'needs-consent' }
-		| { status: 'done'; statements: SummaryStatement[]; reason: SummaryResponse['reason'] }
+		| { status: 'done'; question: string | null; sourceRef?: number; reason: SummaryResponse['reason'] }
 		| { status: 'error'; message: string };
 	let summary = $state<SummaryState>({ status: 'idle' });
 
 	const requests = createSummaryRequests();
 	const summaryView = $derived(
-		!loading && !failed && !saving ? getLighterDaysSummaryView(view, comparisonLimited) : null
+		!loading && !failed && !saving ? getLighterDaysSummaryView(view, comparisonLimited, openThemeId) : null
 	);
 
 	$effect(() => {
@@ -76,12 +74,11 @@
 	});
 
 	const helpfulThemes = $derived(getVisibleComparisonThemes(view, comparisonLimited));
-	const summaryDataLabel = 'Temanamnen, antalet inlägg med temat och det totala antalet inlägg i varje grupp, periodens längd och upp till ' +
-		MAX_SUMMARY_SOURCES + ' ordagranna utdrag som visas under Visa underlaget';
+	const summaryDataLabel = 'Utdragen märkta Ingår i AI-frågan, med tillfälliga källnummer';
 	const percent = new Intl.NumberFormat('sv-SE', { style: 'percent', maximumFractionDigits: 1 });
 
 	function evidenceLabel(theme: LighterDaysTheme) {
-		return openEvidence[theme.id] ? 'Dölj underlaget' : 'Visa underlaget';
+		return openThemeId === theme.id ? 'Dölj underlaget' : 'Visa underlaget';
 	}
 
 	function formatMood(value: number) {
@@ -178,7 +175,7 @@
 					'Content-Type': 'application/json',
 					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
 				},
-				body: JSON.stringify({ period: snapshot.periodDays, snapshotId }),
+				body: JSON.stringify({ period: snapshot.periodDays, themeId: snapshot.themeId, snapshotId }),
 				signal: request.signal
 			});
 			const payload = (await response.json().catch(() => null)) as (SummaryResponse & {
@@ -190,33 +187,33 @@
 				return;
 			}
 			if (!response.ok) {
-				throw new Error(payload?.error ?? 'Kunde inte skapa en sammanfattning just nu.');
+				throw new Error(payload?.error ?? 'Kunde inte ta fram en fråga just nu.');
 			}
 			summary = {
 				status: 'done',
-				statements: payload?.statements ?? [],
+				question: payload?.question ?? null,
+				sourceRef: payload?.sourceRef,
 				reason: payload?.reason ?? null
 			};
 		} catch (error) {
 			if (!request.isCurrent(summaryView)) return;
 			summary = {
 				status: 'error',
-				message: error instanceof Error ? error.message : 'Kunde inte skapa en sammanfattning just nu.'
+				message: error instanceof Error ? error.message : 'Kunde inte ta fram en fråga just nu.'
 			};
 		} finally {
 			request.finish();
 		}
 	}
 
-	async function grantAiConsentAndSummarize() {
+	async function grantAiConsentAndAsk() {
 		await runSummary(true);
 	}
 
 	function summaryEmptyCopy(reason: SummaryResponse['reason']) {
-		if (reason === 'withheld') return 'Sammanfattningen görs inte för det här underlaget. Inläggen och siffrorna nedan finns kvar.';
-		if (reason === 'insufficient-data') return 'Underlaget räcker inte för en sammanfattning.';
-		if (reason === 'no-sources') return 'Det finns inga utdrag att sammanfatta ännu.';
-		return 'Det gick inte att skapa en sammanfattning där varje del går att spåra till dina inlägg. Siffrorna nedan gäller fortfarande.';
+		if (reason === 'withheld') return 'En fråga kunde inte tas fram för de här utdragen.';
+		if (reason === 'insufficient-data' || reason === 'no-sources') return 'Utdragen ger för lite stöd för en fråga som passar.';
+		return 'Det gick inte att ta fram en fråga som kunde verifieras mot utdragen.';
 	}
 </script>
 
@@ -244,10 +241,6 @@
 				Perioden har {view.relevantEntryCount} inlägg med både text och humör. Med färre än 10
 				är underlaget litet, så läs det som enstaka spår snarare än mönster.
 			</p>
-		{/if}
-
-		{#if summaryView}
-			{@render aiSummary()}
 		{/if}
 
 		{#if receipt}
@@ -301,9 +294,9 @@
 							<button
 								type="button"
 								class="lighter-days-action"
-								aria-expanded={openEvidence[theme.id] === true}
+								aria-expanded={openThemeId === theme.id}
 								aria-controls={`evidence-${theme.id}`}
-								onclick={() => (openEvidence = { ...openEvidence, [theme.id]: !openEvidence[theme.id] })}
+								onclick={() => (openThemeId = openThemeId === theme.id ? null : theme.id)}
 							>
 								{evidenceLabel(theme)}
 							</button>
@@ -317,7 +310,7 @@
 							</button>
 						</div>
 
-						{#if openEvidence[theme.id]}
+						{#if openThemeId === theme.id}
 							<div class="lighter-days-evidence" id={`evidence-${theme.id}`}>
 								<p class="lighter-days-muted">
 									{theme.count === theme.evidence.length
@@ -325,8 +318,10 @@
 										: `De senaste ${theme.evidence.length} av ${theme.count} inlägg med högre humör där ${theme.label} fanns med:`}
 								</p>
 								<ul>
-									{#each theme.evidence as item (`${item.entryId ?? item.date}-${item.dateLabel}`)}
-										<li>
+									{#each theme.evidence as item, index (`${item.entryId ?? item.date}-${item.dateLabel}`)}
+										{@const source = summaryView?.sources.find((candidate) => candidate.evidenceIndex === index)}
+										<li id={source ? 'ai-question-source-' + source.ref : undefined}>
+											{#if source}<small>Ingår i AI-frågan</small>{/if}
 											<strong>{item.dateLabel} · humör {formatMood(item.mood)} av 10</strong>
 											{#if item.excerpt}
 												<blockquote>{item.excerpt}</blockquote>
@@ -343,6 +338,9 @@
 										</li>
 									{/each}
 								</ul>
+								{#if summaryView}
+									{@render aiQuestion()}
+								{/if}
 								<a class="lighter-days-link" href="/dagbok">Öppna dagboken</a>
 							</div>
 						{/if}
@@ -386,46 +384,38 @@
 			</p>
 		{/if}
 
-		<!-- AI-delen är oförändrad men ritas överst i kortet (se @render ovan),
-		     så att den går att hitta utan att skrolla förbi alla teman. -->
-		{#snippet aiSummary()}
+		{#snippet aiQuestion()}
 			<div class="lighter-days-ai">
 				{#if summary.status === 'idle' || summary.status === 'error'}
 					<p class="lighter-days-muted">
-						{summaryDataLabel} skickas till OpenAI när du väljer att sammanfatta. AI väljer bland jämförelserna. Varje vald observation visar vilka inlägg den bygger på.
+						{summaryDataLabel} behandlas av OpenAI när du ber om en fråga.
 					</p>
 					<button type="button" class="lighter-days-action" onclick={() => runSummary()} data-testid="lighter-days-ai-button">
-						Sammanfatta underlaget med AI
+						Få en fråga att fundera på
 					</button>
 					{#if summary.status === 'error'}<p class="lighter-days-error" role="alert">{summary.message}</p>{/if}
 				{:else if summary.status === 'loading'}
-					<p class="lighter-days-muted" role="status">Sammanfattar utdragen…</p>
+					<p class="lighter-days-muted" role="status">Tar fram en fråga…</p>
 				{:else if summary.status === 'needs-consent'}
 					<ConsentGate
-						title="Innan AI sammanfattar"
+						title="Innan AI tar fram en fråga"
 						dataLabel={summaryDataLabel}
 						serviceLabel="MittPsyke och OpenAI"
-						onAccept={grantAiConsentAndSummarize}
+						onAccept={grantAiConsentAndAsk}
 					/>
 				{:else if summary.status === 'done'}
-					<section aria-labelledby="lighter-days-ai-heading">
-						<h3 id="lighter-days-ai-heading">AI-sammanfattning av utdragen</h3>
-						{#if summary.statements.length === 0}
-							<p class="lighter-days-muted">{summaryEmptyCopy(summary.reason)}</p>
+					<div role="status">
+						{#if summary.question}
+							<h4>En fråga att fundera på</h4>
+							<p class="lighter-days-question">{summary.question}</p>
 						{:else}
-							<ul class="lighter-days-summary">
-								{#each summary.statements as statement, index (index)}
-									<li>
-										<p>{statement.text}</p>
-										<small>
-											Underlag: {statement.sources.map((source) => source.dateLabel).join(', ')}
-										</small>
-									</li>
-								{/each}
-							</ul>
-							<p class="lighter-days-muted">Skapad av AI utifrån utdragen. Den sparas inte.</p>
+							<p class="lighter-days-muted">{summaryEmptyCopy(summary.reason)}</p>
 						{/if}
-					</section>
+					</div>
+					{#if summary.question && summary.sourceRef !== undefined}
+						<a class="lighter-days-entry-link" href={'#ai-question-source-' + summary.sourceRef}>Läs utdraget som frågan bygger på</a>
+						<p class="lighter-days-muted">Framtagen med AI. Frågan sparas inte.</p>
+					{/if}
 				{/if}
 			</div>
 		{/snippet}
@@ -581,8 +571,7 @@
 	}
 
 	.lighter-days-evidence ul,
-	.lighter-days-hidden ul,
-	.lighter-days-summary {
+	.lighter-days-hidden ul {
 		display: grid;
 		gap: 0.7rem;
 		margin: 0.5rem 0 0.8rem;
@@ -605,8 +594,7 @@
 		overflow-wrap: break-word;
 	}
 
-	.lighter-days-evidence small,
-	.lighter-days-summary small {
+	.lighter-days-evidence small {
 		color: hsl(var(--muted-foreground));
 	}
 
@@ -667,22 +655,21 @@
 		font-size: 0.9rem;
 	}
 
-	/* Ligger överst i kortet, före temana: avgränsas nedåt i stället för uppåt. */
 	.lighter-days-ai {
-		margin: 0.4rem 0 1.2rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid hsl(var(--border));
+		margin: 0.9rem 0;
+		padding-top: 0.8rem;
+		border-top: 1px solid hsl(var(--border));
 	}
 
-	.lighter-days-ai h3 {
+	.lighter-days-ai h4 {
 		margin: 0 0 0.5rem;
-		font-size: 1.05rem;
+		font-size: 1rem;
 		color: hsl(var(--foreground));
 	}
 
-	.lighter-days-summary p {
+	.lighter-days-question {
+		overflow-wrap: anywhere;
 		margin: 0 0 0.2rem;
-		color: hsl(var(--foreground));
 		line-height: 1.55;
 	}
 
