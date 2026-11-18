@@ -114,6 +114,9 @@ describe('stripCheckinReflection och looksPasted', () => {
 		expect(looksPasted('## Rubrik\nText')).toBe(true);
 		expect(looksPasted('Sidor:\n/psykiskt-stod\n/hjalp-vid-angest\n/stod-vid-stress')).toBe(true);
 		expect(looksPasted('Guidad incheckning\n\nHur jag mår just nu:\n- Rastlös\n- Orolig i kroppen')).toBe(false);
+		expect(
+			looksPasted('https://a.se/somn hjälpte mig.\nhttps://a.se/vila påminde mig.\nhttps://a.se/gå gav mig lust.')
+		).toBe(false);
 		expect(looksPasted('Precis varit på Liseberg med mina bästa töser, så underbart.')).toBe(false);
 	});
 });

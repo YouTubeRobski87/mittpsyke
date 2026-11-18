@@ -90,11 +90,12 @@ export function stripCheckinReflection(text: string): string {
 /**
  * Text som ser inklistrad ut snarare än skriven i stunden: mycket lång, med
  * rapportrubriker eller avdelare, eller med flera rader som bara är adresser.
+ * En adress följd av egna ord räknas inte.
  */
 export function looksPasted(text: string): boolean {
 	if (wordCount(text) > MAX_PERIOD_SUMMARY_SOURCE_WORDS) return true;
 	if (/[═]{3,}|^#{1,6}\s|^\*\*[^*\n]+\*\*\s*$/m.test(text)) return true;
-	const addressLines = text.split('\n').filter((line) => /^\s*(?:\/[\w-]|https?:\/\/)/.test(line)).length;
+	const addressLines = text.split('\n').filter((line) => /^\s*(?:\/[\w-]\S*|https?:\/\/\S+)\s*$/.test(line)).length;
 	return addressLines >= 3;
 }
 
