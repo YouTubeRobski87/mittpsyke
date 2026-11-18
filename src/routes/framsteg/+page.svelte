@@ -3,7 +3,8 @@
 	import { onMount, untrack } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
-	import { invalidateAll } from '$app/navigation';
+	import { afterNavigate, invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
 	import { LOAD_RETRY_LABEL, PROGRESS_LOAD_ERROR_MESSAGE, type LoadStatus } from '$lib/load-state';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
@@ -492,7 +493,18 @@
 	let loadedHeatmapData = $state<Record<string, number>>({});
 	let loadedMoodSamples = $state<MoodSample[]>([]);
 	let moodTimelineLoading = $state(false);
-	let activeTab = $state<ProgressTab>('insights');
+	let selectedTab = $state<ProgressTab | null>(null);
+	const linkedTab = $derived(page.url.searchParams.get('tab'));
+	const activeTab: ProgressTab = $derived(
+		selectedTab ??
+			(linkedTab === 'insights' || linkedTab === 'mood' || linkedTab === 'development'
+				? linkedTab
+				: 'place')
+	);
+
+	afterNavigate(() => {
+		selectedTab = null;
+	});
 	let selectedPeriod = $state<PeriodDays>(30);
 	let selectedMoodPoint = $state<ChartPoint | null>(null);
 	let heatmapError = $state('');
@@ -1231,7 +1243,7 @@
 				{#if !isAnonymous && !emptyProgress}
 					<ProgressPeriodPicker period={selectedPeriod} onSelect={changePeriod} />
 				{/if}
-				<ProgressTabs active={activeTab} onSelect={(tab) => (activeTab = tab)} />
+				<ProgressTabs active={activeTab} onSelect={(tab) => (selectedTab = tab)} />
 
 				<div
 					class="progress-tab-panel"
