@@ -14,7 +14,8 @@
 		createSummaryRequests,
 		getLighterDaysSummaryView,
 		getSummarySnapshotId,
-		getVisibleComparisonThemes
+		getVisibleComparisonThemes,
+		selectSummarySource
 	} from '$lib/progress-summary-request';
 	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
@@ -48,6 +49,7 @@
 	} = $props();
 
 	let openThemeId = $state<string | null>(null);
+	let selection = $state.raw<{ view: NonNullable<ReturnType<typeof getLighterDaysSummaryView>>; ref: number } | null>(null);
 	let renaming = $state<string | null>(null);
 	let renameValue = $state('');
 	let saving = $state(false);
@@ -58,7 +60,7 @@
 		| { status: 'idle' }
 		| { status: 'loading' }
 		| { status: 'needs-consent' }
-		| { status: 'done'; question: string | null; sourceRef?: number; reason: SummaryResponse['reason'] }
+		| { status: 'done'; question: string | null; sourceRef?: number; questionOrigin?: SummaryResponse['questionOrigin']; reason: SummaryResponse['reason'] }
 		| { status: 'error'; message: string };
 	let summary = $state<SummaryState>({ status: 'idle' });
 
@@ -67,14 +69,18 @@
 		!loading && !failed && !saving ? getLighterDaysSummaryView(view, comparisonLimited, openThemeId) : null
 	);
 
+	const selectedSnapshot = $derived(
+		selection && selection.view === summaryView ? selectSummarySource(summaryView, selection.ref) : null
+	);
+
 	$effect(() => {
-		void summaryView;
+		void selectedSnapshot;
 		summary = { status: 'idle' };
 		return requests.cancel;
 	});
 
 	const helpfulThemes = $derived(getVisibleComparisonThemes(view, comparisonLimited));
-	const summaryDataLabel = 'Utdragen märkta Ingår i AI-frågan, med tillfälliga källnummer';
+	const summaryDataLabel = 'Bara det valda utdraget';
 	const percent = new Intl.NumberFormat('sv-SE', { style: 'percent', maximumFractionDigits: 1 });
 
 	function evidenceLabel(theme: LighterDaysTheme) {
@@ -147,16 +153,16 @@
 	}
 
 	async function runSummary(grantConsent = false) {
-		const snapshot = summaryView;
+		const snapshot = selectedSnapshot;
 		if (!snapshot || summary.status === 'loading') return;
 		const request = requests.start(snapshot);
 		summary = { status: 'loading' };
 		try {
 			const token = await accessToken();
-			if (!request.isCurrent(summaryView)) return;
+			if (!request.isCurrent(selectedSnapshot)) return;
 			if (!token) throw new Error('Du behöver vara inloggad.');
 			const snapshotId = await getSummarySnapshotId(snapshot);
-			if (!request.isCurrent(summaryView)) return;
+			if (!request.isCurrent(selectedSnapshot)) return;
 
 			if (grantConsent) {
 				const consent = await fetch('/api/consent/diary-ai', {
@@ -164,7 +170,7 @@
 					headers: { Authorization: `Bearer ${token}` },
 					signal: request.signal
 				});
-				if (!request.isCurrent(summaryView)) return;
+				if (!request.isCurrent(selectedSnapshot)) return;
 				if (!consent.ok) throw new Error('Kunde inte spara samtycket just nu. Försök igen.');
 			}
 
@@ -175,13 +181,13 @@
 					'Content-Type': 'application/json',
 					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
 				},
-				body: JSON.stringify({ period: snapshot.periodDays, themeId: snapshot.themeId, snapshotId }),
+				body: JSON.stringify({ period: snapshot.periodDays, themeId: snapshot.themeId, sourceRef: snapshot.source.ref, snapshotId }),
 				signal: request.signal
 			});
 			const payload = (await response.json().catch(() => null)) as (SummaryResponse & {
 				error?: string;
 			}) | null;
-			if (!request.isCurrent(summaryView)) return;
+			if (!request.isCurrent(selectedSnapshot)) return;
 			if (response.status === 403 && payload?.reason === 'ai-consent') {
 				summary = { status: 'needs-consent' };
 				return;
@@ -193,10 +199,11 @@
 				status: 'done',
 				question: payload?.question ?? null,
 				sourceRef: payload?.sourceRef,
+				questionOrigin: payload?.questionOrigin,
 				reason: payload?.reason ?? null
 			};
 		} catch (error) {
-			if (!request.isCurrent(summaryView)) return;
+			if (!request.isCurrent(selectedSnapshot)) return;
 			summary = {
 				status: 'error',
 				message: error instanceof Error ? error.message : 'Kunde inte ta fram en fråga just nu.'
@@ -296,7 +303,10 @@
 								class="lighter-days-action"
 								aria-expanded={openThemeId === theme.id}
 								aria-controls={`evidence-${theme.id}`}
-								onclick={() => (openThemeId = openThemeId === theme.id ? null : theme.id)}
+								onclick={() => {
+									selection = null;
+									openThemeId = openThemeId === theme.id ? null : theme.id;
+								}}
 							>
 								{evidenceLabel(theme)}
 							</button>
@@ -317,28 +327,44 @@
 										? `De ${theme.count} inläggen med högre humör där ${theme.label} fanns med:`
 										: `De senaste ${theme.evidence.length} av ${theme.count} inlägg med högre humör där ${theme.label} fanns med:`}
 								</p>
-								<ul>
-									{#each theme.evidence as item, index (`${item.entryId ?? item.date}-${item.dateLabel}`)}
-										{@const source = summaryView?.sources.find((candidate) => candidate.evidenceIndex === index)}
-										<li id={source ? 'ai-question-source-' + source.ref : undefined}>
-											{#if source}<small>Ingår i AI-frågan</small>{/if}
-											<strong>{item.dateLabel} · humör {formatMood(item.mood)} av 10</strong>
-											{#if item.excerpt}
-												<blockquote>{item.excerpt}</blockquote>
-											{:else}
-												<small>Utdraget visas inte här. Inlägget finns kvar i din dagbok.</small>
-											{/if}
-											{#if diaryEntryHref(item.entryId)}
-												<a
-													class="lighter-days-entry-link"
-													href={diaryEntryHref(item.entryId)}
-													aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
-												>Läs hela anteckningen</a>
-											{/if}
-										</li>
-									{/each}
-								</ul>
-								{#if summaryView}
+								<fieldset class="lighter-days-source-picker">
+									{#if summaryView}<legend>Välj ett utdrag för AI-frågan</legend>{/if}
+									<ul>
+										{#each theme.evidence as item, index (`${item.entryId ?? item.date}-${item.dateLabel}`)}
+											{@const source = summaryView?.sources.find((candidate) => candidate.evidenceIndex === index)}
+											<li id={source ? 'ai-question-source-' + source.ref : undefined}>
+												{#if source}
+													<label class="lighter-days-source-choice">
+														<input
+															type="radio"
+															name="progress-question-source"
+															checked={selectedSnapshot?.source.ref === source.ref}
+															aria-label={`Välj utdrag ${source.ref} från ${item.dateLabel}`}
+															onchange={() => {
+																if (summaryView) selection = { view: summaryView, ref: source.ref };
+															}}
+														/>
+														Välj utdrag
+													</label>
+												{/if}
+												<strong>{item.dateLabel} · humör {formatMood(item.mood)} av 10</strong>
+												{#if item.excerpt}
+													<blockquote>{item.excerpt}</blockquote>
+												{:else}
+													<small>Utdraget visas inte här. Inlägget finns kvar i din dagbok.</small>
+												{/if}
+												{#if diaryEntryHref(item.entryId)}
+													<a
+														class="lighter-days-entry-link"
+														href={diaryEntryHref(item.entryId)}
+														aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
+													>Läs hela anteckningen</a>
+												{/if}
+											</li>
+										{/each}
+									</ul>
+								</fieldset>
+								{#if selectedSnapshot}
 									{@render aiQuestion()}
 								{/if}
 								<a class="lighter-days-link" href="/dagbok">Öppna dagboken</a>
@@ -413,8 +439,14 @@
 						{/if}
 					</div>
 					{#if summary.question && summary.sourceRef !== undefined}
-						<a class="lighter-days-entry-link" href={'#ai-question-source-' + summary.sourceRef}>Läs utdraget som frågan bygger på</a>
-						<p class="lighter-days-muted">Framtagen med AI. Frågan sparas inte.</p>
+						{@const entryHref = diaryEntryHref(selectedSnapshot?.source.entryId)}
+						<a class="lighter-days-entry-link" href={entryHref ?? '#ai-question-source-' + summary.sourceRef}>
+							{entryHref ? 'Läs anteckningen som frågan bygger på' : 'Läs utdraget som frågan bygger på'}
+						</a>
+						<p class="lighter-days-muted">
+							{summary.questionOrigin === 'mittpsyke' ? 'Allmän reflektionsfråga från MittPsyke.' : 'Framtagen med AI.'}
+							Frågan sparas inte.
+						</p>
 					{/if}
 				{/if}
 			</div>
@@ -542,7 +574,8 @@
 		text-underline-offset: 0.2em;
 	}
 
-	.lighter-days-entry-link:focus-visible {
+	.lighter-days-entry-link:focus-visible,
+	.lighter-days-source-choice input:focus-visible {
 		outline: 2px solid hsl(var(--ring, var(--primary)));
 		outline-offset: 2px;
 	}
@@ -568,6 +601,30 @@
 		margin-top: 0.9rem;
 		padding-top: 0.8rem;
 		border-top: 1px solid hsl(var(--border));
+	}
+
+	.lighter-days-source-picker {
+		border: 0;
+		padding: 0;
+		margin: 0;
+		min-inline-size: 0;
+	}
+
+	.lighter-days-source-picker legend {
+		padding: 0;
+		font-size: 0.88rem;
+	}
+
+	.lighter-days-source-choice {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		min-height: 44px;
+		font-size: 0.88rem;
+	}
+
+	.lighter-days-source-choice input {
+		margin: 0;
 	}
 
 	.lighter-days-evidence ul,

@@ -47,7 +47,16 @@ export function getLighterDaysSummaryView(
 		: null;
 }
 
-export async function getSummarySnapshotId(view: SummarySnapshot): Promise<string> {
+type SelectedSummarySnapshot = Omit<SummarySnapshot, 'sources'> & { source: SummarySource };
+
+export function selectSummarySource(view: SummarySnapshot | null, ref: number | null): SelectedSummarySnapshot | null {
+	if (!view) return null;
+	const { sources, ...context } = view;
+	const source = sources.find((item) => item.ref === ref);
+	return source ? { ...context, source } : null;
+}
+
+export async function getSummarySnapshotId(view: SelectedSummarySnapshot): Promise<string> {
 	const bytes = new TextEncoder().encode(JSON.stringify(view));
 	const digest = await crypto.subtle.digest('SHA-256', bytes);
 	return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -63,13 +72,13 @@ export function createSummaryRequests() {
 
 	return {
 		cancel,
-		start(view: SummarySnapshot) {
+		start(view: SelectedSummarySnapshot) {
 			cancel();
 			const controller = new AbortController();
 			active = controller;
 			return {
 				signal: controller.signal,
-				isCurrent: (current: SummarySnapshot | null) => active === controller && current === view,
+				isCurrent: (current: SelectedSummarySnapshot | null) => active === controller && current === view,
 				finish() {
 					if (active === controller) active = undefined;
 				}

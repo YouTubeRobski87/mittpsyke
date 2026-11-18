@@ -56,7 +56,7 @@ export type LighterDaysView = {
 };
 
 export type SummarySource = {
-	/** Numret modellen refererar till, 1-baserat. */
+	/** Utdragets lokala nummer i temats tillåtna urval, 1-baserat. */
 	ref: number;
 	entryId: string | null;
 	date: string;
@@ -68,5 +68,6 @@ export type SummarySource = {
 export type SummaryResponse = {
 	question: string | null;
 	sourceRef?: number;
+	questionOrigin?: 'ai' | 'mittpsyke';
 	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'invalid-response' | null;
 };

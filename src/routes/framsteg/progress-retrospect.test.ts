@@ -41,7 +41,7 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	});
 
 	it('märker förhandsvisade källor och länkar frågan till dess utdrag', () => {
-		expect(card).toContain('Ingår i AI-frågan');
+		expect(card).toContain('Välj ett utdrag för AI-frågan');
 		expect(card).toContain('diaryEntryHref(item.entryId)');
 		expect(card).toContain("'#ai-question-source-' + summary.sourceRef");
 		expect(card).toContain('{summary.question}');
@@ -52,7 +52,7 @@ describe('kortet "Det här verkar hjälpa mig"', () => {
 	it('visar frågeknappen under det öppna temats utdrag', () => {
 		const render = card.indexOf('{@render aiQuestion()}');
 		expect(render).toBeGreaterThan(card.indexOf('<blockquote>{item.excerpt}</blockquote>'));
-		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if summaryView}');
+		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if selectedSnapshot}');
 		expect(card.match(/\{@render aiQuestion\(\)\}/g)).toHaveLength(1);
 		expect(card.match(/data-testid="lighter-days-ai-button"/g)).toHaveLength(1);
 		// Knappen startar fortfarande sammanfattningen - inget körs av sig självt.

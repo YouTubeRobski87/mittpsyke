@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
-import { getLighterDaysSummaryView, getSummarySnapshotId } from '$lib/progress-summary-request';
+import { getLighterDaysSummaryView, getSummarySnapshotId, selectSummarySource } from '$lib/progress-summary-request';
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import { generateAIText } from '$lib/server/ai/text-generation';
 import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
@@ -9,12 +9,12 @@ import {
 	buildLighterDaysSummaryRequest,
 	parseLighterDaysSummary
 } from '$lib/server/progress-lighter-days-summary';
-import { loadProgressRows, parseProgressPeriod, readThemeOverrides } from '$lib/server/progress-rows';
+import { loadProgressRows, readThemeOverrides } from '$lib/server/progress-rows';
 import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
 import type { RequestHandler } from './$types';
 
-// Reflektionsfrågan begärs från ett öppet tema. Modellen får bara de
-// markerade, lokalt numrerade utdragen och servern formulerar frågan.
+// Reflektionsfrågan gäller ett valt utdrag från användarens aktuella tema.
+// Servern återskapar underlaget och skickar bara det valda utdraget.
 
 const RATE_LIMIT_MS = 60 * 1000;
 const lastCallByUser = new Map<string, number>();
@@ -56,11 +56,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		body = null;
 	}
 	const input = body && typeof body === 'object' && !Array.isArray(body)
-		? body as { period?: unknown; snapshotId?: unknown; themeId?: unknown }
+		? body as { period?: unknown; snapshotId?: unknown; themeId?: unknown; sourceRef?: unknown }
 		: {};
-	const period = parseProgressPeriod(input.period);
-	const { snapshotId, themeId } = input;
-	if (typeof themeId !== 'string' || !themeId || typeof snapshotId !== 'string' || !/^[a-f0-9]{64}$/.test(snapshotId)) {
+	const { period, snapshotId, themeId, sourceRef } = input;
+	if ((period !== 30 && period !== 90 && period !== 180) ||
+		typeof themeId !== 'string' || !themeId || typeof sourceRef !== 'number' || !Number.isInteger(sourceRef) ||
+		typeof snapshotId !== 'string' || !/^[a-f0-9]{64}$/.test(snapshotId)) {
 		return json({ error: 'Öppna underlaget för temat för att få en fråga.' }, { status: 400 });
 	}
 
@@ -80,14 +81,14 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!summaryView) {
 		return json({ question: null, reason: 'no-sources' });
 	}
-	if (await getSummarySnapshotId(summaryView) !== snapshotId) {
+	const selected = selectSummarySource(summaryView, sourceRef);
+	if (!selected || await getSummarySnapshotId(selected) !== snapshotId) {
 		return json({ error: 'Underlaget har ändrats. Ladda om återblicken och försök igen.' }, { status: 409 });
 	}
-	const { sources, guardText } = summaryView;
-	const aiRequest = buildLighterDaysSummaryRequest(sources);
+	const { source, guardText } = selected;
+	const aiRequest = buildLighterDaysSummaryRequest(source);
 	const promptText = [guardText, ...aiRequest.messages.map(({ content }) => content)].join('\n');
-	// Utdragen är redan rensade från krisinnehåll, men spärren körs ändå på
-	// hela underlaget innan något skickas till en modell.
+	// Kontrollera även det valda utdraget innan något skickas till modellen.
 	if (resolveDeterministicRiskGuard(promptText)) {
 		return json({ question: null, reason: 'withheld' });
 	}
@@ -99,10 +100,28 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	try {
 		const result = await generateAIText(aiRequest);
+		const response = parseLighterDaysSummary(result.text, source);
+		if (response?.questionOrigin === 'mittpsyke') {
+			// Ett avstående får bara bli en standardfråga om det valda underlaget
+			// fortfarande finns kvar efter väntan på modellen.
+			const { data: { user: currentUser }, error: currentAuthError } = await supabase.auth.getUser();
+			if (currentAuthError || currentUser?.id !== user.id) {
+				return json({ error: 'Unauthorized' }, { status: 401 });
+			}
+			const current = await loadProgressRows(supabase, user.id, period);
+			if (current.error) return json({ error: current.error }, { status: 500 });
+			const currentView = buildLighterDaysView(current.rows, period, readThemeOverrides(currentUser));
+			const currentSelection = selectSummarySource(
+				getLighterDaysSummaryView(currentView, current.truncated, themeId), sourceRef
+			);
+			if (!currentSelection || await getSummarySnapshotId(currentSelection) !== snapshotId) {
+				return json({ error: 'Underlaget har ändrats. Ladda om återblicken och försök igen.' }, { status: 409 });
+			}
+		}
 		if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
 			return json({ error: 'Consent required for sensitive diary AI features.', reason: 'ai-consent' }, { status: 403 });
 		}
-		return json(parseLighterDaysSummary(result.text, sources) ?? {
+		return json(response ?? {
 			question: null, reason: 'invalid-response'
 		}, { headers: { 'Cache-Control': 'no-store' } });
 	} catch {

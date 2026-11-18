@@ -35,8 +35,8 @@ describe('AI-sammanfattningens underlag', () => {
 		expect(snapshot.sources).toHaveLength(1);
 		const [source] = snapshot.sources;
 		expect(source.excerpt).toBe(rows[0].text);
-		const request = buildLighterDaysSummaryRequest(snapshot.sources);
-		expect(JSON.parse(request.messages[0].content)).toEqual([{ ref: 1, excerpt: source.excerpt }]);
+		const request = buildLighterDaysSummaryRequest(source);
+		expect(JSON.parse(request.messages[0].content)).toEqual({ excerpt: source.excerpt });
 		expect(request.outputFormat).toBe('json_object');
 	});
 
@@ -102,8 +102,8 @@ describe('AI-sammanfattningens underlag', () => {
 		] } };
 		const selected = getLighterDaysSummaryView(comparison, false, themeId)!;
 		expect(selected.sources.map(({ evidenceIndex }) => evidenceIndex)).toEqual([2, 4, 5]);
-		const payload = JSON.parse(buildLighterDaysSummaryRequest(selected.sources).messages[0].content);
-		expect(payload).toEqual([2, 4, 5].map((index, i) => ({ ref: i + 1, excerpt: evidence[index].excerpt })));
+		const payload = JSON.parse(buildLighterDaysSummaryRequest(selected.sources[1]).messages[0].content);
+		expect(payload).toEqual({ excerpt: evidence[4].excerpt });
 	});
 
 	it('gömmer frågan när bara korta notiser finns', () => {
@@ -116,10 +116,10 @@ describe('AI-sammanfattningens underlag', () => {
 });
 
 const first = 'Jag valde att stanna kvar ett ögonblick.';
-const selection = { ref: 1, span: 'stanna kvar ett ögonblick', kind: 'meaning' };
-const sources = [{ ...snapshot.sources[0], excerpt: first }];
+const selection = { span: 'stanna kvar ett ögonblick', kind: 'meaning' };
+const selectedSource = { ...snapshot.sources[0], ref: 2, excerpt: first };
 
-function parse(value: unknown, input = sources) {
+function parse(value: Record<string, unknown>, input = selectedSource) {
 	return parseLighterDaysSummary(JSON.stringify(value), input);
 }
 
@@ -127,7 +127,8 @@ describe('serverstyrd reflektionsfråga', () => {
 	it('gör en öppen fråga från ett enda verifierat utdrag', () => {
 		expect(parse({ selection })).toEqual({
 			question: 'Vad betyder orden ”stanna kvar ett ögonblick” för dig när du läser dem nu?',
-			sourceRef: 1,
+			sourceRef: 2,
+			questionOrigin: 'ai',
 			reason: null
 		});
 	});
@@ -137,10 +138,11 @@ describe('serverstyrd reflektionsfråga', () => {
 		['Om jag får tid stannar jag en stund.', 'stannar jag en stund'],
 		['Jag ville gå hem men valde att stanna.', 'valde att stanna']
 	])('förankrar frågan i hela källan när ett klipp kan tappa förbehållet i %s', (excerpt, span) => {
-		const result = parse({ selection: { ref: 1, span, kind: 'notice' } }, [{ ...sources[0], excerpt }]);
+		const result = parse({ selection: { span, kind: 'notice' } }, { ...selectedSource, excerpt });
 		expect(result).toEqual({
 			question: 'Vad lägger du märke till när du läser hela utdraget igen?',
-			sourceRef: 1,
+			sourceRef: 2,
+			questionOrigin: 'ai',
 			reason: null
 		});
 		expect(result?.question).not.toContain(span);
@@ -157,16 +159,22 @@ describe('serverstyrd reflektionsfråga', () => {
 		expect(parse({ selection: invalid })).toBeNull();
 	});
 
-	it('godtar att AI avstår och avvisar trasig JSON eller tidigare svarskontrakt', () => {
-		expect(parse({ selection: null })).toEqual({ question: null, reason: 'insufficient-data' });
-		expect(parseLighterDaysSummary('{"selection":', sources)).toBeNull();
+	it('ger bara en allmän fråga när modellen uttryckligen avstår', () => {
+		expect(parse({ selection: null })).toEqual({
+			question: 'Finns det något i det här utdraget som du vill stanna upp vid?',
+			sourceRef: 2,
+			questionOrigin: 'mittpsyke',
+			reason: null
+		});
+		expect(parseLighterDaysSummary('{"selection":', selectedSource)).toBeNull();
 		expect(parse({ observation: null })).toBeNull();
+		expect(parse({ selection: null, perspectives: [] })).toBeNull();
 	});
 
 	it('går genom den gemensamma, injicerbara AI-tjänsten', async () => {
 		const provider: AITextProvider = { generate: vi.fn().mockResolvedValue(JSON.stringify({ selection })) };
-		const result = await generateAIText(buildLighterDaysSummaryRequest(sources), provider);
+		const result = await generateAIText(buildLighterDaysSummaryRequest(selectedSource), provider);
 		expect(provider.generate).toHaveBeenCalledWith(expect.objectContaining({ purpose: 'diary-narrative' }));
-		expect(parseLighterDaysSummary(result.text, sources)?.sourceRef).toBe(1);
+		expect(parseLighterDaysSummary(result.text, selectedSource)?.sourceRef).toBe(2);
 	});
 });
