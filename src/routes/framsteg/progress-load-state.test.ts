@@ -125,7 +125,7 @@ const template = source.slice(source.lastIndexOf('</script>'));
 
 describe('Framstegs mall', () => {
 	const errorBranch = template.indexOf('{:else if !isAnonymous && entriesLoadFailed}');
-	const emptyBranch = template.indexOf('{:else if !isAnonymous && entryCount === 0');
+	const emptyBranch = template.indexOf('{:else if emptyProgress}');
 
 	it('felrutan kommer före tomt läge, så att tomt läge aldrig visas vid läsfel', () => {
 		expect(errorBranch).toBeGreaterThan(-1);

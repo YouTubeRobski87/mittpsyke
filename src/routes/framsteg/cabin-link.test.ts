@@ -87,7 +87,7 @@ describe('Framstegsscenen runt stuglänken', () => {
 	});
 
 	it('låter inloggade gå in via både stugmotivet och den synliga länken', () => {
-		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('class="framsteg-layout'));
+		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('id="progress-panel-mood"'));
 
 		expect(scene).toContain("href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}");
 		expect(scene.match(/href="\/dashboard\/kvallsstugan"/g) ?? []).toHaveLength(1);

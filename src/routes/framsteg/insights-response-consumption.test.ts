@@ -64,7 +64,7 @@ function buildResponse(rows: DiaryInsightRow[], period: ProgressPeriodDays = 30)
 
 describe('svarsformen från /api/diary/insights', () => {
 	it('returnerar exakt analysis, lighterDays och support', () => {
-		expect(endpoint).toContain('return json({\n\t\t\tanalysis,\n\t\t\tlighterDays,\n\t\t\tsupport\n\t\t});');
+		expect(endpoint).toMatch(/return json\(\{\s*analysis,\s*lighterDays,\s*support\s*\}\);/);
 		for (const field of REMOVED_RESPONSE_FIELDS) {
 			expect(endpoint).not.toContain(`${field}:`);
 		}

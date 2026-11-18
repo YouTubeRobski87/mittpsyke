@@ -12,8 +12,10 @@ describe('Kreativa stunder i Framsteg', () => {
 	it('visar sektionen både i tomläget och i den vanliga inloggade vyn', () => {
 		expect(card).toContain('Kreativa stunder');
 		expect(card).toContain('data-testid="creative-moments"');
-		expect(page.match(/@render creativeMomentsCard\(\)/g)).toHaveLength(2);
+		expect(page.match(/@render creativeMomentsCard\(\)/g)).toHaveLength(1);
 		expect(page).toContain('creativeMomentCount === 0');
+		const development = page.slice(page.indexOf('id="progress-panel-development"'));
+		expect(development).toMatch(/\{\/if\}\s*\{@render creativeMomentsCard\(\)\}/);
 	});
 
 	it('använder sjudagarsantalet från servern och ett lugnt tomläge', () => {
