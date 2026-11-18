@@ -16,8 +16,8 @@ import type { RequestHandler } from './$types';
 
 // "Sammanfatta mina anteckningar" i Framsteg.
 //
-// GET visar bara omfånget (antal anteckningar, datum) och en ögonblicksbild.
-// Ingen text lämnar servern och ingen AI-tjänst anropas.
+// GET visar urvalet för granskning: omfånget, exakt de texter som skulle
+// skickas och en ögonblicksbild. Ingen AI-tjänst anropas.
 // POST skickar urvalet till AI efter ett uttryckligt val, och bara när både
 // hälsodatasamtycket och dagboks-AI-samtycket finns. Båda kontrolleras igen
 // precis före och direkt efter anropet. Sammanfattningen sparas inte.
@@ -111,7 +111,9 @@ const handle: RequestHandler = async ({ request, url }) => {
 		return respond({ reason: 'insufficient-data', basis: selection.basis }, 422);
 	}
 	const snapshotId = await periodSummarySnapshotId(user.id, selection);
-	if (preview) return respond({ ...selection.basis, snapshotId });
+	// Användaren får se exakt de texter som skulle skickas, för att kunna granska
+	// och godkänna urvalet. Det är kontots egna anteckningar; inget skickas vidare.
+	if (preview) return respond({ ...selection.basis, snapshotId, entries: selection.entries });
 	if (!service || input?.snapshotId !== snapshotId) return respond({ reason: 'changed' }, 409);
 
 	// Kontrolleras igen efter läsningen, innan AI-tjänsten ser något.

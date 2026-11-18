@@ -79,11 +79,19 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe('förhandsvisning', () => {
-	it('visar bara omfånget, ingen text och inget AI-anrop', async () => {
+	it('visar omfånget och exakt de texter som skulle skickas, utan AI-anrop', async () => {
 		const { data } = await preview();
 		expect(data).toMatchObject({ period: 30, entryCount: 5, excludedCount: 0, capped: false, firstDate: '2026-11-10', lastDate: '2026-11-14' });
-		expect(JSON.stringify(data)).not.toContain('sov dåligt');
+		expect(data.entries.map(({ text }) => text)).toEqual(texts);
+		expect(data.entries[0]).toEqual({ ref: 1, entryId: 'entry-0', date: '2026-11-10', mood: 5, text: texts[0] });
 		expect(mocks.generate).not.toHaveBeenCalled();
+	});
+
+	it('granskningslistan är samma som det som sedan skickas', async () => {
+		const { data, input } = await preview();
+		await call('POST', input);
+		const sent = JSON.parse(mocks.generate.mock.calls[0][0].messages[0].content);
+		expect(sent).toEqual(data.entries.map(({ ref, date, mood, text }) => ({ ref, date, mood, text })));
 	});
 
 	it('kräver hälsodatasamtycke både i header och i kontot', async () => {
@@ -175,6 +183,7 @@ describe('sammanfattning', () => {
 		});
 		const { data, input } = await preview();
 		expect(data.excludedCount).toBe(1);
+		expect(JSON.stringify(data.entries)).not.toContain('livet');
 		await call('POST', input);
 		expect(mocks.generate.mock.calls[0][0].messages[0].content).not.toContain('livet');
 	});
