@@ -112,7 +112,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
 
-export function hasHealthConsentRecord(value: unknown): boolean {
+export function hasHealthConsentRecord(value: unknown): value is HealthConsentRecord {
 	return (
 		isRecord(value) &&
 		value.accepted === true &&

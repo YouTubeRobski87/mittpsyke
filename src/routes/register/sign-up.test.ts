@@ -168,11 +168,10 @@ describe('GA4 sign_up efter registrering', () => {
 	it('klienten använder en befintlig GA4-helper och kan bara skicka en gång', () => {
 		const layout = readFileSync(new URL('../+layout.svelte', import.meta.url), 'utf8');
 		const eventHelper = readFileSync(new URL('../../lib/analytics.ts', import.meta.url), 'utf8');
-		const signUpEffect = layout.slice(layout.indexOf('$effect(() => {\n\t\tif (!browser || !data?.signUpCompleted'));
-
 		expect(eventHelper).toContain("trackEvent('sign_up')");
-		expect(signUpEffect).toContain('signUpTracked');
-		expect(signUpEffect).toContain('trackSignUp();');
+		expect(layout).toMatch(
+			/\$effect\(\(\)\s*=>\s*\{\s*if\s*\(!browser\s*\|\|\s*!data\?\.signUpCompleted\s*\|\|\s*signUpTracked\)\s*return;\s*signUpTracked\s*=\s*true;\s*trackSignUp\(\);\s*\}\);/
+		);
 		expect(layout.match(/trackSignUp\(\)/g)).toHaveLength(1);
 	});
 });

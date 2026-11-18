@@ -16,6 +16,7 @@ export {
 } from './openai-model-capabilities';
 
 type OpenAIClient = Pick<OpenAI, 'chat'>;
+type ConfidentialCompletion = (params: OpenAIChatParams, timeoutMs: number) => Promise<OpenAI.ChatCompletion>;
 
 export type OpenAIChatParams = {
 	model: string;
@@ -73,15 +74,23 @@ export function buildOpenAIChatParams(
 
 /** Maps MittPsyke's neutral text request to the OpenAI chat-completions API. */
 export class OpenAITextProvider implements AITextProvider {
-	constructor(private readonly client: OpenAIClient) {}
+	constructor(
+		private readonly client: OpenAIClient,
+		private readonly confidentialCompletion?: ConfidentialCompletion
+	) {}
 
 	async generate(request: AITextProviderRequest): Promise<string> {
 		// Valideringen ligger före try-blocket: ett konfigurationsfel ska inte
 		// passera leverantörsfelmappningen och se ut som ett tillfälligt fel.
 		const params = buildOpenAIChatParams(request);
 		try {
-			const completion = await this.client.chat.completions.create(params, { timeout: request.timeoutMs });
-			const choice = completion.choices[0];
+			if (request.confidential && !this.confidentialCompletion) {
+				throw new AITextGenerationError('configuration', 'Konfidentiell AI-transport saknas.');
+			}
+			const completion = request.confidential && this.confidentialCompletion
+				? await this.confidentialCompletion(params, request.timeoutMs)
+				: await this.client.chat.completions.create(params, { timeout: request.timeoutMs });
+			const choice = completion?.choices?.[0];
 			const text = choice?.message?.content?.trim();
 			if (choice?.finish_reason === 'length') {
 				// Svaret klipptes vid tokentaket. Texten returneras som tidigare,
@@ -169,5 +178,41 @@ export function createDefaultTextProvider(): AITextProvider {
 		throw new AITextGenerationError('configuration', 'OPENAI_API_KEY saknas.');
 	}
 
-	return new OpenAITextProvider(new OpenAI({ apiKey }));
+	const client = new OpenAI({ apiKey });
+	// The SDK logs request and response bodies when DEBUG=true. Confidential
+	// calls use the same configuration and parameters without entering that SDK path.
+	return new OpenAITextProvider(client, async (params, timeoutMs) => {
+		const headers = new Headers({
+			Authorization: `Bearer ${apiKey}`,
+			'Content-Type': 'application/json'
+		});
+		if (client.organization) headers.set('OpenAI-Organization', client.organization);
+		if (client.project) headers.set('OpenAI-Project', client.project);
+		const signal = AbortSignal.timeout(timeoutMs);
+		try {
+			const response = await fetch(`${client.baseURL.replace(/\/$/, '')}/chat/completions`, {
+				method: 'POST',
+				headers,
+				body: JSON.stringify(params),
+				redirect: 'error',
+				signal
+			});
+			if (response.ok) return await response.json() as OpenAI.ChatCompletion;
+			const diagnostics = { providerStatus: response.status };
+			if (response.status === 429) {
+				const body = await response.json().catch(() => null);
+				if (body?.error?.code === 'insufficient_quota') {
+					throw new AITextGenerationError('quota', 'AI-tjänstens kvot är slut.', {
+						...diagnostics, providerCode: 'insufficient_quota'
+					});
+				}
+				throw new AITextGenerationError('rate_limit', 'AI-tjänsten är tillfälligt hårt belastad.', diagnostics);
+			}
+			throw new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.', diagnostics);
+		} catch (error) {
+			if (signal.aborted) throw new AITextGenerationError('timeout', 'AI-anropet tog för lång tid.');
+			if (error instanceof AITextGenerationError) throw error;
+			throw new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
+		}
+	});
 }

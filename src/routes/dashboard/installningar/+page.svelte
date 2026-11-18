@@ -911,7 +911,9 @@
 			<h2>Samtycke för AI-reflektioner i dagboken</h2>
 			<p class="field-hint">
 				Detta samtycke gäller bara när du aktivt väljer att få en AI-reflektion från din
-				incheckning i dagboken. Det är separat från vanligt sparande av dagbokstext.
+				incheckning i dagboken. Det används också för den frivilliga återblicken i Min utveckling,
+				där du granskar och godkänner det begränsade urvalet inför varje anrop. Samtycket är
+				separat från vanligt sparande av dagbokstext.
 			</p>
 
 			{#if diaryAiConsentGranted}

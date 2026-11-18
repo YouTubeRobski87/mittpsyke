@@ -4,6 +4,7 @@
 
 	let {
 		title = 'Innan du börjar',
+		idPrefix = 'health-consent',
 		dataLabel = '',
 		serviceLabel = '',
 		policyHref = '/integritet',
@@ -20,6 +21,7 @@
 		onAccept = () => {}
 	}: {
 		title?: string;
+		idPrefix?: string;
 		dataLabel?: string;
 		serviceLabel?: string;
 		policyHref?: string;
@@ -60,13 +62,13 @@
 <div
 	class="consent-gate relative z-[1] pointer-events-auto rounded-[var(--radius-card)] border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.04] p-4"
 	role="dialog"
-	aria-labelledby="health-consent-title"
-	aria-describedby="health-consent-copy"
+	aria-labelledby={`${idPrefix}-title`}
+	aria-describedby={`${idPrefix}-copy`}
 	tabindex="-1"
 >
-	<h2 id="health-consent-title" class="text-sm font-semibold">{title}</h2>
+	<h2 id={`${idPrefix}-title`} class="text-sm font-semibold">{title}</h2>
 	{#if usesCustomCopy}
-		<p id="health-consent-copy" class="mt-2 text-sm leading-relaxed opacity-85">
+		<p id={`${idPrefix}-copy`} class="mt-2 text-sm leading-relaxed opacity-85">
 			{GENERAL_SAFETY_COPY} {dataLabel || 'Det du delar här'} kan
 			innehålla känsliga uppgifter om mående och behandlas av {serviceLabel || 'AI- och tredjepartstjänster'}
 			för att kunna ge dig stöd här.
@@ -76,7 +78,7 @@
 			och <a class="underline underline-offset-2" href={responsibilityHref}>ansvarsinformationen</a>.
 		</p>
 	{:else}
-		<p id="health-consent-copy" class="mt-2 text-sm leading-relaxed opacity-85">
+		<p id={`${idPrefix}-copy`} class="mt-2 text-sm leading-relaxed opacity-85">
 			{GENERAL_SAFETY_COPY} Det du skriver kan handla om mående och
 			andra känsliga uppgifter. Texten behandlas för att kunna ge dig stöd här.
 		</p>
