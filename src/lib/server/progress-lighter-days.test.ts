@@ -273,7 +273,7 @@ describe('språkregler för genererad text', () => {
 	});
 });
 
-describe('jämförelsen i Det här verkar hjälpa mig', () => {
+describe('jämförelsen i Det som ofta fanns med under lättare dagar', () => {
 	function high(dates: string[], text = 'Promenad.') {
 		return dates.map((date, index) => entry(`h${index}`, `2026-06-${date}`, 8, text));
 	}

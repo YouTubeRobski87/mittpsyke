@@ -325,7 +325,7 @@
 
 <section class="card lighter-days" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
 	<div class="lighter-days-header">
-		<h2 id="lighter-days-heading">Det här verkar hjälpa mig</h2>
+		<h2 id="lighter-days-heading">Det som ofta fanns med under lättare dagar</h2>
 		{#if view?.lowConfidence}
 			<span class="low-confidence-badge" data-testid="low-confidence">Låg säkerhet</span>
 		{/if}
