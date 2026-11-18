@@ -218,8 +218,11 @@
 				<li><a href="/sa-fungerar-mittpsyke">Så fungerar MittPsyke</a></li>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
 				<li><a href="/chatta-anonymt-med-nagon">Anonym chatt med AI</a></li>
+				<li><a href="/om-skaparen">Om skaparen</a></li>
+				<li><a href="/redaktionell-metod">Redaktionell metod</a></li>
 				<li><a href="/ansvar">Ansvarsinfo</a></li>
 				<li><a href="/integritet">Integritetspolicy</a></li>
+				<li><a href="/feedback">Lämna feedback</a></li>
 				<li><a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Akut hjälp (Stödlinjer)</a></li>
 			</ul>
 		</nav>

@@ -3,6 +3,7 @@
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
 	import SignedInHome from '$lib/components/home/SignedInHome.svelte';
+	import HomeRecommendations from '$lib/components/home/HomeRecommendations.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
 	import type { PageData } from './$types';
 
@@ -314,6 +315,10 @@
 			<p class="cta-micro">Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.</p>
 		</div>
 	</section>
+
+	<!-- 8. Samarbeten och rekommendationer. Sist i huvudinnehållet, direkt före
+		 sidfoten. Länkarna finns bara här och upprepas inte i sidfoten. -->
+	<HomeRecommendations />
 </div>
 {/if}
 

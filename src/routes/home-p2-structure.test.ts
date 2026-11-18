@@ -37,7 +37,8 @@ describe('Startsidans P2-struktur', () => {
 			'Kvällsincheckning',
 			'Guider när du behöver ord',
 			'Vad det här är och inte är',
-			'Börja med en mening'
+			'Börja med en mening',
+			'Fler platser att upptäcka'
 		]);
 	});
 
@@ -130,9 +131,15 @@ describe('Startsidans P2-struktur', () => {
 
 	it('avslutar med en CTA där kontot kommer efter skrivandet', () => {
 		const closing = sectionOf('closing-title');
-		// Sidans sista sektion är den som bär avslutande CTA.
+		// Avslutande CTA är sista sektionen med eget innehåll. Efter den kommer
+		// bara samarbeten och rekommendationer, direkt före sidfoten.
 		const closingStart = body.lastIndexOf('<section', body.indexOf('aria-labelledby="closing-title"'));
-		expect(body.lastIndexOf('<section')).toBe(closingStart);
+		const recommendationsStart = body.lastIndexOf(
+			'<section',
+			body.indexOf('aria-labelledby="recommendations-title"')
+		);
+		expect(body.lastIndexOf('<section')).toBe(recommendationsStart);
+		expect(body.lastIndexOf('<section', recommendationsStart - 1)).toBe(closingStart);
 		expect(closing).toContain('Du behöver inte veta vad du vill säga innan du börjar.');
 		expect(closing).toMatch(/class="cta-primary" href="\/dagbok\?action=new"[^>]*>Börja skriva<\/a>/);
 		expect(closing).toMatch(/class="cta-secondary" href="\/register"[^>]*>\s*Skapa konto och följ över tid/);

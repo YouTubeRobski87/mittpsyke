@@ -231,3 +231,36 @@ describe('sidfoten', () => {
 		expect(service).not.toContain('Premium');
 	});
 });
+
+describe('den förenklade sidfoten', () => {
+	const footer = layout.slice(layout.indexOf('<footer class="site-footer'), layout.indexOf('</footer>'));
+
+	it('behåller kärnfunktioner, integritet, tillgänglighet och akutstöd', () => {
+		for (const href of [
+			'/dagbok',
+			'/chat',
+			'/guider',
+			'/blogg',
+			'/om-mittpsyke',
+			'/kontakt-och-villkor',
+			'/integritet',
+			'/cookies-och-leverantorer',
+			'/tillganglighet',
+			'tel:112',
+			'tel:90101',
+			'https://www.1177.se',
+			'https://stodlinjer.se'
+		]) {
+			expect(footer).toContain(`href="${href}"`);
+		}
+		expect(footer).toContain('Cookieinställningar');
+	});
+
+	it('flyttar inte bort sidor som saknar annan väg in', () => {
+		const about = readFileSync(new URL('./om-mittpsyke/+page.svelte', import.meta.url), 'utf8');
+		for (const href of ['/om-skaparen', '/redaktionell-metod', '/ansvar', '/feedback', '/for-organisationer']) {
+			expect(about).toContain(`href="${href}"`);
+		}
+		expect(footer).toContain('href="/manadens-ord"');
+	});
+});
