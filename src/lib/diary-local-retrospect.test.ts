@@ -237,9 +237,7 @@ describe('språk och integritet', () => {
 	it('använder observerande ord i rubrik och copy', () => {
 		expect(guestEntry).toContain('Det som återkommer i dina ord');
 		expect(guestEntry).toContain('Återblicken beräknas bara i den här webbläsaren.');
-		expect(guestEntry).toContain(
-			'Innehållet i dina texter skickas inte\n\t\t\t\t\tför att skapa återblicken.'
-		);
+		expect(guestEntry).toMatch(/Innehållet i dina texter skickas inte\s+för att skapa återblicken\./);
 		expect(guestEntry).toContain('Det finns ännu inget tydligt återkommande tema.');
 		expect(guestEntry).toContain('Visa underlaget');
 		expect(guestEntry).toContain('Öppna inlägget');

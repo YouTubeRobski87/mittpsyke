@@ -84,8 +84,8 @@ describe('redirect tillbaka till Dagboken', () => {
 describe('Google-inloggning följer samma säkra redirect', () => {
 	it('registreringssidan skickar med samma validerade ?redirect= till Google', () => {
 		const register = read('src/routes/register/+page.svelte');
-		expect(register).toContain(
-			"getStableOAuthCallbackUrl(\n\t\t\t\t\tsafeInternalRedirect(page.url.searchParams.get('redirect'))\n\t\t\t\t)"
+		expect(register).toMatch(
+			/redirectTo:\s*getStableOAuthCallbackUrl\(\s*safeInternalRedirect\(page\.url\.searchParams\.get\('redirect'\)\)\s*\)/
 		);
 		expect(register).not.toContain("getStableOAuthCallbackUrl('/dashboard/kvallsstugan')");
 	});

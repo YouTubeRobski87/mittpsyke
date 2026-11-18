@@ -11,6 +11,7 @@
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import type { HelpfulReminderState } from '$lib/progress-helpful-reminders';
+	import PersonalRetrospect from '$lib/components/progress/PersonalRetrospect.svelte';
 	import HelpfulReminders from '$lib/components/progress/HelpfulReminders.svelte';
 	import ProgressTabs, { type ProgressTab } from '$lib/components/progress/ProgressTabs.svelte';
 	import ProgressPeriodPicker from '$lib/components/ProgressPeriodPicker.svelte';
@@ -1674,6 +1675,13 @@
 					{#if isAnonymous}
 						<p class="reflection-copy">Här samlas dina påminnelser och sparade stunder när du har ett konto.</p>
 					{:else}
+						{#if activeTab === 'development'}
+							<section class="card reflection-card" aria-labelledby="personal-retrospect-heading">
+								{#key selectedPeriod}
+									<PersonalRetrospect period={selectedPeriod} />
+								{/key}
+							</section>
+						{/if}
 						{@render helpfulReminders()}
 						{#if !emptyProgress}
 							<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">

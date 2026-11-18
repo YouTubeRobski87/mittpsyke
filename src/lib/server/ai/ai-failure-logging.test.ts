@@ -73,6 +73,85 @@ describe('gemensam felloggning i textlagret', () => {
 		expect(logged).not.toContain(SECRET_LIKE);
 	});
 
+	it('använder den konfidentiella transporten även med DEBUG=true och loggar inga utdrag eller svar', async () => {
+		env.OPENAI_DIARY_NARRATIVE_MODEL = 'gpt-4o-mini-2024-07-18';
+		const { generateAIText } = await generator();
+		const citation = 'Syntetiskt stödspann';
+		const sourceId = 'syntetisk-kalla-9';
+		const resultText = 'Syntetiskt fullständigt modellsvar';
+		const logs = (['log', 'debug', 'info', 'warn'] as const).map((method) =>
+			vi.spyOn(console, method).mockImplementation(() => {})
+		);
+		env.OPENAI_API_KEY = SECRET_LIKE;
+		vi.stubEnv('DEBUG', 'true');
+		vi.stubEnv('OPENAI_BASE_URL', 'https://example.invalid/v1');
+		vi.stubEnv('OPENAI_ORG_ID', 'synthetic-org');
+		vi.stubEnv('OPENAI_PROJECT_ID', 'synthetic-project');
+		const timeout = vi.spyOn(AbortSignal, 'timeout');
+		const timeoutController = new AbortController();
+		const transport = vi.fn()
+			.mockResolvedValueOnce(new Response(JSON.stringify({
+				choices: [{ message: { content: resultText }, finish_reason: 'length' }]
+			})))
+			.mockResolvedValueOnce(new Response(JSON.stringify({
+				error: { code: sourceId, message: [USER_TEXT, citation, resultText, SECRET_LIKE].join(' ') }
+			}), { status: 503 }))
+			.mockResolvedValueOnce(new Response(JSON.stringify({
+				error: { code: 'insufficient_quota', message: USER_TEXT }
+			}), { status: 429 }))
+			.mockResolvedValueOnce(new Response(JSON.stringify({
+				error: { code: sourceId }
+			}), { status: 429 }))
+			.mockImplementationOnce(async (_url: string, { signal }: RequestInit) => {
+				expect(signal).toBe(timeoutController.signal);
+				timeoutController.abort();
+				throw new Error([USER_TEXT, citation, resultText, SECRET_LIKE].join(' '));
+			});
+		vi.stubGlobal('fetch', transport);
+
+		const confidentialRequest = {
+			purpose: 'diary-narrative' as const,
+			confidential: true as const,
+			outputFormat: 'json_object' as const,
+			messages: [{ role: 'user' as const, content: [USER_TEXT, citation, sourceId].join(' ') }]
+		};
+		try {
+			expect(process.env.DEBUG).toBe('true');
+			const success = await generateAIText(confidentialRequest);
+			expect(success.text).toBe(resultText);
+			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'provider', providerStatus: 503 });
+			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'quota', providerStatus: 429 });
+			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'rate_limit', providerStatus: 429 });
+			timeout.mockReturnValueOnce(timeoutController.signal);
+			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'timeout' });
+			expect(timeout.mock.calls).toEqual([[20_000], [20_000], [20_000], [20_000], [20_000]]);
+			expect(transport).toHaveBeenCalledTimes(5);
+			const [url, options] = transport.mock.calls[0];
+			expect(url).toBe('https://example.invalid/v1/chat/completions');
+			expect(options).toMatchObject({ method: 'POST', redirect: 'error' });
+			expect(options.headers.get('Authorization')).toBe(`Bearer ${SECRET_LIKE}`);
+			expect(options.headers.get('OpenAI-Organization')).toBe('synthetic-org');
+			expect(options.headers.get('OpenAI-Project')).toBe('synthetic-project');
+			expect(JSON.parse(options.body)).toMatchObject({
+				model: 'gpt-4o-mini-2024-07-18',
+				max_completion_tokens: 900,
+				response_format: { type: 'json_object' },
+				messages: confidentialRequest.messages
+			});
+			const logged = JSON.stringify([...logs, errorSpy].flatMap((spy) => spy.mock.calls));
+			expect(logged).toContain('[ai:truncated]');
+			expect(logged).toContain('[ai:error]');
+			for (const sensitive of [USER_TEXT, citation, sourceId, resultText, SECRET_LIKE]) {
+				expect(logged).not.toContain(sensitive);
+			}
+		} finally {
+			timeout.mockRestore();
+			vi.unstubAllGlobals();
+			vi.unstubAllEnvs();
+			for (const spy of logs) spy.mockRestore();
+		}
+	});
+
 	it('märker konfigurationsfel med eget prefix så att reservsvar inte döljer dem', async () => {
 		const { generateAIText, AITextGenerationError: FreshError } = await generator();
 		const failing = {

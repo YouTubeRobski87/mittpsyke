@@ -214,8 +214,9 @@ describe('introtexten syns helt i en tom chatt efter samtycke på mobil', () => 
 	});
 
 	it('låter textfältet gå före introtexten med tangentbordet uppe', () => {
-		const kb = ":global(html[data-keyboard-open='true']) .empty-chat-view";
-		expect(mobileBlock).toContain(`${kb} {\n\t\t\toverflow-y: hidden;`);
+		expect(mobileBlock).toMatch(
+			/:global\(html\[data-keyboard-open='true'\]\)\s+\.empty-chat-view\s*\{[^}]*overflow-y:\s*hidden;/
+		);
 		expect(mobileBlock).toMatch(
 			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.chat-messages\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto/
 		);

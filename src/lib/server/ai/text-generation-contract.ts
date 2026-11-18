@@ -19,6 +19,7 @@ export type AITextRequest = {
 	frequencyPenalty?: number;
 	presencePenalty?: number;
 	outputFormat?: 'text' | 'json_object';
+	confidential?: true;
 };
 
 export type AITextResponse = {
