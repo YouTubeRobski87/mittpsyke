@@ -48,7 +48,7 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 	});
 });
 
-describe('kortet "Det här verkar hjälpa mig"', () => {
+describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
 	it('samlar utdragsval och frågeknapp i det personliga reflektionskortet', () => {
 		const reflection = card.slice(card.indexOf('<section class="card personal-reflection-card"'), card.indexOf('<section class="card lighter-days"'));
 		expect(reflection).toContain('Din personliga reflektion');
@@ -59,8 +59,11 @@ describe('kortet "Det här verkar hjälpa mig"', () => {
 	});
 
 	it('har den nya rubriken och ingen gammal', () => {
-		expect(card).toContain('<h2 id="lighter-days-heading">Det här verkar hjälpa mig</h2>');
-		for (const source of [card, route]) expect(source).not.toContain('Det som verkar hjälpa');
+		expect(card).toContain('<h2 id="lighter-days-heading">Det som ofta fanns med under lättare dagar</h2>');
+		for (const source of [card, route]) {
+			expect(source).not.toContain('Det som verkar hjälpa');
+			expect(source).not.toContain('Det här verkar hjälpa mig');
+		}
 	});
 
 	it('visar serverns anteckning och underlag, inga egna formuleringar per position', () => {

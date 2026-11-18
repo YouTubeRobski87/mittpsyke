@@ -147,7 +147,15 @@ describe('länkad anteckning i dagbokens mall', () => {
 	it('visar en äldre anteckning för sig överst, med väg tillbaka', () => {
 		const separate = page.slice(page.indexOf('data-testid="linked-entry"'), page.indexOf('data-testid="linked-entry-missing"'));
 		expect(separate).toContain('Anteckningen du öppnade från Framsteg');
-		expect(separate).toContain('href="/framsteg"');
+		expect(separate).toContain('href={progressBackHref}');
+	});
+
+	it('leder tillbaka till samma flik och period i Framsteg', () => {
+		// Startvärdet är vanliga /framsteg; flik och period tas bara från Framsteg.
+		expect(page).toContain('let progressBackHref = $state(PROGRESS_PATH);');
+		expect(page).toContain('if (from?.url.pathname === PROGRESS_PATH) progressBackHref = progressReturnHref(from.url);');
+		expect(page.match(/href=\{progressBackHref\}>Tillbaka till Framsteg/g)).toHaveLength(3);
+		expect(page).not.toContain('href="/framsteg">Tillbaka till Framsteg');
 	});
 
 	it('säger lugnt att anteckningen inte hittas, utan att gissa varför', () => {

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { browser, dev } from '$app/environment';
-	import { beforeNavigate, goto, replaceState } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, goto, replaceState } from '$app/navigation';
+	import { PROGRESS_PATH, progressReturnHref } from '$lib/progress-url';
 	import { getContext, onDestroy, onMount, tick } from 'svelte';
 	import { DIARY_LEAVE_CONTEXT, type DiaryLeaveContext } from '$lib/diary-leave-context';
 	import { page } from '$app/stores';
@@ -1106,6 +1107,14 @@
 		});
 	}
 
+	// "Tillbaka till Framsteg" leder till samma flik och period som anteckningen
+	// öppnades från. Värdet sätts bara när användaren kom från Framsteg; annars
+	// leder länken till Framsteg som vanligt.
+	let progressBackHref = $state(PROGRESS_PATH);
+	afterNavigate(({ from }) => {
+		if (from?.url.pathname === PROGRESS_PATH) progressBackHref = progressReturnHref(from.url);
+	});
+
 	beforeNavigate((navigation) => {
 		if (!hasUnsavedDraft) return;
 		navigation.cancel();
@@ -1982,12 +1991,12 @@
 									</button>
 								{/if}
 							{/if}
-							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+							<a class="linked-entry-back" href={progressBackHref}>Tillbaka till Framsteg</a>
 						</section>
 					{:else if entriesState === 'ready' && linkedPlacement === 'missing'}
 						<section class="auth-panel" data-testid="linked-entry-missing">
 							<p class="text-sm">{LINKED_ENTRY_MISSING_MESSAGE}</p>
-							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+							<a class="linked-entry-back" href={progressBackHref}>Tillbaka till Framsteg</a>
 						</section>
 					{/if}
 
@@ -2148,7 +2157,7 @@
 												{expandedEntryId === entry.id ? 'Visa mindre' : 'Läs vidare'}
 											</button>
 											{#if linkedPlacement === 'list' && isLinkedEntry(entry.id)}
-												<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+												<a class="linked-entry-back" href={progressBackHref}>Tillbaka till Framsteg</a>
 											{/if}
 
 											<div class="entry-actions">

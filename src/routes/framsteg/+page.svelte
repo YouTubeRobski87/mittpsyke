@@ -3,7 +3,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
-	import { afterNavigate, invalidateAll } from '$app/navigation';
+	import { afterNavigate, goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { LOAD_RETRY_LABEL, PROGRESS_LOAD_ERROR_MESSAGE, type LoadStatus } from '$lib/load-state';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
@@ -133,6 +133,13 @@
 		type EveningPatternRow
 	} from '$lib/evening-patterns';
 	import { stockholmTodayKey } from '$lib/stockholm-date';
+	import {
+		DEFAULT_PROGRESS_PERIOD,
+		DEFAULT_PROGRESS_TAB,
+		progressHref,
+		readProgressPeriod,
+		readProgressTab
+	} from '$lib/progress-url';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Moon } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
@@ -495,18 +502,38 @@
 	let loadedMoodSamples = $state<MoodSample[]>([]);
 	let moodTimelineLoading = $state(false);
 	let selectedTab = $state<ProgressTab | null>(null);
-	const linkedTab = $derived(page.url.searchParams.get('tab'));
-	const activeTab: ProgressTab = $derived(
-		selectedTab ??
-			(linkedTab === 'insights' || linkedTab === 'mood' || linkedTab === 'development'
-				? linkedTab
-				: 'place')
+	// Flik och period läses ur adressen (?tab=, ?period=) så att valet finns kvar
+	// när användaren går till en anteckning och tillbaka. Utan flik visas Min plats.
+	const linkedTab = $derived(readProgressTab(page.url.searchParams));
+	const activeTab: ProgressTab = $derived(selectedTab ?? linkedTab ?? DEFAULT_PROGRESS_TAB);
+	// untrack: bara startvärdet. Senare navigeringar synkas i afterNavigate nedan.
+	let selectedPeriod = $state<PeriodDays>(
+		untrack(() => readProgressPeriod(page.url.searchParams) ?? DEFAULT_PROGRESS_PERIOD)
 	);
 
 	afterNavigate(() => {
 		selectedTab = null;
+		// En navigering till en annan adress för Framsteg (t.ex. bakåt i historiken)
+		// tar med sig sin period. Efter våra egna adressbyten är den redan densamma.
+		const linkedPeriod = readProgressPeriod(page.url.searchParams) ?? DEFAULT_PROGRESS_PERIOD;
+		if (linkedPeriod !== selectedPeriod) applyPeriod(linkedPeriod);
 	});
-	let selectedPeriod = $state<PeriodDays>(30);
+
+	/**
+	 * Skriver vald flik och period till adressen. Historikposten ersätts, så
+	 * flikbyten fyller inte bakåtknappen. Sidans laddare läser inte adressen och
+	 * körs därför inte om.
+	 */
+	function syncProgressUrl() {
+		const href = progressHref(activeTab, selectedPeriod);
+		if (href === page.url.pathname + page.url.search) return;
+		void goto(href, { replaceState: true, noScroll: true, keepFocus: true });
+	}
+
+	function selectTab(tab: ProgressTab) {
+		selectedTab = tab;
+		syncProgressUrl();
+	}
 	let selectedMoodPoint = $state<ChartPoint | null>(null);
 	let heatmapError = $state('');
 	let progressLoading = $state(false);
@@ -830,6 +857,11 @@
 
 	function changePeriod(period: PeriodDays) {
 		if (period === selectedPeriod) return;
+		applyPeriod(period);
+		syncProgressUrl();
+	}
+
+	function applyPeriod(period: PeriodDays) {
 		selectedPeriod = period;
 		selectedMoodPoint = null;
 		openAnalysisInsights = {};
@@ -1244,7 +1276,7 @@
 				{#if !isAnonymous && !emptyProgress}
 					<ProgressPeriodPicker period={selectedPeriod} onSelect={changePeriod} />
 				{/if}
-				<ProgressTabs active={activeTab} onSelect={(tab) => (selectedTab = tab)} />
+				<ProgressTabs active={activeTab} onSelect={selectTab} />
 
 				<div
 					class="progress-tab-panel"

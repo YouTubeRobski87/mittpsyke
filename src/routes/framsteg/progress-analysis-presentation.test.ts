@@ -41,8 +41,16 @@ describe('Framstegs första blick', () => {
 	});
 
 	it('öppnar Min plats som standard och läser uttryckliga flikval från länken', () => {
-		expect(route).toContain("page.url.searchParams.get('tab')");
-		expect(route).toMatch(/linkedTab === 'insights' \|\| linkedTab === 'mood' \|\| linkedTab === 'development'\s*\? linkedTab\s*: 'place'/);
+		// Själva tolkningen av ?tab= och standardvärdet testas i progress-url.test.ts.
+		expect(route).toContain('readProgressTab(page.url.searchParams)');
+		expect(route).toContain('selectedTab ?? linkedTab ?? DEFAULT_PROGRESS_TAB');
+	});
+
+	it('skriver flik och period till adressen utan nya historikposter', () => {
+		expect(route).toContain('progressHref(activeTab, selectedPeriod)');
+		expect(route).toContain('goto(href, { replaceState: true, noScroll: true, keepFocus: true })');
+		expect(route).toContain('<ProgressTabs active={activeTab} onSelect={selectTab} />');
+		expect(route).toContain('readProgressPeriod(page.url.searchParams) ?? DEFAULT_PROGRESS_PERIOD');
 	});
 
 	it('visar tunt underlag under Mina insikter och scenen under Min plats', () => {
