@@ -86,6 +86,36 @@ describe('selectPeriodSummaryEntries', () => {
 		expect(selection.basis.capped).toBe(true);
 	});
 
+	it('tar aldrig med en äldre anteckning efter en nyare som inte rymdes', () => {
+		const words = (count: number) => Array.from({ length: count }, () => 'ord').join(' ') + '.';
+		// 14 × 400 + 300 = 5 900 ord. Nästa (200) ryms inte; den äldsta (50) hade rymts.
+		const rows = [
+			...Array.from({ length: 14 }, (_, index) => row(index, words(400), 5, `full-${index}`)),
+			row(14, words(300), 5, 'last-fit'),
+			row(15, words(200), 5, 'too-long'),
+			row(16, words(50), 5, 'older-short')
+		];
+		const selection = selectPeriodSummaryEntries(rows, 30, NOW);
+		const ids = selection.entries.map(({ entryId }) => entryId);
+		expect(ids).toContain('last-fit');
+		expect(ids).not.toContain('too-long');
+		expect(ids).not.toContain('older-short');
+		expect(selection.basis.capped).toBe(true);
+	});
+
+	it('räknar ändå krisflaggade anteckningar äldre än taket som utelämnade', () => {
+		const rows = [
+			...Array.from({ length: MAX_PERIOD_SUMMARY_ENTRIES }, (_, index) => row(index % 20, `Text ${index}.`, 5, `t-${index}`)),
+			row(25, 'Jag vill ta livet av mig.', 2, 'risk-old')
+		];
+		expect(selectPeriodSummaryEntries(rows, 30, NOW).basis.excludedCount).toBe(1);
+	});
+
+	it('anger begränsat urval när hämtningen redan kapats', () => {
+		expect(selectPeriodSummaryEntries(baseRows, 30, NOW).basis.capped).toBe(false);
+		expect(selectPeriodSummaryEntries(baseRows, 30, NOW, { truncated: true }).basis.capped).toBe(true);
+	});
+
 	it('läser humör som tal och ignorerar värden utanför skalan', () => {
 		const selection = selectPeriodSummaryEntries(
 			[row(3, 'Ett.', '7,5'), row(2, 'Två.', 42), row(1, 'Tre.', null)],

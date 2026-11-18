@@ -102,8 +102,8 @@ const handle: RequestHandler = async ({ request, url }) => {
 	if (service && !(await hasDiaryAiConsent(service, user.id))) return aiConsentRequired();
 
 	const readSelection = async () => {
-		const { rows, error } = await loadProgressRows(supabase, user.id, period);
-		return error ? null : selectPeriodSummaryEntries(rows, period);
+		const { rows, truncated, error } = await loadProgressRows(supabase, user.id, period);
+		return error ? null : selectPeriodSummaryEntries(rows, period, new Date(), { truncated });
 	};
 	const selection = await readSelection();
 	if (!selection) return respond({}, 503);

@@ -83,7 +83,8 @@ export function trimEntryText(text: string, maxWords = MAX_PERIOD_SUMMARY_ENTRY_
 export function selectPeriodSummaryEntries(
 	rows: LighterDaysRow[],
 	period: PeriodSummaryPeriod,
-	now = new Date()
+	now = new Date(),
+	{ truncated = false }: { truncated?: boolean } = {}
 ): PeriodSummarySelection {
 	const newestFirst = filterProgressRows(rows, period, now).sort(
 		(a, b) =>
@@ -92,7 +93,10 @@ export function selectPeriodSummaryEntries(
 
 	const chosen: Omit<PeriodSummaryEntry, 'ref'>[] = [];
 	let excludedCount = 0;
-	let capped = false;
+	// Hämtningen kan redan ha kapat periodens äldsta rader. Då är urvalet
+	// begränsat även om taket här aldrig nås.
+	let capped = truncated;
+	let full = false;
 	let words = 0;
 
 	for (const row of newestFirst) {
@@ -105,10 +109,14 @@ export function selectPeriodSummaryEntries(
 			excludedCount += 1;
 			continue;
 		}
+		// När taket väl nåtts tas inga äldre anteckningar med, så urvalet alltid
+		// är de senaste i följd. Loopen fortsätter bara för att räkna utelämnade.
+		if (full) continue;
 		const text = trimEntryText(original);
 		const textWords = wordCount(text);
 		if (chosen.length >= MAX_PERIOD_SUMMARY_ENTRIES || words + textWords > MAX_PERIOD_SUMMARY_WORDS) {
 			capped = true;
+			full = true;
 			continue;
 		}
 		words += textWords;

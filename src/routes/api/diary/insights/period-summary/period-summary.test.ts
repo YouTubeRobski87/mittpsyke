@@ -102,6 +102,12 @@ describe('förhandsvisning', () => {
 		expect(await response.json()).toMatchObject({ reason: 'insufficient-data', basis: { entryCount: 3 } });
 	});
 
+	it('redovisar ett begränsat urval när hämtningen kapats', async () => {
+		mocks.rows.mockResolvedValue({ rows, truncated: true, error: null });
+		const { data } = await preview();
+		expect(data.capped).toBe(true);
+	});
+
 	it('avvisar okända perioder och läsfel', async () => {
 		expect((await call('GET', undefined, { period: 7 })).status).toBe(400);
 		mocks.rows.mockResolvedValue({ rows: [], truncated: false, error: 'boom' });
