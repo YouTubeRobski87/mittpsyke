@@ -141,7 +141,20 @@ html,
 body {
 	margin: 0;
 	padding: 0;
-	overflow-x: hidden;
+}
+
+/* clip i stället för hidden, och bara på html: overflow-x: hidden räknar om
+   overflow-y till auto, så när både html och body hade hidden blev body en egen
+   scrollbehållare ovanpå fönstret och mushjulet kunde fastna i den. clip döljer
+   horisontellt överskott på samma sätt men skapar ingen scrollbehållare. */
+html {
+	overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+	html {
+		overflow-x: hidden;
+	}
 }
 
 body,
