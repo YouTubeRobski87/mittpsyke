@@ -714,18 +714,7 @@
 	});
 	// Huvudvyn visar bara de starkast rankade insikterna. Beräkningen och
 	// rangordningen sker server-side; här hålls endast det lokala visningsläget.
-	let openAnalysisInsights = $state<Record<string, boolean>>({});
 	let analysisBasisOpen = $state(false);
-	function toggleAnalysisInsight(id: string) {
-		openAnalysisInsights = { ...openAnalysisInsights, [id]: !openAnalysisInsights[id] };
-	}
-	const allMoodAverage = $derived.by(() => {
-		if (moodSamples.length === 0) return null;
-		return moodSamples.reduce((sum, sample) => sum + sample.mood, 0) / moodSamples.length;
-	});
-	const selectedMoodDifference = $derived(
-		selectedMoodPoint && allMoodAverage !== null ? selectedMoodPoint.value - allMoodAverage : null
-	);
 
 	// ── Kanske värt att prova ──
 	// Svaren är en preferenssignal som ligger lokalt hos användaren. De går
@@ -864,7 +853,7 @@
 	function applyPeriod(period: PeriodDays) {
 		selectedPeriod = period;
 		selectedMoodPoint = null;
-		openAnalysisInsights = {};
+		analysisBasisOpen = false;
 		supportRotation = 0;
 		if (!isAnonymous && hasSensitiveDataConsent && insightsVisible) void loadInsights();
 	}
@@ -1531,13 +1520,9 @@
 								{/if}
 								{#if selectedMoodPoint}
 									<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
+										<!-- Bara datum och värde: ingen jämförelse mot snitt och inget antal,
+										     så att punkten läses som en dag och inte som statistik. -->
 										<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
-										{#if selectedMoodDifference !== null}
-											<span>
-												{selectedMoodDifference >= 0 ? '+' : ''}{selectedMoodDifference.toFixed(1).replace('.', ',')} jämfört med genomsnittet i tidslinjen.
-											</span>
-										{/if}
-										<small>{selectedMoodPoint.count} {selectedMoodPoint.count === 1 ? 'registrering' : 'registreringar'} ligger bakom punkten.</small>
 									</section>
 								{/if}
 							{/if}
@@ -1569,20 +1554,6 @@
 										<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>
 										<p class="analysis-primary-title">{primaryInsight.title}</p>
 										<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
-										<button
-											type="button"
-											class="analysis-more"
-											aria-expanded={openAnalysisInsights[primaryInsight.id] === true}
-											onclick={() => toggleAnalysisInsight(primaryInsight.id)}
-										>
-											{openAnalysisInsights[primaryInsight.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
-										</button>
-										{#if openAnalysisInsights[primaryInsight.id]}
-											<dl class="analysis-details">
-												<dt>Så är observationen räknad</dt>
-												<dd>{primaryInsight.evidence}</dd>
-											</dl>
-										{/if}
 									</section>
 								{/if}
 								{#if selectedPeriod === 180 && halfYear}
@@ -1603,38 +1574,6 @@
 												</ul>
 											</section>
 										{/if}
-										<!-- Fakta-korten ligger efter reflektionen: de ger detaljer utan att
-										     användaren först behöver tolka siffrorna själv. -->
-										<dl class="half-year-stats">
-											{#each halfYear.stats as stat (stat.id)}
-												<div class="half-year-stat">
-													<dt>{stat.label}</dt>
-													<dd>{stat.value}</dd>
-													<p>{stat.note}</p>
-												</div>
-											{/each}
-										</dl>
-									</section>
-									<section class="analysis-section" aria-labelledby="monthly-analysis-heading">
-										<h3 id="monthly-analysis-heading">Månad för månad</h3>
-										<ul class="monthly-analysis-list">
-											{#each halfYear.months as month (month.month)}
-												<li class:thin={month.status !== 'sufficient'}>
-													<strong>{month.shortLabel}</strong>
-													{#if month.status === 'sufficient' && month.mean !== null}
-														<span>Snitt {month.mean.toFixed(1).replace('.', ',')} · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
-														<!-- Lägesmarkering mot användarens eget halvårssnitt. Samma
-														     dämpade stil för alla tre lägen: ingen bra/dålig-signal. -->
-														{#if month.relativeText}<span class="month-relative">{month.relativeText}</span>{/if}
-													{:else if month.status === 'thin'}
-														<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
-													{:else}
-														<span>Inget mående registrerat</span>
-													{/if}
-												</li>
-											{/each}
-										</ul>
-										{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
 									</section>
 								{/if}
 								{#if moodInsights.length === 0 && showRecurringThemes}
@@ -1647,20 +1586,6 @@
 											<li class="analysis-tile" data-card={item.category}>
 											<h3>{item.title}</h3>
 											<p class="analysis-tile-conclusion">{item.description}</p>
-											<button
-												type="button"
-												class="analysis-more"
-												aria-expanded={openAnalysisInsights[item.id] === true}
-												onclick={() => toggleAnalysisInsight(item.id)}
-											>
-												{openAnalysisInsights[item.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
-											</button>
-											{#if openAnalysisInsights[item.id]}
-												<dl class="analysis-details">
-													<dt>Så är observationen räknad</dt>
-													<dd>{item.evidence}</dd>
-												</dl>
-											{/if}
 											</li>
 										{/each}
 									</ul>
@@ -1683,9 +1608,6 @@
 								{#if analysisBasisOpen}
 									<p class="analysis-basis">
 										Analysen bygger på {progressAnalysis.coverage.entryCount} {progressAnalysis.coverage.entryCount === 1 ? 'anteckning' : 'anteckningar'}, varav {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
-										{#if progressAnalysis.moodSummary.mean !== null && progressAnalysis.moodSummary.median !== null}
-											Ditt snitt är {progressAnalysis.moodSummary.mean.toFixed(1).replace('.', ',')} och medianen {progressAnalysis.moodSummary.median.toFixed(1).replace('.', ',')} på skalan. Registreringarna ligger mellan {progressAnalysis.moodSummary.min} och {progressAnalysis.moodSummary.max}.
-										{/if}
 										{#if progressAnalysis.coverage.truncated} Analysen kan vara begränsad eftersom perioden innehåller fler registreringar än den säkra läsgränsen just nu. {/if}
 									</p>
 									{#if halfYear}
@@ -1693,6 +1615,17 @@
 										     registreringar de bygger på, och varför en slutsats kan eller
 										     inte kan dras. -->
 										<p class="analysis-basis">{halfYear.basis}</p>
+									{/if}
+									{#if sparseMonthCopy}<p class="analysis-basis">{sparseMonthCopy}</p>{/if}
+									{#if moodInsights.length > 0}
+										<!-- En enda knapp för underlaget: varje observations uträkning samlas
+										     här i stället för en egen knapp per kort. -->
+										<dl class="analysis-details">
+											{#each moodInsights as item (item.id)}
+												<dt>{item.title}</dt>
+												<dd>{item.evidence}</dd>
+											{/each}
+										</dl>
 									{/if}
 								{/if}
 							{:else}
@@ -2015,13 +1948,7 @@
 		font-size: 0.95rem;
 	}
 
-	.chart-detail span,
-	.chart-detail small {
-		color: hsl(var(--muted-foreground));
-	}
 
-	.chart-detail span { font-size: 0.92rem; }
-	.chart-detail small { font-size: 0.82rem; }
 
 	.analysis-intro {
 		color: hsl(var(--muted-foreground));
@@ -2149,43 +2076,10 @@
 	   halvåret går att överblicka utan att detaljtexten läses. 8rem är valt så
 	   att två ryms i bredd även på 390px-skärmar; med 9rem föll de ned till fyra
 	   staplade rader. */
-	.half-year-stats {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-		gap: 0.5rem;
-		margin: 0.35rem 0 0;
-	}
 
-	.half-year-stat {
-		display: grid;
-		gap: 0.1rem;
-		min-width: 0;
-		padding: 0.6rem 0.7rem;
-		border: 1px solid var(--color-dashboard-border);
-		border-radius: 0.65rem;
-		background: hsl(var(--background) / 0.5);
-	}
 
-	.half-year-stat dt {
-		color: hsl(var(--muted-foreground));
-		font-size: 0.74rem;
-		letter-spacing: 0.02em;
-	}
 
-	.half-year-stat dd {
-		margin: 0;
-		color: hsl(var(--foreground));
-		font-size: 1rem;
-		font-weight: 600;
-		line-height: 1.25;
-	}
 
-	.half-year-stat p {
-		margin: 0;
-		color: hsl(var(--muted-foreground));
-		font-size: 0.72rem;
-		line-height: 1.35;
-	}
 
 	@media (max-width: 620px) {
 		.analysis-long-period {
@@ -2205,30 +2099,10 @@
 	/* 7,5rem räcker för "Nära ditt halvårssnitt" på två rader och låter alla sex
 	   månaderna ligga på en rad på desktop. Med 10rem föll den sjätte månaden
 	   ned på egen rad, vilket gjorde halvåret svårare att jämföra i ett svep. */
-	.monthly-analysis-list {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-		gap: 0.55rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
 
-	.monthly-analysis-list li {
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.7rem 0.8rem;
-		border: 1px solid var(--color-dashboard-border);
-		border-radius: 0.7rem;
-		background: hsl(var(--muted) / 0.16);
-	}
 
-	.monthly-analysis-list strong { color: hsl(var(--foreground)); font-size: 0.88rem; }
-	.monthly-analysis-list span { color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.4; }
-	.monthly-analysis-list .thin { opacity: 0.78; }
 	/* Samma dämpade ton oavsett om månaden ligger över, under eller nära
 	   snittet. Markeringen ska hjälpa jämförelsen, inte värdera månaden. */
-	.monthly-analysis-list .month-relative { font-size: 0.74rem; opacity: 0.82; }
 
 	.evidence-observations {
 		display: grid;

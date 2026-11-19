@@ -118,11 +118,6 @@ describe('Framstegs första blick', () => {
 });
 
 describe('Framstegsanalysens presentation', () => {
-	it('beskriver en månad utan mående som saknat måendeunderlag, inte som avsaknad av aktivitet', () => {
-		expect(route).toContain('<span>Inget mående registrerat</span>');
-		expect(route).not.toContain('<span>Ingen registrering</span>');
-	});
-
 	it('visar en tydlig täckningsnotis när analysen har truncerats', () => {
 		expect(route).toContain('{#if progressAnalysis.coverage.truncated}');
 		expect(route).toContain('Analysen bygger på en begränsad del av periodens anteckningar.');
@@ -144,23 +139,20 @@ describe('halvårsvyns informationshierarki', () => {
 		expect(halfYearBlock).toContain('{#each halfYear.reflection.highlights as highlight}');
 	});
 
-	it('visar nyckeltalen före månadsdetaljen', () => {
-		const reflectionIndex = halfYearBlock.indexOf('halfYear.reflection.sentences');
-		const statsIndex = halfYearBlock.indexOf('halfYear.stats');
-		const monthsIndex = halfYearBlock.indexOf('halfYear.months');
-
-		expect(reflectionIndex).toBeGreaterThan(-1);
-		expect(statsIndex).toBeGreaterThan(-1);
-		expect(statsIndex).toBeGreaterThan(reflectionIndex);
-		expect(monthsIndex).toBeGreaterThan(statsIndex);
+	it('visar halvåret i ord, utan faktakort eller månadsrutnät', () => {
+		// Robban 2026-11-19: "För mycket statistik". Siffrorna räknas fortfarande
+		// fram, men halvåret visas som meningar.
+		expect(halfYearBlock).toContain('halfYear.reflection.sentences');
+		expect(halfYearBlock).not.toContain('halfYear.stats');
+		expect(halfYearBlock).not.toContain('halfYear.months');
+		expect(route).not.toContain('Månad för månad');
 	});
 
-	it('gör månadskorten jämförbara med snitt, antal, status och läge mot eget snitt', () => {
-		expect(halfYearBlock).toContain('{month.shortLabel}');
-		expect(halfYearBlock).toContain('Snitt {month.mean.toFixed(1)');
-		expect(halfYearBlock).toContain("{month.entryCount === 1 ? 'registrering' : 'registreringar'}");
-		expect(halfYearBlock).toContain('{month.relativeText}');
-		expect(halfYearBlock).toContain('Tunt underlag');
+	it('visar varken snitt eller antal när man väljer en punkt i grafen', () => {
+		const detail = route.slice(route.indexOf('<section class="chart-detail"'), route.indexOf('</section>', route.indexOf('<section class="chart-detail"')));
+		expect(detail).toContain('{selectedMoodPoint.fullLabel}');
+		expect(detail).not.toContain('jämfört med genomsnittet');
+		expect(detail).not.toContain('ligger bakom punkten');
 	});
 
 	it('visar högst fyra insikter, i den ordning servern rangordnat dem', () => {
@@ -170,15 +162,15 @@ describe('halvårsvyns informationshierarki', () => {
 		expect(halfYearBlock).not.toContain('analysis-tile');
 	});
 
-	it('konkretiserar underlaget bakom "Vad bygger det här på?"', () => {
+	it('konkretiserar underlaget bakom en enda "Vad bygger det här på?"', () => {
 		expect(route).toContain('{analysisBasisOpen ? \'Dölj datagrunden\' : \'Vad bygger det här på?\'}');
 		expect(route).toContain('<p class="analysis-basis">{halfYear.basis}</p>');
-	});
-
-	it('färgkodar inte månadernas läge som bra eller dåligt', () => {
-		const relativeStyle = route.slice(route.indexOf('.monthly-analysis-list .month-relative'));
-
-		expect(relativeStyle.slice(0, 120)).not.toMatch(/red|green|--destructive|--success/i);
+		// Varje observations uträkning ligger i samma utfällning, inte bakom egna knappar.
+		expect(analysisBlock.match(/Vad bygger det här på\?/g)).toHaveLength(1);
+		expect(analysisBlock).toContain('{#each moodInsights as item (item.id)}');
+		expect(analysisBlock).toContain('<dd>{item.evidence}</dd>');
+		// Snitt och median visas inte längre i datagrunden.
+		expect(analysisBlock).not.toContain('medianen');
 	});
 
 	it('använder neutral reflektionstext utan prestations- eller diagnosspråk', () => {

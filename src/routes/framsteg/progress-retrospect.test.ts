@@ -33,6 +33,15 @@ describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
 		}
 	});
 
+	it('säger det i ord på kortet och lägger antal och andelar under "Visa underlaget"', () => {
+		const cardBody = card.slice(card.indexOf('<h3>{theme.label}</h3>'), card.indexOf('{#if openThemeId === theme.id}'));
+		const evidence = card.slice(card.indexOf('{#if openThemeId === theme.id}'));
+		expect(cardBody).toContain('{sentenceStart(theme.label)} fanns oftare med på dina lättare dagar.');
+		expect(cardBody).not.toContain('Andel');
+		expect(evidence).toContain('{theme.note} Andel:');
+		expect(evidence).toContain('{theme.comparison} Andel:');
+	});
+
 	it('visar serverns anteckning och underlag, inga egna formuleringar per position', () => {
 		expect(card).toContain('{theme.note}');
 		expect(card).toContain('{theme.comparison}');
