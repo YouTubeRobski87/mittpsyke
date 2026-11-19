@@ -12,21 +12,21 @@ const chrome = process.env.CHROME_BIN ?? (process.platform === 'win32'
 	? 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 	: '/usr/bin/google-chrome');
 
-it('knyter frågan till markerade utdrag och släpper svar för en tidigare vy', async () => {
+it('flikar, diagram och underlag fungerar utan AI-anrop', async () => {
 	const result = await build({
 		configFile: false,
 		logLevel: 'error',
 		resolve: { alias: { '$lib': resolve('src/lib') } },
 		plugins: [{
-			name: 'progress-question-browser-fixture',
+			name: 'progress-tabs-browser-fixture',
 			enforce: 'pre',
 			resolveId(id) {
-				if (id === 'progress-question-fixture') return '\0' + id;
+				if (id === 'progress-tabs-fixture') return '\0' + id;
 				if (id.endsWith('/supabase')) return '\0supabase-stub';
 			},
 			load(id) {
 				if (id === '\0supabase-stub') return 'export const supabase = { auth: { getSession: async () => ({ data: { session: { access_token: "test" } } }) } };';
-				if (id === '\0progress-question-fixture') return `
+				if (id === '\0progress-tabs-fixture') return `
 					import { mount, tick } from 'svelte';
 					import { writable, fromStore } from 'svelte/store';
 					import Card from '/src/lib/components/progress/LighterDaysCard.svelte';
@@ -49,31 +49,9 @@ it('knyter frågan till markerade utdrag och släpper svar för en tidigare vy',
 					const timeline = () => buildMoodTimelineView([
 						{ date: '2026-06-01', mood: 5 }, { date: '2026-06-02', mood: 6 }, { date: '2026-06-03', mood: 8 }, { date: '2026-06-04', mood: 7 }
 					], reactive.current.periodDays, new Date('2026-06-04T12:00:00Z'));
-					const calls = [];
-					let consentWrites = 0;
-					window.fetch = (url, options) => new Promise(resolve => {
-						if (url === '/api/consent/diary-ai') {
-							consentWrites++;
-							resolve({ok:true});
-							return;
-						}
-						if (url !== '/api/diary/insights/summary') throw new Error('Unexpected request');
-						calls.push({
-							body:JSON.parse(options.body), signal:options.signal,
-							requireConsent:() => resolve({status:403,ok:false,json:async()=>({reason:'ai-consent'})}),
-							reply:(question, questionOrigin = 'ai') => resolve({
-								status:200,ok:true,json:async()=>({question,sourceRef:JSON.parse(options.body).sourceRef,questionOrigin,reason:null})
-							})
-						});
-					});
-					const until = async (predicate) => {
-						for (let i=0;i<100;i++) {
-							if (predicate()) return;
-							await new Promise(resolve=>setTimeout(resolve,20));
-						}
-						throw new Error('browser timeout');
-					};
-					const ai = () => document.querySelector('[data-testid="lighter-days-ai-button"]');
+					const requests = [];
+					// Fliken Framsteg får inte göra några AI-anrop alls: varje förfrågan registreras.
+					window.fetch = (url) => { requests.push(String(url)); return new Promise(() => {}); };
 					const evidence = (id) => document.querySelector('[aria-controls="evidence-' + id + '"]');
 					const assert = (ok,message) => { if (!ok) throw new Error(message); };
 
@@ -107,16 +85,11 @@ it('knyter frågan till markerade utdrag och släpper svar för en tidigare vy',
 							onSelectPeriod() {}, options: [], fallbackText:'Saknar värden'
 						}});
 						mount(Card,{target:panel('insights'),props:{
-							get view(){return reactive.current;},get active(){return active.current === 'insights';}
+							get view(){return reactive.current;}
 						}});
 						await tick();
 						const tab = id => document.getElementById('progress-tab-' + id);
-						const themeSelect = () => document.querySelector('.personal-reflection-card select');
-						const chooseTheme = (id) => {
-							themeSelect().value = id;
-							themeSelect().dispatchEvent(new Event('change', {bubbles:true}));
-						};
-						assert(!ai() && !themeSelect().value && calls.length===0,'no preselection or request');
+						assert(!document.querySelector('.personal-reflection-card'), 'reflection question removed');
 						tab('insights').focus();
 						const press = key => document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));
 						for (const [key,id] of [['Home','place'],['ArrowLeft','development'],['End','development'],['ArrowLeft','mood']]) {
@@ -130,107 +103,19 @@ it('knyter frågan till markerade utdrag och släpper svar för en tidigare vy',
 						assert(plot?.getBoundingClientRect().width > 0 && plot.querySelector('polyline'), 'chart visible after tab change');
 						press('ArrowLeft');
 						await tick();
-						assert(!panel('insights').hidden && panel('mood').hidden && calls.length === 0, 'tabs do not request AI');
-						const radios = () => [...document.querySelectorAll('input[type="radio"][name="progress-question-source"]')];
-						const assertUnselected = () => assert(
-							radios().length === 3 && !radios().some(radio => radio.checked) && !ai(),
-							'three choices, no preselection or request button'
-						);
+						assert(!panel('insights').hidden && panel('mood').hidden, 'insights panel selected');
 						evidence('Sömn').click();
 						await tick();
-						assert(!radios().length, 'evidence has no question controls');
-						chooseTheme('Sömn');
-						await tick();
-						assertUnselected();
-						assert(calls.length === 0, 'opening evidence does not send');
-						assert(radios().map(radio => radio.closest('label').querySelector('span span').textContent).join('|') ===
-							themes[0].evidence.slice(1,4).map(x=>x.excerpt).join('|'), 'only eligible excerpts are selectable');
-						assert(document.querySelectorAll('#evidence-Sömn blockquote').length === 5, 'additional excerpts and links remain');
-						radios()[0].focus();
-						assert(document.activeElement === radios()[0] && radios()[0].tabIndex === 0 &&
-							getComputedStyle(radios()[0]).outlineStyle !== 'none', 'radio keyboard focus');
-						radios()[0].click();
-						await tick();
-						assert(calls.length === 0 && ai()?.textContent.trim() === 'Skapa min reflektionsfråga', 'selection requires explicit click');
-						const notice = document.getElementById(ai().getAttribute('aria-describedby'));
-						assert(notice?.textContent.includes('Bara det valda utdraget behandlas av OpenAI') &&
-							notice.getBoundingClientRect().bottom <= ai().getBoundingClientRect().top, 'processing notice above the button');
-						if (innerWidth <= 640) {
-							const button = ai().getBoundingClientRect();
-							const actions = ai().parentElement.getBoundingClientRect();
-							assert(button.width === actions.width && button.height >= 44, 'full-width mobile button');
-						}
-						ai().focus();
-						assert(document.activeElement === ai() && ai().tabIndex === 0 &&
-							getComputedStyle(ai()).outlineStyle !== 'none', 'request button keyboard focus');
-						ai().click();
-						await until(() => calls.length === 1);
-						assert(calls[0].body.themeId === 'Sömn' && calls[0].body.period === 30 &&
-							calls[0].body.sourceRef === 1 && Object.keys(calls[0].body).length === 4, 'scoped request');
-						radios()[1].click();
-						await tick();
-						assert(calls[0].signal.aborted && ai(), 'selection change aborts');
-						calls[0].reply('Inaktuellt utdrag?');
-						await tick();
-						assert(!document.body.textContent.includes('Inaktuellt utdrag?'), 'late source response ignored');
-						ai().click();
-						await until(() => calls.length === 2);
-						assert(calls[1].body.sourceRef === 2 &&
-							calls[1].body.snapshotId !== calls[0].body.snapshotId, 'selection is bound to snapshot');
-						chooseTheme('Motion');
-						await tick();
-						assert(calls[1].signal.aborted, 'theme change aborts');
-						assertUnselected();
-						calls[1].reply('Inaktuellt tema?');
-						await tick();
-						assert(!document.body.textContent.includes('Inaktuellt tema?'), 'late theme response ignored');
-						radios()[0].click();
-						await tick();
-						ai().click();
-						await until(() => calls.length === 3);
+						assert(document.querySelectorAll('#evidence-Sömn blockquote').length === 5, 'all excerpts shown');
+						assert(!document.querySelector('input[type="radio"]'), 'evidence has no question controls');
 						document.querySelectorAll('[aria-label="Välj tidsperiod"] button')[1].click();
 						await tick();
-						assert(calls[2].signal.aborted, 'period change aborts');
-						assertUnselected();
-						calls[2].reply('Inaktuell period?');
-						await tick();
-						assert(!document.body.textContent.includes('Inaktuell period?'), 'late period response ignored');
-						radios()[1].click();
-						await tick();
-						ai().click();
-						await until(() => calls.length === 4);
-						assert(calls[3].body.themeId === 'Motion' && calls[3].body.period === 90 &&
-							calls[3].body.sourceRef === 2, 'new view request');
-						calls[3].requireConsent();
-						await until(() => document.body.textContent.includes('Innan AI tar fram en fråga'));
-						assert(consentWrites === 0, 'consent requires a user action');
-						document.querySelector('.personal-reflection-card [role="dialog"] button').click();
-						await until(() => calls.length === 5);
-						assert(consentWrites === 1 && calls[4].body.snapshotId === calls[3].body.snapshotId, 'consent retry uses the same excerpt');
-						tab('mood').click();
-						await tick();
-						assert(calls[4].signal.aborted && !panel('mood').hidden, 'leaving insights aborts');
-						calls[4].reply('Inaktiv flik?');
-						tab('insights').click();
-						await tick();
-						assertUnselected();
-						assert(calls.length === 5 && !document.body.textContent.includes('Inaktiv flik?'), 'late tab response ignored');
-						radios()[1].click();
-						await tick();
-						ai().click();
-						await until(() => calls.length === 6);
-						calls[5].reply('Finns det något i det här utdraget som du vill stanna upp vid?', 'mittpsyke');
-						await until(() => document.body.textContent.includes('Allmän reflektionsfråga från MittPsyke.'));
-						const link = [...document.querySelectorAll('a')].find(a => a.textContent.includes('Läs anteckningen som frågan bygger på'));
-						assert(link?.closest('.personal-reflection-card') && link.getAttribute('href').includes('anteckning=entry-1-2'), 'answer links to selected diary entry');
-						assert(document.querySelector('#ai-question-source-2 label span span')?.textContent === themes[1].evidence[2].excerpt, 'selected source retained');
-						link.focus();
-						assert(document.activeElement === link && link.tabIndex === 0 && getComputedStyle(link).outlineStyle !== 'none', 'source link focus');
 						for (const id of ['insights','mood','place','development']) {
 							tab(id).click();
 							await tick();
 							assert(document.documentElement.scrollWidth <= document.documentElement.clientWidth, 'horizontal overflow: ' + id);
 						}
+						assert(requests.length === 0, 'no requests: ' + requests.join(','));
 						parent.postMessage([innerWidth,'PASS'],location.origin);
 					} catch(error) {
 						parent.postMessage([innerWidth,error.message],location.origin);
@@ -242,7 +127,7 @@ it('knyter frågan till markerade utdrag och släpper svar för en tidigare vy',
 		build: {
 			write: false,
 			target: 'esnext',
-			rollupOptions: { input: 'progress-question-fixture', output: { inlineDynamicImports: true } }
+			rollupOptions: { input: 'progress-tabs-fixture', output: { inlineDynamicImports: true } }
 		}
 	});
 	const output = Array.isArray(result) ? result[0] : result;

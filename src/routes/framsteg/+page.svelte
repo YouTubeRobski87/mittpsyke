@@ -11,7 +11,6 @@
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import type { HelpfulReminderState } from '$lib/progress-helpful-reminders';
-	import PersonalRetrospect from '$lib/components/progress/PersonalRetrospect.svelte';
 	import PeriodSummaryCard from '$lib/components/progress/PeriodSummaryCard.svelte';
 	import HelpfulReminders from '$lib/components/progress/HelpfulReminders.svelte';
 	import ProgressTabs, { type ProgressTab } from '$lib/components/progress/ProgressTabs.svelte';
@@ -1311,13 +1310,12 @@
 							comparisonLimited={Boolean(progressAnalysis?.coverage.truncated)}
 							loading={insightsLoading}
 							failed={Boolean(insightsError)}
-							active={activeTab === 'insights'}
 							onChanged={loadInsights}
 						/>
 					{:else}
 						<section class="card reflection-card" aria-labelledby="personal-reflection-heading">
-							<h2 id="personal-reflection-heading">Din personliga reflektion</h2>
-							<p class="reflection-copy">Välj ett utdrag ur din dagbok och låt AI hjälpa dig att hitta en fråga att fundera över.</p>
+							<h2 id="personal-reflection-heading">Se mönster i dina anteckningar</h2>
+							<p class="reflection-copy">MittPsyke kan visa vad som återkommer och vad som ofta fanns med under lättare dagar. Det räknas fram med fasta regler, utan AI.</p>
 							<ConsentGate
 								title="Se analys av dina mönster"
 								dataLabel="Dina sparade texter och humörvärden"
@@ -1714,13 +1712,6 @@
 					{#if isAnonymous}
 						<p class="reflection-copy">Här samlas dina påminnelser och sparade stunder när du har ett konto.</p>
 					{:else}
-						{#if activeTab === 'development'}
-							<section class="card reflection-card" aria-labelledby="personal-retrospect-heading">
-								{#key selectedPeriod}
-									<PersonalRetrospect period={selectedPeriod} />
-								{/key}
-							</section>
-						{/if}
 						{@render helpfulReminders()}
 						{#if !emptyProgress}
 							<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
