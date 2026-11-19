@@ -48,6 +48,11 @@
 		return openThemeId === theme.id ? 'Dölj underlaget' : 'Visa underlaget';
 	}
 
+	/** Stor bokstav först, eftersom ett eget temanamn kan vara skrivet med gemener. */
+	function sentenceStart(label: string) {
+		return label.charAt(0).toLocaleUpperCase('sv-SE') + label.slice(1);
+	}
+
 	function formatMood(value: number) {
 		return value.toFixed(1).replace('.', ',');
 	}
@@ -172,10 +177,9 @@
 						{:else}
 							<h3>{theme.label}</h3>
 						{/if}
-						<p class="lighter-days-note">{theme.note} Andel: {percent.format(theme.count / theme.base)}.</p>
-						<p class="lighter-days-comparison">
-							{theme.comparison} Andel: {percent.format(theme.otherCount / theme.otherBase)}. Spritt över {theme.weekCount} {theme.weekCount === 1 ? 'vecka' : 'veckor'}.
-						</p>
+						<!-- Kortet säger det i ord. Antal och andelar finns kvar under
+						     "Visa underlaget" för den som vill väga det själv. -->
+						<p class="lighter-days-note">{sentenceStart(theme.label)} fanns oftare med på dina lättare dagar.</p>
 
 						<div class="lighter-days-actions">
 							<button
@@ -201,6 +205,10 @@
 
 						{#if openThemeId === theme.id}
 							<div class="lighter-days-evidence" id={`evidence-${theme.id}`}>
+								<p class="lighter-days-comparison">
+									{theme.note} Andel: {percent.format(theme.count / theme.base)}.
+									{theme.comparison} Andel: {percent.format(theme.otherCount / theme.otherBase)}. Spritt över {theme.weekCount} {theme.weekCount === 1 ? 'vecka' : 'veckor'}.
+								</p>
 								<p class="lighter-days-muted">
 									{theme.count === theme.evidence.length
 										? `De ${theme.count} inläggen med högre humör där ${theme.label} fanns med:`
