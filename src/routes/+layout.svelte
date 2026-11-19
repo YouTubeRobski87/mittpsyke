@@ -1064,16 +1064,19 @@
 	<footer class="site-footer mt-12">
 		<div class="footer-inner">
 			<div class="footer-grid">
+				<!-- Sidfoten visar bara det som behöver synas på varje sida. Övriga
+					 sidor nås via huvudmenyn ("Läs", "Så fungerar det", sök-ikonen) och
+					 via Om MittPsyke, som samlar Om skaparen, Redaktionell metod,
+					 Ansvar, För organisationer och Feedback. Inga routes är borttagna. -->
 				<!-- Kolumn 1: Tjänsten -->
 				<div class="footer-col">
 					<p class="footer-col-heading">Tjänsten</p>
 					<a href="/dagbok" class="footer-link">Dagbok</a>
 					<a href="/framsteg" class="footer-link">{currentUser ? 'Framsteg' : 'Återblick'}</a>
 					<a href="/chat" class="footer-link">Chatta anonymt</a>
-					<a href="/ovningar" class="footer-link">Övningar</a>
 					<a href="/guider" class="footer-link">Guider</a>
 					<a href="/blogg" class="footer-link">Artiklar</a>
-					<a href="/anonyma-berattelser" class="footer-link">Berättelser</a>
+					<!-- Månadens ord har ingen annan ingång i menyerna, så den står kvar här. -->
 					<a href="/manadens-ord" class="footer-link">Månadens ord</a>
 				</div>
 
@@ -1081,14 +1084,8 @@
 				<div class="footer-col">
 					<p class="footer-col-heading">Om MittPsyke</p>
 					<a href="/om-mittpsyke" class="footer-link">Om tjänsten</a>
-					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
-					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
-					<a href="/for-organisationer" class="footer-link">För organisationer</a>
-					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
 					<a href="/ansvarsfull-ai" class="footer-link">Ansvarsfull AI</a>
 					<a href="/sa-hanterar-chatten-kriser" class="footer-link">Så hanterar chatten kriser</a>
-					<a href="/ansvar" class="footer-link">Ansvar</a>
-					<a href="/feedback" class="footer-link">Feedback</a>
 					<a href="/kontakt-och-villkor" class="footer-link">Kontakt och villkor</a>
 				</div>
 
@@ -1099,7 +1096,6 @@
 					<a href="/cookies-och-leverantorer" class="footer-link">Cookies och leverantörer</a>
 					<a href="/tillganglighet" class="footer-link">Tillgänglighet</a>
 					<button type="button" onclick={() => cookieBannerOpen.set(true)} class="footer-link footer-link-btn">Cookieinställningar</button>
-					<a href="/sok" class="footer-link">Sök</a>
 				</div>
 
 				<!-- Kolumn 4: Akut hjälp + info -->
