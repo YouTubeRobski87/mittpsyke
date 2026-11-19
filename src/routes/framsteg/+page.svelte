@@ -97,7 +97,6 @@
 	import { supabase } from '$lib/supabase';
 	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
 	import {
-		buildHistoryActivity,
 		toMoodSamples,
 		type ChartPoint,
 		type MoodSample,
@@ -460,7 +459,6 @@
 		nextMilestone: null,
 		totalEntries: 0
 	};
-	const ANONYMOUS_PREVIEW_HEATMAP: Record<string, number> = {};
 
 	// Utloggad vy använder aldrig exempelvärden som kan uppfattas som användarens.
 	const ANONYMOUS_PREVIEW_MOOD_SAMPLES: MoodSample[] = [];
@@ -640,13 +638,6 @@
 			features: { cloud: false, sun: false, moon: false }
 		})
 	);
-	// Aktiv dag = minst ett sparat dagboksinlägg, samma källa som världen. Den
-	// gamla heatmapen hämtas inte längre och var därför alltid tom här, så
-	// "Vad det här bygger på" räknade bara dagar med humörvärde.
-	const heatmapData = $derived(
-		isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : (data.diaryActivityDays ?? {})
-	);
-
 	// ── Kvällar över tid ──
 	// Egen dataväg: kvällsincheckningarnas struktur, aldrig dagbokens humör och
 	// aldrig kvällens fritext. Räknas om lokalt när perioden byts - servern har
@@ -661,10 +652,6 @@
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
-	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
-	// Utan något sparat material har underlagskortet inget att redovisa. Att räkna
-	// upp nollor gör en tom sida till ett facit (docs/NORTH_STAR.md, "Ingen skuld").
-	const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);
 	// Överblicken högst upp. Oberoende av periodvalet: den svarar alltid på den
 	// senaste veckan, som annars inte hade någon yta alls på sidan.
 	const weekSummary = $derived(buildWeekSummary(moodSamples));
@@ -1646,7 +1633,9 @@
 						<p class="reflection-copy">Här samlas dina påminnelser och sparade stunder när du har ett konto.</p>
 					{:else}
 						{@render helpfulReminders()}
-						{#if !emptyProgress}
+						{#if !emptyProgress && !weekSummary.insufficient}
+							<!-- Med för lite underlag säger kortet bara att det inte räcker,
+							     så då visas det inte alls. -->
 							<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
 								<div class="card-header">
 									<div class="icon-badge heat"><Calendar size={24} /></div>
@@ -1655,7 +1644,7 @@
 								<p class="week-summary-lead">{weekSummary.summary}</p>
 								{#if weekSummary.comparisonText}
 									<p class="week-summary-comparison">{weekSummary.comparisonText}</p>
-								{:else if !weekSummary.insufficient}
+								{:else}
 									<p class="week-summary-note">
 										Veckan innan har för få registreringar för en jämförelse.
 									</p>
@@ -1683,7 +1672,6 @@
 												<li class="support-suggestion">
 													<strong>{suggestion.title}</strong>
 													<span>{suggestion.body}</span>
-													<small>{suggestion.evidence}</small>
 													{#if supportResponses[suggestion.id]}
 														<p class="support-receipt" aria-live="polite">
 															{supportResponses[suggestion.id] === 'fits'
@@ -1778,47 +1766,6 @@
 									{/if}
 								</section>
 							{/if}
-							<section class="card garden-presence-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="garden-presence-heading">
-								<div class="card-header">
-									<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-									<h2 id="garden-presence-heading">Vad det här bygger på</h2>
-								</div>
-								<!-- Korten ovan säger vad som går att se. Det här säger hur mycket
-								     material observationerna vilar på, så att användaren kan väga dem
-								     själv. Det är underlag - inte ett resultat, och inte ett mått på
-								     hur mycket appen har använts (docs/NORTH_STAR.md, "Ingen skuld"). -->
-								{#if hasHistoryMaterial}
-									<p class="reflection-copy">
-										{moodSamples.length}
-										{moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen och
-										{entryCount}
-										{entryCount === 1 ? 'sparat dagboksinlägg' : 'sparade dagboksinlägg'} totalt.
-									</p>
-									<p class="reflection-copy">
-										Registreringarna i den valda perioden är spridda över {historyActivity.activeDays}
-										{historyActivity.activeDays === 1 ? 'dag' : 'dagar'} och {historyActivity.activeWeeks}
-										{historyActivity.activeWeeks === 1 ? 'vecka' : 'veckor'}.
-									</p>
-									<p class="reflection-copy history-missing-note">
-										Dagar utan registrering räknas som att det saknas data — inte som sämre mående.
-									</p>
-								{:else}
-									<p class="reflection-copy">
-										Här samlas underlaget som återblicken vilar på. Det fylls på av det du själv väljer att
-										spara i dagboken.
-									</p>
-								{/if}
-								<!-- Kvällarna räknas för sig och står utanför valet ovan: den som bara
-								     gjort kvällsincheckningar ska också se sitt underlag. Raden utelämnas
-								     helt vid noll kvällar - en nolla här vore bara en tom påminnelse. -->
-								{#if eveningPatterns.eveningCount > 0}
-									<p class="reflection-copy">
-										Kvällar över tid bygger på {eveningPatterns.eveningCount}
-										{eveningPatterns.eveningCount === 1 ? 'sparad kvällsincheckning' : 'sparade kvällsincheckningar'}
-										i den valda perioden. De räknas för sig, skilt från dagbokens inlägg och humörvärden.
-									</p>
-								{/if}
-							</section>
 							<FramstegComprehensionCard enabled={!isAnonymous} />
 						{/if}
 					{/if}
@@ -1909,8 +1856,7 @@
 
 
 
-	.reflection-card,
-	.garden-presence-card {
+	.reflection-card {
 		display: grid;
 		gap: 0.8rem;
 	}
@@ -1998,12 +1944,6 @@
 		margin: 0;
 		color: hsl(var(--muted-foreground));
 		line-height: 1.5;
-	}
-
-	/* Saknad data är en förutsättning för att läsa korten rätt, men den ska
-	   ligga lågt i hierarkin - inte som ännu ett påstående om måendet. */
-	.history-missing-note {
-		color: hsl(var(--muted-foreground));
 	}
 
 	/* Överblicken är sidans första innehållskort. Den får lite mer tyngd i
@@ -2326,12 +2266,6 @@
 	.support-suggestion span {
 		color: hsl(var(--muted-foreground));
 		font-size: 0.94rem;
-	}
-
-	.support-suggestion small {
-		color: hsl(var(--muted-foreground) / 0.85);
-		font-size: 0.8rem;
-		line-height: 1.45;
 	}
 
 	.support-actions {

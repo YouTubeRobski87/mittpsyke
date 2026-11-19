@@ -27,10 +27,10 @@ describe('Framstegs begriplighetskort', () => {
 	});
 
 	it('är sekundärt placerat efter de centrala Framsteg-korten och bara för inloggade', () => {
-		const basis = page.indexOf('garden-presence-card');
+		const evenings = page.indexOf('evening-patterns-card');
 		const card = page.indexOf('<FramstegComprehensionCard');
-		expect(basis).toBeGreaterThan(-1);
-		expect(card).toBeGreaterThan(basis);
+		expect(evenings).toBeGreaterThan(-1);
+		expect(card).toBeGreaterThan(evenings);
 		expect(page).toContain('<FramstegComprehensionCard enabled={!isAnonymous} />');
 	});
 
