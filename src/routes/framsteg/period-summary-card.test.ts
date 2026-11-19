@@ -69,10 +69,10 @@ describe('kortet Det du har skrivit', () => {
 });
 
 describe('avgränsning', () => {
-	it('behåller de befintliga AI-funktionerna och statistiken', () => {
+	it('behåller lättare dagar, teman och statistiken men inte de gamla AI-korten', () => {
 		expect(insightsPanel).toContain('<LighterDaysCard');
 		expect(insightsPanel).toContain('<RecurringThemesCard');
-		expect(route).toContain('<PersonalRetrospect period={selectedPeriod} />');
+		expect(route).not.toContain('PersonalRetrospect');
 		expect(route).toContain('id="progress-panel-mood"');
 	});
 });

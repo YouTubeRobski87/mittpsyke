@@ -54,20 +54,3 @@ export type LighterDaysView = {
 	/** Hur urvalet är gjort, i klartext. */
 	basis: string;
 };
-
-export type SummarySource = {
-	/** Utdragets lokala nummer i temats tillåtna urval, 1-baserat. */
-	ref: number;
-	entryId: string | null;
-	date: string;
-	dateLabel: string;
-	evidenceIndex: number;
-	excerpt: string;
-};
-
-export type SummaryResponse = {
-	question: string | null;
-	sourceRef?: number;
-	questionOrigin?: 'ai' | 'mittpsyke';
-	reason: 'no-sources' | 'insufficient-data' | 'ai-consent' | 'withheld' | 'invalid-response' | null;
-};
