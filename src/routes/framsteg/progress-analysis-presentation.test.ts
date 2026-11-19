@@ -232,40 +232,13 @@ describe('periodens tydligaste insikt', () => {
 	});
 });
 
-// Underlagskortet låg tidigare som "Din historik" och redovisade antal inlägg,
-// aktiva dagar och en längsta sammanhängande följd. Det gjorde appanvändning
-// till sidans avslutande budskap. Kortet ska i stället säga vad observationerna
-// vilar på - och inte räkna upp nollor för den som ännu inte sparat något.
-const historyBlock = route.slice(
-	route.indexOf('<section class="card garden-presence-card"'),
-	route.indexOf('<FramstegComprehensionCard')
-);
-
+// Underlagskortet "Vad det här bygger på" räknade upp registreringar, inlägg,
+// dagar och veckor. Robban 2026-11-19: "För mycket statistik", så kortet är borta.
 describe('underlagskortet', () => {
-	it('ramar in talen som underlag i stället för historik', () => {
-		expect(historyBlock).toContain('Vad det här bygger på');
-		expect(historyBlock).not.toContain('Din historik');
-	});
-
-	it('redovisar ingen sammanhängande följd', () => {
-		expect(historyBlock).not.toContain('longestActiveStreak');
-		expect(historyBlock).not.toMatch(/sammanh[äa]ngande/i);
-	});
-
-	it('säger uttryckligen att saknad registrering inte är sämre mående', () => {
-		expect(historyBlock).toContain(
-			'Dagar utan registrering räknas som att det saknas data — inte som sämre mående.'
-		);
-	});
-
-	it('räknar inte upp nollor innan något sparats', () => {
-		expect(historyBlock).toContain('{#if hasHistoryMaterial}');
-		expect(route).toContain(
-			'const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);'
-		);
-		const emptyBranch = historyBlock.slice(historyBlock.indexOf('{:else}'));
-		expect(emptyBranch).toContain('Här samlas underlaget som återblicken vilar på.');
-		expect(emptyBranch).not.toMatch(/\{moodSamples\.length\}|\{entryCount\}/);
+	it('finns inte längre under Min utveckling', () => {
+		expect(route).not.toContain('garden-presence-card');
+		expect(route).not.toContain('Vad det här bygger på');
+		expect(route).not.toContain('historyActivity');
 	});
 });
 
@@ -293,9 +266,12 @@ describe('veckoöverblicken', () => {
 		expect(weekBlock).toContain('{weekSummary.summary}');
 	});
 
+	it('visas inte alls när underlaget är för litet', () => {
+		expect(route).toContain('{#if !emptyProgress && !weekSummary.insufficient}');
+	});
+
 	it('visar jämförelsen bara när modulen lämnat en', () => {
 		expect(weekBlock).toContain('{#if weekSummary.comparisonText}');
-		expect(weekBlock).toContain('{:else if !weekSummary.insufficient}');
 		expect(weekBlock).toContain('Veckan innan har för få registreringar för en jämförelse.');
 	});
 
@@ -312,5 +288,14 @@ describe('veckoöverblicken', () => {
 
 	it('är inte beroende av periodvalet', () => {
 		expect(weekBlock).not.toContain('selectedPeriod');
+	});
+});
+
+describe('Kanske värt att prova', () => {
+	it('visar förslaget utan sifferrad', () => {
+		const support = route.slice(route.indexOf('<ul class="support-suggestions">'), route.indexOf('</ul>', route.indexOf('<ul class="support-suggestions">')));
+		expect(support).toContain('<strong>{suggestion.title}</strong>');
+		expect(support).toContain('<span>{suggestion.body}</span>');
+		expect(support).not.toContain('{suggestion.evidence}');
 	});
 });

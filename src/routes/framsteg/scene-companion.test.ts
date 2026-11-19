@@ -130,14 +130,6 @@ describe('Framstegs scen och följeslagare', () => {
 		expect(world).not.toContain('moodEntryCount');
 		expect(world).not.toContain('loadedMoodSamples');
 	});
-	it('räknar aktiva dagar i "Vad det här bygger på" på samma dagboksdagar som världen', () => {
-		expect(route).toContain('const heatmapData = $derived(');
-		const source = route.slice(route.indexOf('const heatmapData = $derived('), route.indexOf('const historyActivity ='));
-		expect(source).toContain('data.diaryActivityDays');
-		expect(source).not.toContain('loadedHeatmapData');
-		expect(route).toContain('buildHistoryActivity(heatmapData, moodSamples, selectedPeriod)');
-	});
-
 	it('mäter om scenen när den ändrar storlek, även när den renderas efter laddningen', () => {
 		// Scenrutan finns inte i onMount för inloggade (den ligger bakom
 		// laddningsläget). Observern måste därför kopplas i en effekt som följer
