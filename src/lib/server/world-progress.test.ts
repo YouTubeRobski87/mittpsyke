@@ -205,6 +205,8 @@ describe('syncWorldProgress - migrations-cutoff', () => {
 		// Exakt de spår scenario D ger utan humördubbelräkningen, i renderingsordning.
 		expect(state.marks).toEqual([
 			'still-birds',
+			'shore-reeds',
+			'bank-flowers',
 			'lantern',
 			'resting-seat',
 			'first-bloom',

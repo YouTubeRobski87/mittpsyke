@@ -141,6 +141,44 @@ describe('världen är kumulativ', () => {
 			expect(stored.stage).toBeGreaterThanOrEqual(beforeStage);
 		}
 	});
+
+	it('låter stranddetaljerna växa stegvis och behåller dem efter omladdning', () => {
+		let stored: WorldProgressState | null = null;
+		const shoreline = ['shore-reeds', 'bank-flowers', 'jetty', 'rowboat', 'woodpile'];
+		for (const [count, days, expectedMarks] of [
+			[0, 0, 0],
+			[10, 10, 1],
+			[30, 30, 2],
+			[100, 100, 3],
+			[300, 183, 5]
+		]) {
+			const presence = buildWorldPresence({
+				entryCount: count,
+				activityDays: consecutiveDays('2027-01-01', days),
+				now: new Date('2027-07-02T12:00:00Z')
+			});
+			const { state } = resolveWorldProgress({ stored, presence });
+			stored = readWorldProgressState({ [WORLD_PROGRESS_METADATA_KEY]: state });
+			for (const timeOfDay of ['day', 'night'] as const) {
+				const visible = getWorldMarks(buildWorldPresence({}), {
+					timeOfDay,
+					narrow: true,
+					unlocked: stored?.marks
+				});
+				expect(visible.filter((mark) => shoreline.includes(mark.id))).toHaveLength(expectedMarks);
+				expect(visible.find((mark) => mark.id === 'shore-path')?.pathPresence).toBe(
+					count ? 3 : undefined
+				);
+			}
+		}
+	});
+
+	it('behåller växtnivån även när flera inlägg gjordes på samma dag', () => {
+		const presence = buildWorldPresence({ entryCount: 6 });
+		expect(getWorldStage(presence)).toBe(1);
+		const { state } = resolveWorldProgress({ stored: null, presence });
+		expect(resolveWorldProgress({ stored: state, presence: buildWorldPresence({}) }).state.stage).toBe(2);
+	});
 });
 
 describe('det sparade tillståndet', () => {

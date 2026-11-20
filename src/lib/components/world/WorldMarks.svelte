@@ -2,9 +2,8 @@
 	// Renderar de små spår som vuxit fram i scenen över tid.
 	//
 	// Lagret ligger medvetet utanför AmbientWorld: den är aria-hidden och har
-	// pointer-events: none, och spåren ska gå att röra vid och läsas upp. Formerna
-	// är rena CSS-gradienter av samma slag som världens övriga lager, så inget nytt
-	// bildmaterial laddas och scenen blir inte tyngre.
+	// pointer-events: none, och spåren ska gå att röra vid och läsas upp.
+	// CSS och små SVG-former gör att inget separat bildmaterial behöver laddas.
 	//
 	// Utan spår renderas ingenting alls, och utan JS-interaktion syns de ändå -
 	// beröringen avslöjar bara en extra rad.
@@ -81,27 +80,27 @@
 				<!-- Platsen tar form: föremål med egen siluett i stället för en
 					 gradient, så att de går att se och känna igen över tid. -->
 				{#if mark.id === 'jetty-posts' || mark.id === 'jetty'}
-					<!-- Bryggan pekar ut från stranden mot betraktaren och blir
-						 bredare närmast, samma perspektiv som målningen. -->
+					<!-- Bryggan börjar på höger strand och löper snett ut i vattnet. -->
 					<svg class="mark-shape" viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true">
 						{#if mark.id === 'jetty'}
-							<path class="mark-reflection" d="M44 31v9M63 42v8M91 35v8" />
-							<path class="jetty-post" d="M44 25v7M63 41v6M91 34v6" />
-							<path class="jetty-deck" d="M8 7 27 4.5 92 33.5 62 41.5Z" />
-							<path class="jetty-planks" d="M21 12.2 34.5 8.4M34 18.6 50 13.8M47 25 66 19.2M58 32 80 25.4" />
+							<path class="mark-reflection" d="M14 26v8M45 26v7M32 37v7M58 36v6" />
+							<path class="jetty-post" d="M14 17v10M45 13v14M32 29v9M58 26v11M50 41v7" />
+							<path class="jetty-edge" d="M10 16 66 47 95 35 95 38 66 50 10 20Z" />
+							<path class="jetty-deck" d="M10 16 36 8 95 35 66 47Z" />
+							<path class="jetty-planks" d="M20 22 47 13M30 28 57 18M41 34 69 24M52 40 81 29" />
 						{:else}
-							<path class="mark-reflection" d="M24 18v7M44 29v8M63 40v8" />
-							<path class="jetty-post" d="M24 10v9M44 21v9" />
-							<path class="jetty-post jetty-post--short" d="M63 34v7" />
-							<path class="jetty-beam" d="M9 7.5 26 11.5" />
+							<path class="mark-reflection" d="M14 26v8M34 35v8M45 25v7" />
+							<path class="jetty-post" d="M14 14v13M34 24v12M45 12v14" />
+							<path class="jetty-post jetty-post--short" d="M58 25v11" />
+							<path class="jetty-beam" d="M14 18 45 15M34 28 58 29" />
 						{/if}
 					</svg>
 				{:else if mark.id === 'rowboat'}
 					<svg class="mark-shape" viewBox="0 0 42 14" preserveAspectRatio="none" aria-hidden="true">
 						<path class="mark-reflection boat-reflection" d="M8 10.5Q21 13 35 10.5" />
-						<path class="boat-hull" d="M1.5 3.6Q21 2.2 40.5 3.6L35 10Q21 11.8 7 10Z" />
-						<path class="boat-rim" d="M3 4.2Q21 3 39 4.2" />
-						<path class="boat-thwart" d="M17 4.4v4.6M26 4.4v4.6" />
+						<path class="boat-hull" d="M1.5 3.6Q20 0 40.5 4.8Q37 8.3 33 10Q19 11.8 7 8.9Q3 6.2 1.5 3.6Z" />
+						<path class="boat-rim" d="M2 3.6Q22 1 40 4.8Q20 7.7 2 3.6Z" />
+						<path class="boat-thwart" d="M15 2.8l1 2.6M26 3l-1 2.9" />
 					</svg>
 				{:else if mark.id === 'woodpile'}
 					<svg class="mark-shape" viewBox="0 0 32 18" preserveAspectRatio="none" aria-hidden="true">
@@ -116,6 +115,18 @@
 						<path class="jetty-post" d="M7 9v24" />
 						<rect class="jetty-light-lamp" x="5" y="5" width="4" height="4.6" rx="1" />
 					</svg>
+				{:else if mark.id === 'shore-reeds'}
+					<svg class="mark-shape" viewBox="0 0 120 62" preserveAspectRatio="none" aria-hidden="true">
+						<path class="reed-leaves" d="M6 56Q8 39 2 33Q12 35 15 52Q13 34 19 21Q19 42 23 57Q27 46 37 41Q34 51 26 58Z M39 57Q43 40 36 31Q46 36 48 54Q49 32 55 29Q53 39 57 54Q64 38 74 34Q66 45 61 57Z M81 53Q82 37 77 29Q86 34 89 52Q90 31 97 25Q93 42 96 52Q104 38 119 36Q108 43 104 52Z" />
+						<path class="reed-stems" d="M16 56Q11 31 12 15M24 57Q22 37 26 26M49 56Q45 27 48 13M58 56Q59 34 63 24M89 52Q86 28 88 14M98 52Q101 28 105 20" />
+						<path class="reed-heads" d="M12 16v-6M26 27l1-5M48 14v-7M64 24l1-5M88 15V9M105 21l2-5" />
+					</svg>
+				{:else if mark.id === 'bank-flowers'}
+					<svg class="mark-shape" viewBox="0 0 128 58" preserveAspectRatio="none" aria-hidden="true">
+						<path class="flower-leaves" d="M12 46Q7 38 2 37Q15 37 20 44Q19 37 24 33Q26 42 22 47Q34 37 43 39Q41 45 31 48Z M68 52Q58 42 51 43Q61 39 75 48Q70 38 76 35Q80 41 80 47Q86 39 96 39Q93 47 87 51Z M95 38Q92 30 86 29Q96 27 103 35Q103 27 108 22Q112 28 109 34Q119 27 125 30Q120 36 114 38Z" />
+						<path class="reed-stems" d="M21 45Q19 35 16 29M28 45Q31 32 35 31M76 48Q71 36 66 34M78 47Q78 27 83 23M86 48Q88 39 94 34M105 36Q103 22 100 19M110 36Q114 27 117 24" />
+						<path class="bank-blossoms" d="M12 27l4-2 4 2-1 4-5 1Z M31 29l5-3 3 3-2 4-5 1Z M62 32l4-2 5 2-2 5-5-1Z M79 22l4-4 4 3-1 5-6 1Z M91 32l4-3 4 2-2 5-5 1Z M96 18l4-3 5 2-1 5-6 1Z M114 23l3-4 4 3-1 4-5 1Z" />
+					</svg>
 				{/if}
 			</button>
 		{/each}
@@ -128,6 +139,11 @@
 
 <style>
 	.world-marks {
+		--reed-leaf: rgb(88 99 48);
+		--reed-stem: rgb(127 139 72);
+		--reed-head: rgb(92 65 43);
+		--bank-leaf: rgb(103 113 50);
+		--bank-flower: rgb(208 178 200);
 		position: absolute;
 		inset: 0;
 		/* Ovanpå de rena bakgrundslagren, men under följeslagaren och scenens
@@ -319,6 +335,11 @@
 		--lamp-glow: rgb(255 214 150 / 0.22);
 	}
 	:global([data-time='evening']) .world-marks {
+		--reed-leaf: rgb(62 70 41);
+		--reed-stem: rgb(110 109 67);
+		--reed-head: rgb(78 56 39);
+		--bank-leaf: rgb(79 83 42);
+		--bank-flower: rgb(171 137 158);
 		--wood-top: rgb(74 64 54);
 		--wood-edge: rgb(38 33 28);
 		--wood-post: rgb(34 29 24);
@@ -330,18 +351,40 @@
 		--lamp-glow: rgb(255 214 150 / 0.4);
 	}
 	:global([data-time='night']) .world-marks {
-		--wood-top: rgb(52 52 56);
+		--reed-leaf: rgb(37 53 49);
+		--reed-stem: rgb(70 83 70);
+		--reed-head: rgb(45 42 39);
+		--bank-leaf: rgb(48 61 53);
+		--bank-flower: rgb(107 112 141);
+		--wood-top: rgb(65 71 80);
 		--wood-edge: rgb(26 26 30);
 		--wood-post: rgb(24 24 28);
 		--wood-beam: rgb(42 42 46);
-		--hull: rgb(36 35 38);
-		--hull-rim: rgb(58 58 62);
+		--hull: rgb(36 40 47);
+		--hull-rim: rgb(87 91 101);
 		--log-end: rgb(70 66 62);
 		--log-stack: rgb(30 28 28);
 		--lamp-glow: rgb(255 214 150 / 0.48);
 	}
 
+	.world-mark-shore-reeds,
+	.world-mark-bank-flowers {
+		--mark-opacity: 0.88;
+	}
+
+	.reed-leaves { fill: var(--reed-leaf); }
+	.flower-leaves { fill: var(--bank-leaf); }
+	.bank-blossoms { fill: var(--bank-flower); }
+	.reed-stems,
+	.reed-heads {
+		fill: none;
+		stroke-linecap: round;
+	}
+	.reed-stems { stroke: var(--reed-stem); stroke-width: 1px; }
+	.reed-heads { stroke: var(--reed-head); stroke-width: 2px; }
+
 	.jetty-deck { fill: var(--wood-top); stroke: var(--wood-edge); stroke-width: 0.8px; }
+	.jetty-edge { fill: var(--wood-edge); }
 	.jetty-planks { fill: none; stroke: var(--wood-edge); stroke-opacity: 0.7; stroke-width: 0.8px; }
 	.jetty-post { fill: none; stroke: var(--wood-post); stroke-width: 2px; stroke-linecap: round; }
 	.jetty-post--short { stroke-width: 1.6px; }
