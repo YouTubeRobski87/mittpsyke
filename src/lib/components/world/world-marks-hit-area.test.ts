@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
-import type { WorldMark } from '$lib/world/worldStage';
+import { EMPTY_WORLD_PRESENCE, getWorldMarks, type WorldMark } from '$lib/world/worldStage';
 import WorldMarks from './WorldMarks.svelte';
 
 // Regressionsskydd för scenmarkeringarnas träffytor i Framsteg.
@@ -127,5 +127,29 @@ describe('scenlayout', () => {
 
 	it('renderar ingenting utan spår', () => {
 		expect(render(WorldMarks, { props: { marks: [] } }).body).not.toContain('world-mark');
+	});
+
+	it('ritar landskapslager från sparade spår även på mobil och under natten', () => {
+		const middle = getWorldMarks(EMPTY_WORLD_PRESENCE, {
+			narrow: true,
+			timeOfDay: 'night',
+			unlocked: ['shore-reeds', 'bank-flowers']
+		});
+		const middleScene = render(WorldMarks, { props: { marks: middle } }).body;
+		expect(middleScene).toContain('data-landscape="path-edge"');
+		expect(middleScene).toContain('path-edge-night.webp');
+		expect(middleScene).toContain('data-landscape="shore-reeds"');
+		expect(middleScene).not.toContain('data-landscape="foreground"');
+
+		const mature = getWorldMarks(EMPTY_WORLD_PRESENCE, {
+			narrow: true,
+			timeOfDay: 'night',
+			unlocked: ['shore-reeds', 'bank-flowers', 'jetty-posts', 'jetty', 'rowboat']
+		});
+		const matureScene = render(WorldMarks, { props: { marks: mature } }).body;
+		expect(matureScene).toContain('data-landscape="foreground"');
+		expect(matureScene).toContain('data-landscape="jetty"');
+		expect(matureScene).toContain('data-landscape="rowboat"');
+		expect(matureScene).not.toContain('data-mark="jetty-posts"');
 	});
 });
