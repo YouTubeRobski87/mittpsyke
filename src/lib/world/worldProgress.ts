@@ -32,6 +32,7 @@ import {
 	type WorldPresence,
 	type WorldStage
 } from '$lib/world/worldStage';
+import { getGardenGrowthPoints, getGrowthLevel } from '$lib/worldScene';
 
 export const WORLD_PROGRESS_METADATA_KEY = 'world_progress';
 export const WORLD_PROGRESS_VERSION = 1;
@@ -167,6 +168,9 @@ export function resolveWorldProgress(input: {
 	const stage = Math.max(
 		stored?.stage ?? 0,
 		getWorldStage(presence),
+		// Även en tät skrivdag kan ge en högre växtnivå än miljöstadiet.
+		// Spara den nivån som golv för att samma växtlighet ska finnas kvar.
+		getGrowthLevel(getGardenGrowthPoints(presence.entryCount, presence.reflectionCount)),
 		legacy ? getWorldStage(legacy) : 0
 	) as WorldStage;
 

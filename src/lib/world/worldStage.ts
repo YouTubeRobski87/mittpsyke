@@ -205,6 +205,8 @@ export type WorldMarkId =
 	| 'night-glow'
 	| 'first-bloom'
 	| 'hearth-stones'
+	| 'shore-reeds'
+	| 'bank-flowers'
 	| 'woodpile'
 	| 'jetty-posts'
 	| 'jetty'
@@ -243,6 +245,8 @@ export interface WorldMark {
 	 * Spårlagret ritar då ingen egen form.
 	 */
 	invisible?: boolean;
+	/** Formen följer en fast punkt i sjöbilden. */
+	anchored?: boolean;
 	/** Endast för stigen: intern visuell styrka, aldrig användarsynlig nivå. */
 	pathPresence?: WorldPathPresence;
 }
@@ -271,11 +275,8 @@ function livedMonths(presence: WorldPresence, months: number): boolean {
  * är korta och konstaterande. De förklarar aldrig villkoret som gjorde att
  * föremålet dök upp — upptäckten är hela poängen.
  *
- * Koordinaterna är kalibrerade mot scenens FAKTISKA beskärning, inte mot
- * källbilden: .companion-media visar bilden med object-fit: cover och
- * object-position: 50% 72%, så bara mittbandet syns. Marken finns därför i tre
- * användbara band — trädlinjen överst, den vänstra strandkanten ovanför scenens
- * text, och den högra banken utanför textblocket.
+ * Grundkoordinaterna följer hela sjöbilden, som visas i samma bildförhållande
+ * på mobil och desktop. Stranddetaljer ligger på vattenlinjen utanför texten.
  */
 const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 	{
@@ -322,8 +323,7 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		appears: (presence) => presence.registrationCount >= 50 || presence.activeMonths >= 4
 	},
 	// ── Platsen tar form ──
-	// Den långsamma serien vid stugans strand. Vegetationen är full efter någon
-	// månad; de här föremålen fortsätter över ett år. Villkoren är aktiva
+	// Den långsamma serien vid sjön fortsätter över ett år. Villkoren är aktiva
 	// månader - någon som skriver en gång i månaden kommer lika långt som den
 	// som skriver varje dag - eller många registreringar för den som skriver tätt.
 	// De ritas som tydliga former, inte som opacitet, så en återkomst efter
@@ -332,33 +332,36 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		id: 'woodpile',
 		label: 'Vedtraven',
 		revealText: 'Staplad för många kvällar.',
-		x: 21.6,
-		y: 39.4,
-		width: 3.2,
-		height: 2.4,
+		x: 12.4,
+		y: 42.3,
+		width: 5,
+		height: 4,
 		depth: 0.5,
+		anchored: true,
 		appears: (presence) => livedMonths(presence, 9) || presence.registrationCount >= 220
 	},
 	{
 		id: 'jetty-posts',
 		label: 'Stolparna',
 		revealText: 'Någon har börjat bygga här.',
-		x: 24.5,
-		y: 45.4,
-		width: 7,
-		height: 6.4,
+		x: 67,
+		y: 44.6,
+		width: 12,
+		height: 10,
 		depth: 0.55,
+		anchored: true,
 		appears: (presence) => livedMonths(presence, 2) || presence.registrationCount >= 40
 	},
 	{
 		id: 'jetty',
 		label: 'Bryggan',
 		revealText: 'Den blev klar en bit i taget.',
-		x: 24.5,
-		y: 45.4,
-		width: 7,
-		height: 6.4,
+		x: 67,
+		y: 44.6,
+		width: 12,
+		height: 10,
 		depth: 0.55,
+		anchored: true,
 		replaces: 'jetty-posts',
 		appears: (presence) => livedMonths(presence, 4) || presence.registrationCount >= 80
 	},
@@ -366,23 +369,50 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		id: 'rowboat',
 		label: 'Ekan',
 		revealText: 'Den ligger förtöjd. Ingen brådska.',
-		x: 29.9,
-		y: 49.7,
-		width: 3.2,
-		height: 1.5,
+		x: 64,
+		y: 44.1,
+		width: 6.4,
+		height: 4.5,
 		depth: 0.58,
+		anchored: true,
 		appears: (presence) => livedMonths(presence, 6) || presence.registrationCount >= 140
 	},
 	{
 		id: 'jetty-light',
 		label: 'Ljuset på bryggan',
 		revealText: 'Någon har hängt upp det för kvällarna.',
-		x: 30.3,
-		y: 46.1,
+		x: 70.15,
+		y: 44.25,
 		width: 1.3,
 		height: 3.4,
 		depth: 0.56,
+		anchored: true,
 		appears: (presence) => livedMonths(presence, 12) || presence.registrationCount >= 320
+	},
+	{
+		id: 'shore-reeds',
+		label: 'Vassen',
+		revealText: 'Vassen har vuxit vid vattenkanten.',
+		x: 61.8,
+		y: 46.6,
+		width: 10.5,
+		height: 7.5,
+		depth: 0.6,
+		anchored: true,
+		appears: (presence) => presence.activeDays >= 7
+	},
+	{
+		id: 'bank-flowers',
+		label: 'Strandblommorna',
+		revealText: 'Mellan stenarna har blommor fått fäste.',
+		x: 82.4,
+		y: 72.8,
+		width: 14,
+		height: 10,
+		depth: 0.85,
+		anchored: true,
+		appears: (presence) =>
+			presence.activeWeeks >= 4 || presence.entryCount + presence.reflectionCount >= 25
 	},
 	{
 		id: 'lantern',
@@ -514,7 +544,9 @@ export function getWorldMarkVariation(
 ): { x: number; y: number; opacityScale: number } {
 	// Ett spår som redan finns i scenen är förankrat i sin egen bild. Att
 	// förskjuta träffytan skulle bara flytta den bort från motivet.
-	if (!visitSeed || mark.invisible) return { x: mark.x, y: mark.y, opacityScale: 1 };
+	if (!visitSeed || mark.invisible || mark.anchored) {
+		return { x: mark.x, y: mark.y, opacityScale: 1 };
+	}
 	const seed = `${visitSeed}:${mark.id}`;
 	return {
 		x: Math.round((mark.x + (hash(`${seed}:x`) - 0.5) * 1.8) * 100) / 100,
@@ -537,6 +569,8 @@ export function getWorldMarks(
 			(mark) => mark.id
 		)
 	);
+	// De beständiga spåren visar också vilka steg stigen redan har passerat.
+	const pathPresence: WorldPathPresence = present.has('shore-reeds') ? 3 : present.has('shore-stone') ? 2 : 1;
 	// Ett tidigare skede ritas inte när det har ersatts av nästa.
 	const replaced = new Set(
 		WORLD_MARK_DEFINITIONS.filter((mark) => mark.replaces && present.has(mark.id)).map(
@@ -551,7 +585,7 @@ export function getWorldMarks(
 	}).map(({ appears: _appears, replaces: _replaces, ...mark }) => {
 		const visibleMark =
 			mark.id === 'shore-path'
-				? { ...mark, pathPresence: getWorldPathPresence(presence) }
+				? { ...mark, pathPresence }
 				: mark;
 		if (!options.narrow) return visibleMark;
 		return {
