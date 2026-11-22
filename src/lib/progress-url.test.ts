@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+	defaultProgressTab,
 	progressHref,
 	progressReturnHref,
 	readProgressPeriod,
@@ -50,6 +51,21 @@ describe('progressHref', () => {
 		expect(progressHref('insights', 30)).toBe('/framsteg?tab=insights');
 		expect(progressHref('place', 90)).toBe('/framsteg?period=90');
 		expect(progressHref('insights', 180)).toBe('/framsteg?tab=insights&period=180');
+	});
+
+	it('utgår från gästens standardflik när den skickas med', () => {
+		const guestDefault = defaultProgressTab(true);
+		expect(progressHref('insights', 30, guestDefault)).toBe('/framsteg');
+		// En gäst som väljer Min plats måste få fliken i adressen, annars skulle
+		// /framsteg öppna exemplet igen vid omladdning eller bakåt.
+		expect(progressHref('place', 30, guestDefault)).toBe('/framsteg?tab=place');
+	});
+});
+
+describe('defaultProgressTab', () => {
+	it('öppnar Mina insikter (exemplet) för gäster och Min plats för inloggade', () => {
+		expect(defaultProgressTab(true)).toBe('insights');
+		expect(defaultProgressTab(false)).toBe('place');
 	});
 });
 

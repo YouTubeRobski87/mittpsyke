@@ -14,6 +14,10 @@ export const PROGRESS_PATH = '/framsteg';
 export const PROGRESS_TAB_PARAM = 'tab';
 export const PROGRESS_PERIOD_PARAM = 'period';
 export const DEFAULT_PROGRESS_TAB: ProgressUrlTab = 'place';
+// En gäst har ingen egen plats eller egna anteckningar än. Det gästen kommer
+// till Återblick för är exemplet på vad återblicken kan visa, och det ligger
+// under Mina insikter. Därför öppnar sidan där för gäster.
+export const GUEST_PROGRESS_TAB: ProgressUrlTab = 'insights';
 export const DEFAULT_PROGRESS_PERIOD: PeriodDays = 30;
 
 const TABS: readonly ProgressUrlTab[] = ['place', 'insights', 'mood', 'development'];
@@ -30,10 +34,23 @@ export function readProgressPeriod(searchParams: URLSearchParams | null | undefi
 	return PERIOD_OPTIONS.find((option) => String(option.value) === value)?.value ?? null;
 }
 
-/** Adressen till Framsteg med vald flik och period. Standardvärden utelämnas. */
-export function progressHref(tab: ProgressUrlTab, period: PeriodDays): string {
+/** Fliken som visas när adressen inte anger någon. */
+export function defaultProgressTab(isAnonymous: boolean): ProgressUrlTab {
+	return isAnonymous ? GUEST_PROGRESS_TAB : DEFAULT_PROGRESS_TAB;
+}
+
+/**
+ * Adressen till Framsteg med vald flik och period. Standardvärden utelämnas.
+ * defaultTab är fliken som gäller utan ?tab för den som tittar, så att en gäst
+ * som väljer Min plats får ?tab=place i adressen och stannar där.
+ */
+export function progressHref(
+	tab: ProgressUrlTab,
+	period: PeriodDays,
+	defaultTab: ProgressUrlTab = DEFAULT_PROGRESS_TAB
+): string {
 	const params = new URLSearchParams();
-	if (tab !== DEFAULT_PROGRESS_TAB) params.set(PROGRESS_TAB_PARAM, tab);
+	if (tab !== defaultTab) params.set(PROGRESS_TAB_PARAM, tab);
 	if (period !== DEFAULT_PROGRESS_PERIOD) params.set(PROGRESS_PERIOD_PARAM, String(period));
 	const query = params.toString();
 	return query ? `${PROGRESS_PATH}?${query}` : PROGRESS_PATH;

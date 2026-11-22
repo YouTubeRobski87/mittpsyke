@@ -134,7 +134,7 @@
 	import { stockholmTodayKey } from '$lib/stockholm-date';
 	import {
 		DEFAULT_PROGRESS_PERIOD,
-		DEFAULT_PROGRESS_TAB,
+		defaultProgressTab,
 		progressHref,
 		readProgressPeriod,
 		readProgressTab
@@ -501,9 +501,11 @@
 	let moodTimelineLoading = $state(false);
 	let selectedTab = $state<ProgressTab | null>(null);
 	// Flik och period läses ur adressen (?tab=, ?period=) så att valet finns kvar
-	// när användaren går till en anteckning och tillbaka. Utan flik visas Min plats.
+	// när användaren går till en anteckning och tillbaka. Utan flik visas Min plats,
+	// eller Mina insikter för en gäst (där exemplet ligger).
 	const linkedTab = $derived(readProgressTab(page.url.searchParams));
-	const activeTab: ProgressTab = $derived(selectedTab ?? linkedTab ?? DEFAULT_PROGRESS_TAB);
+	const fallbackTab = $derived(defaultProgressTab(Boolean(data.isAnonymous)));
+	const activeTab: ProgressTab = $derived(selectedTab ?? linkedTab ?? fallbackTab);
 	// untrack: bara startvärdet. Senare navigeringar synkas i afterNavigate nedan.
 	let selectedPeriod = $state<PeriodDays>(
 		untrack(() => readProgressPeriod(page.url.searchParams) ?? DEFAULT_PROGRESS_PERIOD)
@@ -523,7 +525,7 @@
 	 * körs därför inte om.
 	 */
 	function syncProgressUrl() {
-		const href = progressHref(activeTab, selectedPeriod);
+		const href = progressHref(activeTab, selectedPeriod, fallbackTab);
 		if (href === page.url.pathname + page.url.search) return;
 		void goto(href, { replaceState: true, noScroll: true, keepFocus: true });
 	}
