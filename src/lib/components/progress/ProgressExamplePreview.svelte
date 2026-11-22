@@ -287,10 +287,10 @@
 		overflow-wrap: break-word;
 	}
 
+	/* Får bryta rad mellan dagarna, så att inget klipps vid förstorad text. */
 	.example-sources {
 		color: var(--ex-muted);
 		font-size: 0.88rem;
-		white-space: nowrap;
 	}
 
 	.example-question {
