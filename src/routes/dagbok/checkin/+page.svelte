@@ -1674,10 +1674,11 @@
 							</svg>
 						</div>
 						<div class="progress-handoff-copy">
-							<h2 id="progress-handoff-title">Ditt mående över tid</h2>
-							<p>Se registrerat mående, återkommande teman och förändringar i Framsteg.</p>
+							<h2 id="progress-handoff-title">Det du har skrivit</h2>
+							<p>Läs en sammanhängande text om dina anteckningar och se vad som återkommer, i Framsteg.</p>
 						</div>
-						<a class="auth-button progress-handoff-action" href="/framsteg">Öppna Framsteg</a>
+						<!-- Leder direkt till texten under Mina insikter, inte till Min plats. -->
+						<a class="auth-button progress-handoff-action" href="/framsteg?tab=insights">Öppna Framsteg</a>
 					</section>
 
 					<section class="auth-panel daily-question-panel" aria-label="En fråga att skriva utifrån">

@@ -9,6 +9,8 @@
 		TrendingUp
 	} from 'lucide-svelte';
 	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
+	import { MIN_PERIOD_SUMMARY_ENTRIES } from '$lib/progress-period-summary';
+	import { progressHref, DEFAULT_PROGRESS_PERIOD } from '$lib/progress-url';
 
 	let {
 		overview
@@ -24,10 +26,16 @@
 		overview.displayName ? `Välkommen tillbaka, ${overview.displayName}` : 'Välkommen tillbaka'
 	);
 	const primaryLabel = $derived(hasEntries ? 'Skriv en stund' : 'Skriv din första rad');
+	// Vägen tillbaka till "Det du har skrivit" i Framsteg. Raden räknar inte
+	// och kräver inget: den säger vad som finns, eller vad som blir möjligt.
+	// Gränsen är densamma som för texten i Framsteg, som själv säger till om
+	// underlaget ändå inte räcker (t.ex. anteckningar utan text).
+	const writtenHref = progressHref('insights', DEFAULT_PROGRESS_PERIOD);
+	const canReadWritten = $derived(overview.entryCount >= MIN_PERIOD_SUMMARY_ENTRIES);
 	const signal = $derived(
-		overview.entryCount === 1
-			? 'Din första sparade text finns kvar. Med fler stunder kan förändringar börja bli lättare att se.'
-			: `${overview.entryCount} sparade texter finns samlade när du vill se tillbaka över tid.`
+		hasEntries
+			? 'Det du sparar finns kvar. Efter några anteckningar till kan du i Framsteg läsa en text om det du har skrivit.'
+			: 'När du har sparat några anteckningar kan du i Framsteg läsa en text om det du har skrivit. Det finns inget att hålla igång.'
 	);
 </script>
 
@@ -56,12 +64,17 @@
 			</aside>
 		</section>
 
-		{#if hasEntries}
-			<p class="personal-signal">
-				<Sparkles size={16} aria-hidden="true" />
-				{signal}
-			</p>
-		{/if}
+		<p class="personal-signal">
+			<Sparkles size={16} aria-hidden="true" />
+			{#if canReadWritten}
+				<span>
+					Dina anteckningar finns samlade.
+					<a class="signal-link" href={writtenHref}>Läs det du har skrivit</a>
+				</span>
+			{:else}
+				<span>{signal}</span>
+			{/if}
+		</p>
 
 		<section class="places" aria-labelledby="places-title">
 			<div class="section-heading">
@@ -228,7 +241,7 @@
 
 	.personal-signal {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 0.5rem;
 		margin: 1.1rem 0 0;
 		padding-left: 0.2rem;
@@ -236,7 +249,22 @@
 		color: var(--color-dashboard-text-muted);
 	}
 
+	.signal-link {
+		color: var(--color-dashboard-text);
+		font-weight: 650;
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.signal-link:focus-visible {
+		outline: 3px solid rgba(var(--primary-rgb), 0.34);
+		outline-offset: 2px;
+		border-radius: 0.25rem;
+	}
+
 	.personal-signal :global(svg) {
+		flex: 0 0 auto;
+		margin-top: 0.2em;
 		color: var(--color-primary);
 	}
 
