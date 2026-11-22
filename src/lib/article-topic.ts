@@ -9,6 +9,7 @@ export type ArticleTopic =
 	| 'dagbok'
 	| 'tankar'
 	| 'stress'
+	| 'kvall'
 	| 'oro'
 	| 'sorg'
 	| 'relation'
@@ -28,7 +29,13 @@ const TOPIC_BY_SLUG: Record<string, ArticleTopic> = {
 	'overtanker-allt': 'tankar',
 	hogkanslig: 'stress',
 	'depression-angest': 'depression',
-	'5-tecken-pa-mental-overbelastning': 'stress'
+	'5-tecken-pa-mental-overbelastning': 'stress',
+	// Kväll och sömn: oron inför natten, inte panik mitt i natten. "Vaknar med
+	// panik på natten" och "Hjärtklappning på kvällen" behåller grounding och
+	// body scan, som passar när kroppen redan har gått upp i varv.
+	'angest-nar-man-ska-lagga-sig': 'kvall',
+	'radd-for-att-somna': 'kvall',
+	'adhd-somn-dygnsrytm-mittpsyke': 'kvall'
 };
 
 // Första träffen vinner, så de smalaste ämnena står först.
