@@ -8,6 +8,8 @@ import { findForbiddenProgressPhrase } from '$lib/progress-language';
 import {
 	EXAMPLE_PREVIEW_HEADING,
 	LIGHTER_DAYS_EXAMPLE,
+	PROSE_EXAMPLE,
+	PROSE_EXAMPLE_LABEL,
 	RECURRING_THEME_EXAMPLE,
 	RECURRING_THEME_EXAMPLE_COUNT,
 	RECURRING_THEME_EXAMPLE_OBSERVATION
@@ -36,7 +38,8 @@ describe('exemplet är omisskännligt ett exempel', () => {
 			if (name === 'Framsteg') expect(visible).toContain('inte dina och kommer inte från någon riktig person');
 			if (name === 'Framsteg') expect(visible).toContain('Exempel · Det som återkommer');
 			// Varje citat är märkt och varje dag heter "Exempeldag".
-			for (const quote of RECURRING_THEME_EXAMPLE.quotes) {
+			const quotes = name === 'startsidan' ? PROSE_EXAMPLE.quotes : RECURRING_THEME_EXAMPLE.quotes;
+			for (const quote of quotes) {
 				expect(visible).toContain(`Exempeltext: ${quote.text}`);
 			}
 			expect(visible).not.toMatch(REAL_DATE);
@@ -56,8 +59,37 @@ describe('exemplet är omisskännligt ett exempel', () => {
 
 	it('följer sidans rubrikhierarki', () => {
 		expect(home).toMatch(/<h2[^>]*id="example-preview-heading-home"[^>]*>\s*Så här kan det se ut efter en månad/);
-		expect(text(home)).toContain('Sömn återkom i 6 av 14 anteckningar under en månad.');
+
 		expect(progress).toMatch(/<h2[^>]*id="example-preview-heading-progress"/);
+	});
+});
+
+describe('startsidans exempel är en återblick i ord', () => {
+	const visible = text(home);
+
+	it('visar löptexten med exempeldagar som underlag, som i Det du har skrivit', () => {
+		expect(visible).toContain(`Exempel · ${PROSE_EXAMPLE_LABEL}`);
+		for (const sentence of PROSE_EXAMPLE.sentences) {
+			expect(visible).toContain(sentence.text);
+			expect(visible).toContain(`(${sentence.days.join(', ')})`);
+			// Varje hänvisad dag finns med bland exempelanteckningarna.
+			for (const day of sentence.days) {
+				expect(PROSE_EXAMPLE.quotes.some((quote) => quote.day === day)).toBe(true);
+			}
+		}
+		expect(visible).toContain(PROSE_EXAMPLE.question);
+	});
+
+	it('visar inga siffror eller andelar, bara ord', () => {
+		const prose = [...PROSE_EXAMPLE.sentences.map((sentence) => sentence.text), PROSE_EXAMPLE.question].join(' ');
+		expect(prose).not.toMatch(/\d/);
+		expect(visible).not.toMatch(/\d+ av \d+|%|humör \d/);
+	});
+
+	it('säger hur den riktiga texten skapas och att inget skickas utan godkännande', () => {
+		expect(visible).toContain('skulle skickas till OpenAI');
+		expect(visible).toContain('inget skickas förrän du har godkänt dem');
+		expect(visible).toContain('kommer inte från någon riktig person');
 	});
 });
 

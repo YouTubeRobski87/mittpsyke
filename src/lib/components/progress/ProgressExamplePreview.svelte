@@ -11,6 +11,8 @@
 	import {
 		EXAMPLE_PREVIEW_HEADING,
 		LIGHTER_DAYS_EXAMPLE,
+		PROSE_EXAMPLE,
+		PROSE_EXAMPLE_LABEL,
 		RECURRING_THEME_EXAMPLE,
 		RECURRING_THEME_EXAMPLE_COUNT,
 		RECURRING_THEME_EXAMPLE_OBSERVATION
@@ -22,7 +24,7 @@
 	}: {
 		/** 2 för en fristående sektion, 3 under en befintlig rubrik. */
 		headingLevel?: 2 | 3;
-		/** 'home' visar ett kort sömnexempel och 'progress' visar hela exemplet. */
+		/** 'home' visar en kort återblick i ord och 'progress' visar hela exemplet. */
 		context?: 'home' | 'progress';
 	} = $props();
 
@@ -44,17 +46,30 @@
 	</svelte:element>
 	{#if context === 'home'}
 		<p class="example-disclaimer">
-			Påhittat exempel. {RECURRING_THEME_EXAMPLE.label} återkom i {RECURRING_THEME_EXAMPLE.count} av
-			{RECURRING_THEME_EXAMPLE.total} anteckningar under en månad.
+			Påhittat exempel. Texten och anteckningarna nedan kommer inte från någon riktig person.
 		</p>
-		<ul class="example-evidence" aria-label="Exempelmeningar om sömn">
-			{#each RECURRING_THEME_EXAMPLE.quotes as quote (quote.day)}
-				<li><blockquote>Exempeltext: {quote.text}</blockquote></li>
+		<div class="example-card example-prose">
+			<p class="example-card-label">Exempel · {PROSE_EXAMPLE_LABEL}</p>
+			{#each PROSE_EXAMPLE.sentences as sentence (sentence.text)}
+				<p class="example-prose-text">
+					{sentence.text}
+					<span class="example-sources">({sentence.days.join(', ')})</span>
+				</p>
 			{/each}
-		</ul>
+			<p class="example-question">{PROSE_EXAMPLE.question}</p>
+			<ul class="example-evidence" aria-label="Exempelanteckningar som texten bygger på">
+				{#each PROSE_EXAMPLE.quotes as quote (quote.day)}
+					<li>
+						<strong>{quote.day}</strong>
+						<blockquote>Exempeltext: {quote.text}</blockquote>
+					</li>
+				{/each}
+			</ul>
+		</div>
 		<p class="example-footnote">
-			I <a href="/framsteg">Återblick</a> kan du se teman som återkommer i dina egna ord.
-			Din egen återblick kräver konto och bygger på anteckningar du sparar.
+			I <a href="/framsteg">Återblick</a> kan du be om en sådan text om dina egna sparade anteckningar.
+			Du ser först exakt vilka anteckningar som skulle skickas till OpenAI, och inget skickas förrän du
+			har godkänt dem. Din egen återblick kräver konto och bygger på anteckningar du sparar.
 		</p>
 	{:else}
 		<p class="example-disclaimer">
@@ -260,5 +275,29 @@
 	.example-footnote {
 		margin: 1rem 0 0;
 		font-size: 0.9rem;
+	}
+
+	/* Återblicken i ord: löptext som i Framstegs "Det du har skrivit", med
+	   exempeldagarna i stället för klickbara datum. */
+	.example-prose-text {
+		max-width: 62ch;
+		margin: 0 0 0.6rem;
+		color: var(--ex-fg);
+		line-height: 1.6;
+		overflow-wrap: break-word;
+	}
+
+	/* Får bryta rad mellan dagarna, så att inget klipps vid förstorad text. */
+	.example-sources {
+		color: var(--ex-muted);
+		font-size: 0.88rem;
+	}
+
+	.example-question {
+		max-width: 62ch;
+		margin: 0.85rem 0 0;
+		color: var(--ex-fg);
+		font-style: italic;
+		line-height: 1.55;
 	}
 </style>
