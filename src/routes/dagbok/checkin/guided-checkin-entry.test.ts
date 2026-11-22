@@ -79,8 +79,10 @@ describe('inloggad dagbok: ingång till guidad incheckning', () => {
 		expect(startPanelIndex).toBeLessThan(progressHandoffIndex);
 		expect(source).not.toContain('<DiaryMoodTimeline');
 		expect(source).not.toContain("import DiaryMoodTimeline");
-		expect(source).toContain('Se registrerat mående, återkommande teman och förändringar i Framsteg.');
-		expect(source).toContain('href="/framsteg">Öppna Framsteg</a>');
+		expect(source).toContain('<h2 id="progress-handoff-title">Det du har skrivit</h2>');
+		expect(source).toContain('Läs en sammanhängande text om dina anteckningar och se vad som återkommer, i Framsteg.');
+		expect(source).not.toContain('registrerat mående');
+		expect(source).toContain('href="/framsteg?tab=insights">Öppna Framsteg</a>');
 	});
 
 	// Ordning i panelen: Skriv fritt → Guidad incheckning → inspiration.

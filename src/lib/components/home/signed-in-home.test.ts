@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
 import SignedInHome from './SignedInHome.svelte';
+import { MIN_PERIOD_SUMMARY_ENTRIES } from '$lib/progress-period-summary';
 
 describe('inloggad startsida', () => {
 	it('visar användarens översikt med kärnnyttan före stöd och upplevelselager', () => {
@@ -14,7 +15,8 @@ describe('inloggad startsida', () => {
 		});
 
 		expect(body).toContain('Välkommen tillbaka, Maja');
-		expect(body).toContain('3 sparade texter finns samlade när du vill se tillbaka över tid.');
+		expect(body).toContain('Det du sparar finns kvar. Efter några anteckningar till kan du i Framsteg läsa en text om det du har skrivit.');
+		expect(body).not.toMatch(/\d+ sparade texter/);
 		expect(body).toContain('Chatta');
 		expect(body).toContain('Framsteg');
 		expect(body).toContain('Se vad som återkommer i det du skrivit, över tid.');
@@ -48,5 +50,24 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('href="/dagbok/checkin#skriv-sjalv"');
 		expect(body).not.toContain('sparade texter finns kvar');
 		expect(body).toContain('Se vad som återkommer i det du skrivit, över tid.');
+		// Ny användare: en lugn rad om vad som blir möjligt, utan krav och utan länk dit än.
+		expect(body).toContain('När du har sparat några anteckningar kan du i Framsteg läsa en text om det du har skrivit. Det finns inget att hålla igång.');
+		expect(body).not.toContain('href="/framsteg?tab=insights"');
+	});
+
+	it('leder direkt till Det du har skrivit när det finns nog att skriva om', () => {
+		const render5 = (entryCount: number) =>
+			render(SignedInHome, { props: { overview: { displayName: null, entryCount } } }).body;
+
+		const enough = render5(MIN_PERIOD_SUMMARY_ENTRIES);
+		expect(enough).toContain('Dina anteckningar finns samlade.');
+		expect(enough).toMatch(/<a class="signal-link[^"]*" href="\/framsteg\?tab=insights">Läs det du har skrivit<\/a>/);
+		// Inga siffror i raden, och platskortet leder fortfarande till Framsteg.
+		expect(enough).not.toMatch(/\d+ sparade texter|\d+ anteckningar/);
+		expect(enough).toContain('href="/framsteg"');
+
+		const almost = render5(MIN_PERIOD_SUMMARY_ENTRIES - 1);
+		expect(almost).not.toContain('href="/framsteg?tab=insights"');
+		expect(almost).toContain('Efter några anteckningar till');
 	});
 });
