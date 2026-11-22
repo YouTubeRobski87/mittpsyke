@@ -40,14 +40,15 @@ describe('Framstegs första blick', () => {
 		expect(route).toContain("[data-low-data-hidden='true']");
 	});
 
-	it('öppnar Min plats som standard och läser uttryckliga flikval från länken', () => {
-		// Själva tolkningen av ?tab= och standardvärdet testas i progress-url.test.ts.
+	it('öppnar Min plats som standard, exemplet för gäster, och läser uttryckliga flikval från länken', () => {
+		// Själva tolkningen av ?tab= och standardvärdena testas i progress-url.test.ts.
 		expect(route).toContain('readProgressTab(page.url.searchParams)');
-		expect(route).toContain('selectedTab ?? linkedTab ?? DEFAULT_PROGRESS_TAB');
+		expect(route).toContain('defaultProgressTab(Boolean(data.isAnonymous))');
+		expect(route).toContain('selectedTab ?? linkedTab ?? fallbackTab');
 	});
 
 	it('skriver flik och period till adressen utan nya historikposter', () => {
-		expect(route).toContain('progressHref(activeTab, selectedPeriod)');
+		expect(route).toContain('progressHref(activeTab, selectedPeriod, fallbackTab)');
 		expect(route).toContain('goto(href, { replaceState: true, noScroll: true, keepFocus: true })');
 		expect(route).toContain('<ProgressTabs active={activeTab} onSelect={selectTab} />');
 		expect(route).toContain('readProgressPeriod(page.url.searchParams) ?? DEFAULT_PROGRESS_PERIOD');
