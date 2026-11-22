@@ -109,6 +109,16 @@ const NEXT_STEP_BY_TOPIC: Record<ArticleTopic, ArticleNextStep> = {
 			label: 'Prova 4-7-8 andning'
 		}
 	},
+	kvall: {
+		pillarSlug: 'sovproblem',
+		exerciseHref: '/ovningar/dagens-avslut-reflektion',
+		exerciseLabel: 'Prova: Avslutning av dagen',
+		early: {
+			text: 'Ligger dagen kvar i huvudet när du ska sova? En kort kvällsreflektion kan göra det lättare att lägga den åt sidan.',
+			href: '/ovningar/dagens-avslut-reflektion',
+			label: 'Prova kvällsreflektionen'
+		}
+	},
 	oro: {
 		pillarSlug: 'angest',
 		exerciseHref: '/ovningar/grounding-5-4-3-2-1',

@@ -57,6 +57,23 @@ describe('getArticleNextStep', () => {
 		expect(socialen.pillarSlug).toBeUndefined();
 	});
 
+	it('ger kvälls- och sömnartiklarna ett kvällssteg', () => {
+		for (const [slug, collection] of [
+			['angest-nar-man-ska-lagga-sig', 'oro-och-stress'],
+			['radd-for-att-somna', 'oro-och-stress'],
+			['adhd-somn-dygnsrytm-mittpsyke', 'medicin-och-halsa']
+		]) {
+			expect(getArticleTopic(slug, collection), slug).toBe('kvall');
+			const step = getArticleNextStep(getArticleTopic(slug, collection));
+			expect(step.pillarSlug).toBe('sovproblem');
+			expect(step.exerciseHref).toBe('/ovningar/dagens-avslut-reflektion');
+			expect(step.early.href).toBe('/ovningar/dagens-avslut-reflektion');
+		}
+		// Panik mitt i natten och hjärtklappning behåller sina kroppsnära övningar.
+		expect(getArticleTopic('vaknar-med-panik-pa-natten', 'oro-och-stress')).toBe('oro');
+		expect(getArticleTopic('hjartklappning-pa-kvallen', 'oro-och-stress')).toBe('stress');
+	});
+
 	it('ger inte sorgartikeln rubriken om nedstämdhet', () => {
 		expect(getArticleNextStep(getArticleTopic('vad-sager-man-i-sorg')).pillarSlug).toBeUndefined();
 	});
