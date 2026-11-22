@@ -44,3 +44,32 @@ export const LIGHTER_DAYS_EXAMPLE = {
 		{ day: 'Exempeldag 26', mood: '7,0', text: 'Gick en promenad innan jag skrev det här.' }
 	] satisfies ExampleQuote[]
 } as const;
+
+// Startsidans exempel visar återblicken som den ser ut i dag: en kort,
+// personlig text i löpande ord, utan siffror, där varje mening hänvisar till
+// de anteckningar den bygger på (i Framsteg klickbara datum, här exempeldagar).
+// Samma språkregler som den riktiga texten: den beskriver vad som återkom och
+// vad du själv skrev, aldrig vem du är eller vad som orsakade något.
+
+export type ProseExampleSentence = { text: string; days: string[] };
+
+export const PROSE_EXAMPLE_LABEL = 'Det du har skrivit';
+
+export const PROSE_EXAMPLE = {
+	sentences: [
+		{
+			text: 'Under de senaste veckorna har du återkommit till sömn och återhämtning.',
+			days: ['Exempeldag 6', 'Exempeldag 23']
+		},
+		{
+			text: 'Du beskriver också flera lugna kvällar då det gick lättare att varva ner.',
+			days: ['Exempeldag 11']
+		}
+	] satisfies ProseExampleSentence[],
+	question: 'Vad brukar finnas med under de kvällar som känns lugnare?',
+	quotes: [
+		{ day: 'Exempeldag 6', text: 'Somnade sent igen, tankarna fortsatte gå.' },
+		{ day: 'Exempeldag 11', text: 'Lugn kväll med te och en bok. Kroppen varvade ner tidigare än vanligt.' },
+		{ day: 'Exempeldag 23', text: 'Sov längre i natt och vaknade innan väckarklockan.' }
+	] satisfies ExampleQuote[]
+} as const;
