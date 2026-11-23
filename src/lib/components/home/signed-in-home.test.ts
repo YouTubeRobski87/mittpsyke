@@ -70,4 +70,21 @@ describe('inloggad startsida', () => {
 		expect(almost).not.toContain('href="/framsteg?tab=insights"');
 		expect(almost).toContain('Efter några anteckningar till');
 	});
+
+	it('visar Månadens ord som ett lugnt kort när ett ord är publicerat', () => {
+		const withWord = render(SignedInHome, {
+			props: { overview: { displayName: null, entryCount: 0, monthlyWord: 'Återhämtning' } }
+		}).body;
+		expect(withWord).toContain('href="/manadens-ord"');
+		expect(withWord).toContain('>Månadens ord</strong>');
+		expect(withWord).toContain('Återhämtning. Några rader och en fråga att stanna vid, om du vill.');
+		// Kortet ligger bland de andra platserna, efter Artiklar.
+		expect(withWord.indexOf('href="/blogg"')).toBeLessThan(withWord.indexOf('href="/manadens-ord"'));
+
+		// Inget publicerat ord: inget tomt kort.
+		const without = render(SignedInHome, {
+			props: { overview: { displayName: null, entryCount: 0, monthlyWord: null } }
+		}).body;
+		expect(without).not.toContain('href="/manadens-ord"');
+	});
 });

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { isRedirect } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { load } from './+page.server';
+import { getCurrentMonthlyWord } from '$lib/data/manadens-ord';
 
 type TestUser = { id: string; is_anonymous?: boolean } | null;
 type HomeData = {
@@ -10,6 +11,7 @@ type HomeData = {
 	homeOverview?: {
 		displayName: string | null;
 		entryCount: number;
+		monthlyWord?: string | null;
 	};
 };
 
@@ -52,7 +54,8 @@ describe('Startsidan för inloggade', () => {
 		expect(data.title).toBe('Mitt hem');
 		expect(data.homeOverview).toEqual({
 			displayName: null,
-			entryCount: 3
+			entryCount: 3,
+			monthlyWord: getCurrentMonthlyWord()?.word ?? null
 		});
 	});
 

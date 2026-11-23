@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
+import { getCurrentMonthlyWord } from '$lib/data/manadens-ord';
 import type { PageServerLoad } from './$types';
 
 function cleanName(value: unknown): string | null {
@@ -33,7 +34,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 			homeOverview: {
 				displayName:
 					cleanName(metadata.display_name) ?? cleanName(metadata.full_name) ?? cleanName(metadata.name),
-				entryCount: await loadDiaryEntryCount(locals.supabase, user.id)
+				entryCount: await loadDiaryEntryCount(locals.supabase, user.id),
+				// Bara ordet, valt på servern så att kort och sida visar samma månad.
+				monthlyWord: getCurrentMonthlyWord()?.word ?? null
 			}
 		};
 	}
