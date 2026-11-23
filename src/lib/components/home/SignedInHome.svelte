@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		ArrowRight,
+		Feather,
 		MessageCircle,
 		MoonStar,
 		Newspaper,
@@ -18,6 +19,8 @@
 		overview: {
 			displayName: string | null;
 			entryCount: number;
+			/** Månadens ord, om något är publicerat. */
+			monthlyWord?: string | null;
 		};
 	} = $props();
 
@@ -117,6 +120,14 @@
 							<Newspaper size={19} aria-hidden="true" />
 							<span><strong>Artiklar</strong><small>Ord och perspektiv när du hellre vill läsa.</small></span>
 						</a>
+						<!-- Månadens ord fanns bara i sidfoten. Här blir det ett stilla fjärde
+						     kort: ordet och en fråga att stanna vid, utan krav på att svara. -->
+						{#if overview.monthlyWord}
+							<a href="/manadens-ord">
+								<Feather size={19} aria-hidden="true" />
+								<span><strong>Månadens ord</strong><small>{overview.monthlyWord}. Några rader och en fråga att stanna vid, om du vill.</small></span>
+							</a>
+						{/if}
 					</div>
 				</div>
 			</div>
