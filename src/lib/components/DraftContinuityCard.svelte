@@ -18,7 +18,10 @@
 	<section class="draft-continuity" aria-labelledby="draft-continuity-title">
 		<h2 id="draft-continuity-title">Ditt utkast finns kvar</h2>
 		<p>Fortsätt där du slutade. Du väljer själv när du vill spara texten som ett inlägg.</p>
-		<a class="draft-continuity-action" href="/dagbok/checkin#skriv-sjalv">Fortsätt skriva</a>
+		<!-- Laddas som en ny sida: webbläsaren visar då sin egen laddning medan
+		     dagboken hämtas, och knappen fungerar även i en flik som var öppen
+		     före en uppdatering. Utan det kunde ett tryck se ut att inte göra något. -->
+		<a class="draft-continuity-action" href="/dagbok/checkin#skriv-sjalv" data-sveltekit-reload>Fortsätt skriva</a>
 	</section>
 {/if}
 
