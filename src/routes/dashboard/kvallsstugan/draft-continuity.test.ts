@@ -27,4 +27,14 @@ describe('Utkastkontinuitet i Kvällstugan', () => {
 		expect(flowColumn).toContain('<DraftContinuityCard />');
 		expect(page).not.toMatch(/redirect\(303, ['"]\/dashboard['"]\)/);
 	});
+
+	it('laddar dagboken som en ny sida när man fortsätter skriva', () => {
+		const card = readFileSync(
+			join(process.cwd(), 'src/lib/components/DraftContinuityCard.svelte'),
+			'utf8'
+		);
+		expect(card).toMatch(
+			/<a class="draft-continuity-action" href="\/dagbok\/checkin#skriv-sjalv" data-sveltekit-reload>/
+		);
+	});
 });
