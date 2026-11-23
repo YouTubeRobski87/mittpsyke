@@ -19,9 +19,6 @@ vi.mock('$lib/server/companion-presence', () => ({
 vi.mock('$lib/server/companion-daily-question', () => ({
 	loadCompanionDailyState: async () => null
 }));
-vi.mock('$lib/server/creative-moments', () => ({
-	loadCreativeMomentCount: async () => 0
-}));
 vi.mock('$lib/server/diary-activity-days', () => ({
 	loadDiaryActivityDays: async () => ({})
 }));

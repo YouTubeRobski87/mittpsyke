@@ -109,7 +109,6 @@
 	} from '$lib/progress-reflection';
 	import { buildWeekSummary } from '$lib/progress-week-summary';
 	import { getProgressLowDataCopy } from '$lib/progress-low-data-copy';
-	import { getCreativeMomentCopy } from '$lib/creative-moments';
 	import { buildHalfYearView } from '$lib/progress-half-year';
 	import {
 		EMPTY_SUPPORT_VIEW,
@@ -344,7 +343,6 @@
 		entryCount: number;
 		// 'error' när servern inte kunde läsa antalet inlägg. Saknas = 'ready'.
 		entriesStatus?: LoadStatus;
-		creativeMomentCount?: number;
 		activeDays: number;
 		growthScore: number;
 		growthLevel: number;
@@ -559,8 +557,6 @@
 			entriesRetrying = false;
 		}
 	}
-	const creativeMomentCount = $derived(data.creativeMomentCount ?? 0);
-	const creativeMomentCopy = $derived(getCreativeMomentCopy(creativeMomentCount));
 	const livingWorldReflectionCopy = $derived(
 		getLivingWorldReflectionCopy(isAnonymous ? undefined : entryCount)
 	);
@@ -848,7 +844,7 @@
 	}
 
 	const emptyProgress = $derived(
-		!isAnonymous && entryCount === 0 && (data.eveningPatternRows?.length ?? 0) === 0 && creativeMomentCount === 0
+		!isAnonymous && entryCount === 0 && (data.eveningPatternRows?.length ?? 0) === 0
 	);
 
 	let loading = $derived(progressLoading && !progressLoaded);
@@ -1177,24 +1173,6 @@
 </svelte:head>
 <CompanionPresenceTracker enabled={!data.isAnonymous} />
 
-{#snippet creativeMomentsCard()}
-	<section
-		class="card creative-moments-card"
-		aria-labelledby="creative-moments-heading"
-		data-testid="creative-moments"
-	>
-		<div class="card-header creative-moments-header">
-			<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-			<h2 id="creative-moments-heading">Kreativa stunder</h2>
-		</div>
-		<p class="creative-moments-copy">{creativeMomentCopy}</p>
-		<p class="creative-moments-note">Här räknas bara att stunden ägde rum. Inga motiv eller färger sparas.</p>
-		<a class="creative-moments-link" href="/dashboard/kvallsstugan#evening-activities">
-			Måla i världen i Kvällstugan
-		</a>
-	</section>
-{/snippet}
-
 {#snippet helpfulReminders()}
 	{#if !isAnonymous && data.helpfulReminderAccount}
 		<section class="card reflection-card" aria-labelledby="helpful-reminders-heading">
@@ -1302,6 +1280,101 @@
 							/>
 						</section>
 					{/if}
+					<!-- Förslag och egen lista ligger här, under lättare dagar, inte i Min utveckling. -->
+					{#if !isAnonymous && !emptyProgress && showSupportCard}
+						<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
+							<div class="card-header">
+								<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+								<h2 id="support-heading">Kanske värt att prova</h2>
+							</div>
+							<p class="analysis-intro">{SUPPORT_INTRO_COPY}</p>
+
+							{#if insightsLoading}
+								<p class="reflection-copy">Letar efter något som har täckning i din egen historik.</p>
+							{:else if supportView.learning || supportSuggestions.length === 0}
+								<p class="reflection-copy">{SUPPORT_LEARNING_COPY}</p>
+								<p class="reflection-copy">{SUPPORT_LEARNING_DETAIL}</p>
+							{:else}
+								<ul class="support-suggestions">
+									{#each supportSuggestions as suggestion (suggestion.id)}
+										<li class="support-suggestion">
+											<strong>{suggestion.title}</strong>
+											<span>{suggestion.body}</span>
+											{#if supportResponses[suggestion.id]}
+												<p class="support-receipt" aria-live="polite">
+													{supportResponses[suggestion.id] === 'fits'
+														? 'Noterat som något som kan passa. Det påverkar inte din måendehistorik.'
+														: 'Okej. Det här får vila resten av dagen.'}
+												</p>
+											{:else}
+												<div class="support-actions">
+													<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'fits')}>
+														Det här passar idag
+													</button>
+													<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'not-today')}>
+														Inte idag
+													</button>
+												</div>
+											{/if}
+										</li>
+									{/each}
+								</ul>
+
+								{#if supportView.suggestions.length > supportSuggestions.length}
+									<button type="button" class="support-link" onclick={showAnotherSuggestion}>Visa något annat</button>
+								{/if}
+
+								{#if supportView.breathingRoom.length > 0}
+									<div class="analysis-section">
+										<h3>Teman under dagar med högre registrerat mående</h3>
+										<ul class="support-topics">
+											{#each supportView.breathingRoom as topic}
+												<li>
+													<button
+														type="button"
+														class="support-chip"
+														aria-pressed={supportExamplesOpen && supportSelectedTopic === topic}
+														onclick={() => chooseSupportTopic(topic)}
+													>
+														{topic.toLocaleLowerCase('sv-SE')}
+													</button>
+												</li>
+											{/each}
+										</ul>
+									</div>
+								{/if}
+
+								{#if supportExampleTopics.length > 0}
+									<button
+										type="button"
+										class="support-link"
+										aria-expanded={supportExamplesOpen}
+										onclick={toggleSupportExamples}
+									>
+										{supportExamplesOpen ? 'Dölj tidigare anteckningar' : 'Utforska vad du har skrivit tidigare'}
+									</button>
+									{#if supportExamplesOpen}
+										{#if supportExamples.length > 0}
+											<ul class="evidence-observations support-examples">
+												{#each supportExamples as example (`${example.topicLabel}-${example.date}-${example.summary}`)}
+													<li>
+														<strong>{example.date}</strong>
+														{#if example.quote}
+															<span>”{example.quote}”</span>
+														{/if}
+														<small>{example.summary}</small>
+													</li>
+												{/each}
+											</ul>
+										{:else}
+											<p class="reflection-copy">Det finns inga sparade rader att visa för det temat än.</p>
+										{/if}
+									{/if}
+								{/if}
+							{/if}
+						</section>
+					{/if}
+					{@render helpfulReminders()}
 					{#if showLowDataOverview}
 						<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
 							<div class="card-header">
@@ -1632,9 +1705,15 @@
 					hidden={activeTab !== 'development'}
 				>
 					{#if isAnonymous}
-						<p class="reflection-copy">Här samlas dina påminnelser och sparade stunder när du har ett konto.</p>
+						<p class="reflection-copy">Med ett konto kan du se här hur veckorna och kvällarna förändras över tid.</p>
 					{:else}
-						{@render helpfulReminders()}
+						{#if emptyProgress || showLowDataOverview}
+							<!-- Fliken visar bara förändring över tid. Utan underlag sägs det
+							     lugnt, utan krav på att skriva mer. -->
+							<p class="reflection-copy" data-testid="development-empty">
+								När det finns lite mer att jämföra kan du se här hur veckorna och kvällarna har sett ut. Det finns inget du behöver hinna med.
+							</p>
+						{/if}
 						{#if !emptyProgress && !weekSummary.insufficient}
 							<!-- Med för lite underlag säger kortet bara att det inte räcker,
 							     så då visas det inte alls. -->
@@ -1653,102 +1732,7 @@
 								{/if}
 							</section>
 						{/if}
-						{@render creativeMomentsCard()}
 						{#if !emptyProgress}
-							{#if showSupportCard}
-								<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
-									<div class="card-header">
-										<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-										<h2 id="support-heading">Kanske värt att prova</h2>
-									</div>
-									<p class="analysis-intro">{SUPPORT_INTRO_COPY}</p>
-
-									{#if insightsLoading}
-										<p class="reflection-copy">Letar efter något som har täckning i din egen historik.</p>
-									{:else if supportView.learning || supportSuggestions.length === 0}
-										<p class="reflection-copy">{SUPPORT_LEARNING_COPY}</p>
-										<p class="reflection-copy">{SUPPORT_LEARNING_DETAIL}</p>
-									{:else}
-										<ul class="support-suggestions">
-											{#each supportSuggestions as suggestion (suggestion.id)}
-												<li class="support-suggestion">
-													<strong>{suggestion.title}</strong>
-													<span>{suggestion.body}</span>
-													{#if supportResponses[suggestion.id]}
-														<p class="support-receipt" aria-live="polite">
-															{supportResponses[suggestion.id] === 'fits'
-																? 'Noterat som något som kan passa. Det påverkar inte din måendehistorik.'
-																: 'Okej. Det här får vila resten av dagen.'}
-														</p>
-													{:else}
-														<div class="support-actions">
-															<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'fits')}>
-																Det här passar idag
-															</button>
-															<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'not-today')}>
-																Inte idag
-															</button>
-														</div>
-													{/if}
-												</li>
-											{/each}
-										</ul>
-
-										{#if supportView.suggestions.length > supportSuggestions.length}
-											<button type="button" class="support-link" onclick={showAnotherSuggestion}>Visa något annat</button>
-										{/if}
-
-										{#if supportView.breathingRoom.length > 0}
-											<div class="analysis-section">
-												<h3>Teman under dagar med högre registrerat mående</h3>
-												<ul class="support-topics">
-													{#each supportView.breathingRoom as topic}
-														<li>
-															<button
-																type="button"
-																class="support-chip"
-																aria-pressed={supportExamplesOpen && supportSelectedTopic === topic}
-																onclick={() => chooseSupportTopic(topic)}
-															>
-																{topic.toLocaleLowerCase('sv-SE')}
-															</button>
-														</li>
-													{/each}
-												</ul>
-											</div>
-										{/if}
-
-										{#if supportExampleTopics.length > 0}
-											<button
-												type="button"
-												class="support-link"
-												aria-expanded={supportExamplesOpen}
-												onclick={toggleSupportExamples}
-											>
-												{supportExamplesOpen ? 'Dölj tidigare anteckningar' : 'Utforska vad du har skrivit tidigare'}
-											</button>
-											{#if supportExamplesOpen}
-												{#if supportExamples.length > 0}
-													<ul class="evidence-observations support-examples">
-														{#each supportExamples as example (`${example.topicLabel}-${example.date}-${example.summary}`)}
-															<li>
-																<strong>{example.date}</strong>
-																{#if example.quote}
-																	<span>”{example.quote}”</span>
-																{/if}
-																<small>{example.summary}</small>
-															</li>
-														{/each}
-													</ul>
-												{:else}
-													<p class="reflection-copy">Det finns inga sparade rader att visa för det temat än.</p>
-												{/if}
-											{/if}
-										{/if}
-									{/if}
-								</section>
-							{/if}
-
 							{#if !isAnonymous}
 								<!-- Kvällsincheckningens egen återblick. Strukturen i kvällarna, aldrig
 								     tanken användaren skrev och aldrig ihopvägd med dagbokens humör -
@@ -2967,33 +2951,6 @@
 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%); }
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
 	.card-header h2 { font-size: 1.45rem; margin: 0; color: hsl(var(--foreground)); }
-	.creative-moments-header { margin-bottom: 0.9rem; }
-	.creative-moments-copy {
-		margin: 0;
-		color: hsl(var(--foreground));
-		font-size: 1rem;
-		line-height: 1.65;
-	}
-	.creative-moments-note {
-		margin: 0.55rem 0 0;
-		color: hsl(var(--muted-foreground));
-		font-size: 0.88rem;
-		line-height: 1.55;
-	}
-	.creative-moments-link {
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-		margin-top: 0.55rem;
-		color: var(--theme-accent, #557c68);
-		font-weight: 650;
-		text-underline-offset: 0.18em;
-	}
-	.creative-moments-link:focus-visible {
-		outline: 2px solid var(--theme-accent, #557c68);
-		outline-offset: 3px;
-		border-radius: 0.25rem;
-	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 
 	/* ── Din senaste tid ── */
