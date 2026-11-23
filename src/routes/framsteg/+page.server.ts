@@ -5,7 +5,6 @@ import { getProgressInitialSceneSpot } from '$lib/progressCompanionPlacement';
 import { getProgressSceneBand } from '$lib/progressScene';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
-import { loadCreativeMomentCount } from '$lib/server/creative-moments';
 import { loadDiaryEntryCountResult } from '$lib/server/diary-entry-count';
 import { loadDiaryActivityDays } from '$lib/server/diary-activity-days';
 import { loadEveningPatternRows } from '$lib/server/evening-checkin';
@@ -42,7 +41,6 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 			weeklyEntries: 0,
 			entryCount: 0,
-			creativeMomentCount: 0,
 			activeDays: 0,
 			growthScore: 0,
 			growthLevel: 0,
@@ -58,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 
 	setHeaders({ 'cache-control': 'private, no-store' });
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-	const [entryCountResult, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount, reminders] = await Promise.all([
+	const [entryCountResult, companionDaily, diaryActivityDays, eveningPatternRows, reminders] = await Promise.all([
 		// Status följer med så att sidan kan skilja ett läsfel från noll inlägg.
 		loadDiaryEntryCountResult(locals.supabase, user.id),
 		loadCompanionDailyState(locals.supabase, user.id),
@@ -67,7 +65,6 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		// "Kvällar över tid". Egen dataväg, aldrig sammanblandad med dagbokens
 		// humörvärden, och utan kvällens fritext.
 		loadEveningPatternRows(locals.supabase, user.id),
-		loadCreativeMomentCount(locals.supabase, user.id),
 		loadHelpfulReminders(locals.supabase, user.id).catch(() => null)
 	]);
 
@@ -107,7 +104,6 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 		weeklyEntries: 0,
 		entryCount,
-		creativeMomentCount,
 		activeDays: 0,
 		growthScore: 0,
 		growthLevel: 0,
