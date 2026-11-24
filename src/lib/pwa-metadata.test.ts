@@ -60,6 +60,17 @@ describe('PWA-metadata', () => {
 		expect(appHtml).toContain('<meta name="apple-mobile-web-app-title" content="MittPsyke" />');
 		expect(appHtml).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />');
 		expect(appHtml).toContain('<link rel="icon" type="image/png" href="/logo-192.png" sizes="192x192" />');
+		expect(appHtml).toContain('<link rel="icon" type="image/svg+xml" href="/favicon.svg" />');
+	});
+
+	// Ikonen ska vara ren vektor så att den blir skarp i 16 px. Den gamla filen
+	// bäddade in en PNG, som blev suddig i flikar och sökresultat.
+	it('har en favicon.svg som är ren vektor utan inbäddade bilder', () => {
+		const svg = readFileSync(join(staticRoot, 'favicon.svg'), 'utf8');
+		expect(svg).toContain('viewBox="0 0 64 64"');
+		expect(svg).not.toContain('<image');
+		expect(svg).not.toContain('data:');
+		expect(svg.length).toBeLessThan(2_000);
 	});
 
 	// Webbläsare och sökmotorer frågar efter /favicon.ico oavsett länktaggarna.
