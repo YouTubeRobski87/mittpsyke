@@ -2,23 +2,49 @@ name: Spegelvattnet weekly reflection
 
 on:
   schedule:
-    # Run both possible UTC hours for 06:00 Europe/Stockholm.
-    # The endpoint itself checks Swedish local time, so DST is handled there.
-    - cron: '0 4,5 * * 0'
+    # Flera försök under söndagen. GitHub startar schemalagda jobb ofta flera
+    # timmar sent och tappar ibland körningar, särskilt på hela timmar, därför
+    # minut 17. Servern kör bara söndag 06:00–23:59 Europe/Stockholm och är
+    # idempotent, så extra försök skapar inga dubbletter och inga extra AI-anrop.
+    # 05:17 UTC är 06:17 vintertid och 07:17 sommartid, alltså alltid i fönstret.
+    - cron: '17 5,9,13,17 * * 0'
   workflow_dispatch:
 
 permissions: {}
 
+# Två körningar får aldrig gå samtidigt. En ny väntar på den pågående.
+concurrency:
+  group: spegelvattnet
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Trigger weekly reflections
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           SITE_URL: ${{ vars.MITTPSYKE_SITE_URL || 'https://mittpsyke.se' }}
         run: |
-          curl --fail --show-error --silent \
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET saknas i repots hemligheter."
+            exit 1
+          fi
+          body="$(mktemp)"
+          code=$(curl --silent --show-error --max-time 1500 \
+            --output "$body" --write-out '%{http_code}' \
             --request POST \
             --header "x-cron-secret: $CRON_SECRET" \
-            "$SITE_URL/api/cron/spegelvattnet"
+            "$SITE_URL/api/cron/spegelvattnet") || code=000
+          # Bara status och utfall loggas, aldrig hela svaret.
+          outcome=$(sed -n 's/.*"outcome":"\([a-z_]*\)".*/\1/p' "$body")
+          rm -f "$body"
+          echo "HTTP $code, utfall: ${outcome:-okänt}"
+          case "$code" in
+            200|202) ;;
+            *) exit 1 ;;
+          esac
+          # skipped betyder utanför fönstret (till exempel ett jobb som GitHub
+          # startade efter midnatt). Söndagens tidigare försök har då gjort jobbet,
+          # så det är inget fel. Utfallet syns i loggen ovan.

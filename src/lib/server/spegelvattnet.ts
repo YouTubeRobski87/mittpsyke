@@ -108,9 +108,16 @@ function getStockholmParts(date = new Date()) {
 	};
 }
 
+/**
+ * Schemalagd körning tillåts hela söndagen från 06:00 Europe/Stockholm.
+ * GitHub startar schemalagda jobb ofta flera timmar sent, så ett fönster på en
+ * timme missades varje vecka. Genereringen är idempotent (en spegling per
+ * användare och vecka), så flera körningar samma söndag är ofarliga. Måndag
+ * stoppas, eftersom veckan då räknas som nästa vecka.
+ */
 export function shouldRunSpegelvattnetCron(date = new Date()) {
 	const parts = getStockholmParts(date);
-	return parts.weekday.startsWith('sön') && parts.hour === 6;
+	return parts.weekday.startsWith('sön') && parts.hour >= 6;
 }
 
 export function currentStockholmWeekStart(date = new Date()) {
@@ -319,10 +326,12 @@ async function loadPosts(supabase: SupabaseClient, userId: string, weekStart: st
 		.order('created_at', { ascending: true });
 
 	if (error) {
-		console.error('Spegelvattnet diary load error:', error);
-		return { posts: [], weekEnd };
+		// Bara felkoden loggas. Felobjektet kan innehålla nyckelvärden.
+		console.error('Spegelvattnet diary load error', { code: error.code });
+		return { posts: [], weekEnd, failed: true };
 	}
 	return {
+		failed: false,
 		posts: ((data ?? []) as DiaryPost[]).filter((post) =>
 			isWithinStockholmDateRange(post.created_at, weekStart, weekEnd)
 		),
@@ -348,9 +357,15 @@ export async function generateWeeklyReflection(
 		.eq('user_id', userId)
 		.eq('week_start', weekStart)
 		.maybeSingle();
+	if (existing.error) {
+		console.error('Spegelvattnet existing check error', { code: existing.error.code });
+		return { skipped: true, reason: 'insert_failed' };
+	}
+	// Kontrollen sker före AI-anropet, så en redan genererad vecka kostar inget.
 	if (existing.data) return { skipped: true, reason: 'already_exists' };
 
-	const { posts, weekEnd } = await loadPosts(supabase, userId, weekStart);
+	const { posts, weekEnd, failed } = await loadPosts(supabase, userId, weekStart);
+	if (failed) return { skipped: true, reason: 'insert_failed' };
 	if (posts.length < 2) return { skipped: true, reason: 'too_few_posts' };
 
 	if (posts.some((post) => hasCrisisSignal(post.text))) {
@@ -367,7 +382,7 @@ export async function generateWeeklyReflection(
 				paused_reason: 'acute_signal'
 			}
 		});
-		if (error) console.error('Spegelvattnet paused insert error:', error);
+		if (error) return insertFailure(error, 'paused');
 		return { skipped: false, status: 'paused' };
 	}
 
@@ -401,12 +416,21 @@ export async function generateWeeklyReflection(
 		})
 	});
 
-	if (error) {
-		console.error('Spegelvattnet ready insert error:', error);
-		return { skipped: true, reason: 'insert_failed' };
-	}
+	if (error) return insertFailure(error, 'ready');
 
 	return { skipped: false, status: 'ready' };
+}
+
+/**
+ * En samtidig körning kan hinna spara samma vecka först. Unik-villkoret
+ * (user_id, week_start) stoppar dubbletten, och det räknas som redan
+ * genererad, inte som fel. Bara felkoden loggas: detaljtexten innehåller
+ * nyckelvärden (användar-id).
+ */
+function insertFailure(error: { code?: string }, kind: 'ready' | 'paused') {
+	if (error.code === '23505') return { skipped: true, reason: 'already_exists' };
+	console.error('Spegelvattnet insert error', { kind, code: error.code });
+	return { skipped: true, reason: 'insert_failed' };
 }
 
 export async function generateWeeklyReflectionsForWeek(supabase: SupabaseClient, weekStart: string) {
@@ -418,8 +442,8 @@ export async function generateWeeklyReflectionsForWeek(supabase: SupabaseClient,
 		.lt('created_at', broadUtcEnd(weekEnd));
 
 	if (error) {
-		console.error('Spegelvattnet user discovery error:', error);
-		return { generated: 0, skipped: 0, errors: 1 };
+		console.error('Spegelvattnet user discovery error', { code: error.code });
+		return { ...emptyRunResult(), errors: 1 };
 	}
 
 	const counts = new Map<string, number>();
@@ -429,21 +453,51 @@ export async function generateWeeklyReflectionsForWeek(supabase: SupabaseClient,
 		counts.set(userId, (counts.get(userId) ?? 0) + 1);
 	}
 
-	let generated = 0;
-	let skipped = 0;
-	let errors = 0;
+	const totals = emptyRunResult();
 	for (const [userId, count] of counts) {
 		if (count < 2) {
-			skipped += 1;
+			totals.skipped += 1;
 			continue;
 		}
-		const result = await generateWeeklyReflection(supabase, userId, weekStart);
-		if ('reason' in result && result.reason === 'insert_failed') errors += 1;
-		else if (result.skipped) skipped += 1;
-		else generated += 1;
+		let result: Awaited<ReturnType<typeof generateWeeklyReflection>>;
+		try {
+			result = await generateWeeklyReflection(supabase, userId, weekStart);
+		} catch (error) {
+			// Ett oväntat fel för en användare stoppar inte resten, men räknas som fel.
+			console.error('Spegelvattnet generation error', { name: (error as Error)?.name });
+			totals.errors += 1;
+			continue;
+		}
+		if ('reason' in result && result.reason === 'insert_failed') totals.errors += 1;
+		else if ('reason' in result && result.reason === 'already_exists') totals.alreadyGenerated += 1;
+		else if (result.skipped) totals.skipped += 1;
+		else if ('status' in result && result.status === 'paused') totals.paused += 1;
+		else totals.generated += 1;
 	}
 
-	return { generated, skipped, errors };
+	return totals;
+}
+
+export type SpegelvattnetRunResult = {
+	generated: number;
+	paused: number;
+	alreadyGenerated: number;
+	skipped: number;
+	errors: number;
+};
+
+function emptyRunResult(): SpegelvattnetRunResult {
+	return { generated: 0, paused: 0, alreadyGenerated: 0, skipped: 0, errors: 0 };
+}
+
+export type SpegelvattnetOutcome = 'generated' | 'already_generated' | 'nothing_to_do' | 'failed';
+
+/** Sammanfattar en körning. Fel vinner alltid, så ett misslyckande aldrig ser lyckat ut. */
+export function summarizeSpegelvattnetRun(result: SpegelvattnetRunResult): SpegelvattnetOutcome {
+	if (result.errors > 0) return 'failed';
+	if (result.generated + result.paused > 0) return 'generated';
+	if (result.alreadyGenerated > 0) return 'already_generated';
+	return 'nothing_to_do';
 }
 
 export function isReflectionVisibleByAge(weekStart: string, date = new Date()) {
