@@ -83,7 +83,7 @@ Inga hemligheter hittades i repot. Inga CRITICAL-fynd i applikationen.
 
 - **Var:** `src/routes/api/account/export/+server.ts` rad 33 (`creative_moments` i `EXPORT_TABLES`), felhantering rad 166 och 179–183.
 - **Evidens:** Tabellen `creative_moments` finns inte i produktionsdatabasen (kontrollerat i `pg_class`). Migrationen `supabase/migrations/20261004090000_creative_moments.sql` finns i repot men inte i databasens migrationshistorik. Exporten kör frågorna i ordning, kastar vid första fel (`if (error) throw error`) och returnerar ett generiskt 500-fel. Raden lades till i commit `6b26e8d1` (2026-10-12).
-- **Konsekvens:** Den självbetjänade exporten – användarens sätt att få ut sin data (GDPR art. 15 och 20) – ger ingenting. Felet är tyst för användaren ("Försök igen senare") och syns bara i serverloggen. Samma saknade tabell gör troligen att funktionen kreativa stunder (målning i Kvällsstugan) inte kan spara.
+- **Konsekvens:** Den självbetjänade exporten – användarens sätt att få ut sin data (GDPR art. 15 och 20) – ger ingenting. Felet är tyst för användaren ("Försök igen senare") och syns bara i serverloggen. Samma saknade tabell gör troligen att funktionen kreativa stunder (målning i Kvällstugan) inte kan spara.
 - **Varför testerna inte fångar det:** `export.test.ts` mockar Supabase, och `supabase/tests/rls_cross_user.test.sql` (som nämner tabellen) körs inte mot produktion eller i CI.
 - **Ej verifierat:** Ett faktiskt exportanrop i produktion. Slutsatsen bygger på kod plus schema och är mycket sannolik, men bör bekräftas i Render-loggen (`Data export failed`).
 - **Riktning för fas 2:** Applicera den saknade migrationen efter granskning, och gör exporten tålig så att en saknad tabell inte fäller hela exporten.
@@ -216,7 +216,7 @@ Inga hemligheter hittades i repot. Inga CRITICAL-fynd i applikationen.
 7. **L1** – slå på skydd mot läckta lösenord (1 klick).
 8. **M6** – uppdatera Capacitor, `openai` och `zod`.
 
-Inget av detta kräver omtag av produkten. Gästläge, lokal skrivning, dagbok, Återblick, Mitt Hem, Kvällsstugan, kvällsincheckning och följeslagare påverkas inte av förslagen ovan.
+Inget av detta kräver omtag av produkten. Gästläge, lokal skrivning, dagbok, Återblick, Mitt Hem, Kvällstugan, kvällsincheckning och följeslagare påverkas inte av förslagen ovan.
 
 ---
 
