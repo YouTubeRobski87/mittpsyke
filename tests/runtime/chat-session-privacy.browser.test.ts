@@ -36,12 +36,33 @@ const clientMock = `
 	const readDb = () => JSON.parse(localStorage.getItem(DB_KEY) || '{}');
 	const writeDb = (db) => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
+	// Fördröjningar (ms) styrs från testet via localStorage, så att de gäller
+	// även efter navigering: { history, conversation, session }.
+	const delayFor = (kind) => {
+		if (typeof window === 'undefined') return 0;
+		try { return JSON.parse(localStorage.getItem('__test_delays') || '{}')[kind] || 0; } catch { return 0; }
+	};
+	const wait = (ms) => (ms ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());
+	const CONV_KEY = '__test_db_conversations';
+	const readConversations = () => JSON.parse(localStorage.getItem(CONV_KEY) || '{}');
+
 	function tableQuery(table) {
 		const filters = {};
 		let op = 'select';
 		let payload = null;
-		const run = () => {
-			if (typeof window === 'undefined' || table !== 'chat_history') return { data: op === 'select' ? [] : null, error: null };
+		const run = async () => {
+			if (typeof window === 'undefined') return { data: op === 'select' ? [] : null, error: null };
+			if (table === 'conversations' || table === 'messages') {
+				await wait(delayFor('conversation'));
+				const conversations = readConversations();
+				if (table === 'conversations') {
+					const row = conversations[filters.id];
+					return { data: row && row.user_id === filters.user_id ? { id: filters.id } : null, error: null };
+				}
+				const row = conversations[filters.conversation_id];
+				return { data: row ? row.messages : [], error: null };
+			}
+			if (table !== 'chat_history') return { data: op === 'select' ? [] : null, error: null };
 			const db = readDb();
 			if (op === 'upsert') {
 				db[payload.user_id + ':' + payload.topic] = payload;
@@ -54,7 +75,8 @@ const clientMock = `
 				writeDb(db);
 				return { data: null, error: null };
 			}
-			const row = db[filters.user_id + ':' + filters.topic] || null;
+			await wait(delayFor('history'));
+			const row = readDb()[filters.user_id + ':' + filters.topic] || null;
 			return { data: row, error: null };
 		};
 		const query = {
@@ -64,9 +86,9 @@ const clientMock = `
 			upsert: (row) => { op = 'upsert'; payload = row; return query; },
 			delete: () => { op = 'delete'; return query; },
 			insert: () => query, update: () => query,
-			maybeSingle: async () => run(),
-			single: async () => run(),
-			then: (resolve, reject) => Promise.resolve(run()).then((result) => resolve({ ...result, data: result.data ?? [], count: 0 }), reject)
+			maybeSingle: () => run(),
+			single: () => run(),
+			then: (resolve, reject) => run().then((result) => resolve({ ...result, data: result.data ?? [], count: 0 }), reject)
 		};
 		return query;
 	}
@@ -88,7 +110,12 @@ const clientMock = `
 		return {
 			auth: {
 				getUser: async () => ({ data: { user: current()?.user ?? null }, error: null }),
-				getSession: async () => ({ data: { session: current() }, error: null }),
+				getSession: async () => {
+					// Sessionen läses när anropet görs, och svaret kan dröja
+					const session = current();
+					await wait(delayFor('session'));
+					return { data: { session }, error: null };
+				},
 				onAuthStateChange: (cb) => {
 					listeners.add(cb);
 					queueMicrotask(() => cb('INITIAL_SESSION', current()));
@@ -378,6 +405,127 @@ describe('chattinnehåll efter avslutad session', () => {
 		await tab.evaluate((a) => (window as unknown as { __testAuth: { switchTo(id: string): void } }).__testAuth.switchTo(a), USER_A);
 		await tab.waitForTimeout(400);
 		expect(await bodyText(tab)).toContain(SECRET_A);
+		await context.close();
+	}, 90_000);
+
+	it('kontobyte medan historiken laddas: det förra kontots samtal visas aldrig och sparas inte på det nya kontot', async () => {
+		const context = await newContext(USER_A);
+		const tab = await context.newPage();
+		await tab.goto(base + '/integritet');
+		await tab.evaluate(([a, b, secretA, secretB]) => {
+			localStorage.setItem('__test_db_chat_history', JSON.stringify({
+				[`${a}:allmant`]: { user_id: a, topic: 'allmant', messages: [{ role: 'user', content: secretA }, { role: 'assistant', content: 'Svar till A' }] },
+				[`${b}:allmant`]: { user_id: b, topic: 'allmant', messages: [{ role: 'user', content: secretB }, { role: 'assistant', content: 'Svar till B' }] }
+			}));
+			localStorage.setItem('__test_delays', JSON.stringify({ history: 2500 }));
+		}, [USER_A, USER_B, SECRET_A, SECRET_B]);
+		await tab.goto(base + CHAT);
+		await tab.waitForFunction(() => (window as unknown as { testHydrated?: boolean }).testHydrated === true);
+		// A:s historik är på väg. Kontot byts innan den har kommit fram.
+		await tab.waitForTimeout(300);
+		await tab.evaluate((b) => (window as unknown as { __testAuth: { switchTo(id: string): void } }).__testAuth.switchTo(b), USER_B);
+
+		await expect.poll(() => bodyText(tab), { timeout: 15_000 }).toContain(SECRET_B);
+		await tab.waitForTimeout(3500);
+		expect(await bodyText(tab)).not.toContain(SECRET_A);
+		const db = await tab.evaluate(() => JSON.parse(localStorage.getItem('__test_db_chat_history') || '{}'));
+		expect(JSON.stringify(db[`${USER_B}:allmant`])).not.toContain(SECRET_A);
+		expect(JSON.stringify(db[`${USER_B}:allmant`])).toContain(SECRET_B);
+		expect(await chatKeys(tab)).not.toContain(`chat_history_allmant_${USER_A}`);
+		await context.close();
+	}, 90_000);
+
+	it('samtal från adressen (?id=): kontobyte under laddningen visar inte det förra kontots samtal', async () => {
+		const context = await newContext(USER_A);
+		const tab = await context.newPage();
+		await tab.goto(base + '/integritet');
+		await tab.evaluate(([a, b, secretA, secretB]) => {
+			localStorage.setItem('__test_db_conversations', JSON.stringify({
+				c1: { user_id: a, messages: [{ role: 'user', content: secretA }, { role: 'assistant', content: 'Svar till A' }] }
+			}));
+			localStorage.setItem('__test_db_chat_history', JSON.stringify({
+				[`${b}:allmant`]: { user_id: b, topic: 'allmant', messages: [{ role: 'user', content: secretB }] }
+			}));
+			localStorage.setItem('__test_delays', JSON.stringify({ conversation: 1500 }));
+		}, [USER_A, USER_B, SECRET_A, SECRET_B]);
+		await tab.goto(base + CHAT + '?id=c1');
+		await tab.waitForFunction(() => (window as unknown as { testHydrated?: boolean }).testHydrated === true);
+		await tab.waitForTimeout(300);
+		await tab.evaluate((b) => (window as unknown as { __testAuth: { switchTo(id: string): void } }).__testAuth.switchTo(b), USER_B);
+
+		await tab.waitForTimeout(4000);
+		expect(await bodyText(tab)).not.toContain(SECRET_A);
+		const db = await tab.evaluate(() => JSON.parse(localStorage.getItem('__test_db_chat_history') || '{}'));
+		expect(JSON.stringify(db)).not.toContain(SECRET_A);
+		await context.close();
+	}, 90_000);
+
+	it('samtal från adressen visas för rätt användare (kontroll av att ändringen inte stänger av funktionen)', async () => {
+		const context = await newContext(USER_A);
+		const tab = await context.newPage();
+		await tab.goto(base + '/integritet');
+		await tab.evaluate(([a, secretA]) => {
+			localStorage.setItem('__test_db_conversations', JSON.stringify({
+				c1: { user_id: a, messages: [{ role: 'user', content: secretA }, { role: 'assistant', content: 'Svar till A' }] }
+			}));
+		}, [USER_A, SECRET_A]);
+		await tab.goto(base + CHAT + '?id=c1');
+		await expect.poll(() => bodyText(tab), { timeout: 15_000 }).toContain(SECRET_A);
+		await context.close();
+	}, 90_000);
+
+	it('bakåt-cachen med fördröjd sessionskontroll: det förra kontots samtal syns inte ens en kort stund', async () => {
+		const context = await newContext(USER_A);
+		const tab = await context.newPage();
+		await openChat(tab);
+		await sendMessage(tab, SECRET_A);
+		await expect.poll(() => bodyText(tab)).toContain(`Svar på: ${SECRET_A}`);
+
+		// Vanlig navigering bort. Chatten hamnar i bakåt-cachen med samtalet kvar.
+		await tab.goto(base + '/integritet');
+		await tab.waitForFunction(() => (window as unknown as { testHydrated?: boolean }).testHydrated === true);
+		// Sessionen byts utan att någon händelse når den cachade sidan (en händelse
+		// via BroadcastChannel skulle få webbläsaren att kasta cachen och ladda om).
+		await tab.evaluate((b) => {
+			localStorage.setItem('__test_delays', JSON.stringify({ session: 2000 }));
+			document.cookie = 'test-user=' + b + '; path=/';
+		}, USER_B);
+
+		await tab.goBack({ waitUntil: 'commit' });
+		await tab.waitForFunction(() => location.pathname.startsWith('/chat'));
+		const visibleText = () =>
+			tab.evaluate(() => {
+				const log = document.querySelector('.chat-messages') as HTMLElement | null;
+				return log && getComputedStyle(log).visibility !== 'hidden' ? log.innerText : '';
+			});
+		const samples: string[] = [];
+		for (let i = 0; i < 12; i += 1) {
+			samples.push(await visibleText());
+			await tab.waitForTimeout(250);
+		}
+		const fromBfcache = await tab.evaluate(() => (window as unknown as { __fromBfcache?: boolean }).__fromBfcache);
+		expect(fromBfcache, 'sidan ska komma från bakåt-cachen för att testet ska pröva rätt sak').toBe(true);
+		for (const sample of samples) expect(sample).not.toContain(SECRET_A);
+		await context.close();
+	}, 90_000);
+
+	it('bakåt-cachen med samma användare: samtalet visas igen efter kontrollen', async () => {
+		const context = await newContext(USER_A);
+		const tab = await context.newPage();
+		await openChat(tab);
+		await sendMessage(tab, SECRET_A);
+		await expect.poll(() => bodyText(tab)).toContain(`Svar på: ${SECRET_A}`);
+		await tab.goto(base + '/integritet');
+		await tab.goBack({ waitUntil: 'commit' });
+		await tab.waitForFunction(() => location.pathname.startsWith('/chat'));
+		await expect
+			.poll(() =>
+				tab.evaluate(() => {
+					const log = document.querySelector('.chat-messages') as HTMLElement | null;
+					return log && getComputedStyle(log).visibility !== 'hidden' ? log.innerText : '';
+				})
+			, { timeout: 10_000 })
+			.toContain(SECRET_A);
 		await context.close();
 	}, 90_000);
 });

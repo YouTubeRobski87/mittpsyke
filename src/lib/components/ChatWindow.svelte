@@ -31,7 +31,7 @@
 		sanitizeChatMessages
 	} from '$lib/state/chat-memory';
 	import { supabase } from '$lib/supabase';
-	import { onMount, tick, untrack } from 'svelte';
+	import { flushSync, onMount, tick, untrack } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 	import type { Session } from '@supabase/supabase-js';
 
@@ -47,11 +47,14 @@
 		category,
 		initialMessages = [],
 		initialConversationId = null,
+		initialOwnerUserId = null,
 		initialConsentMissing = false
 	}: {
 		category: string;
 		initialMessages?: ChatMessage[];
 		initialConversationId?: string | null;
+		/** Användaren vars session läste initialMessages. Annan användare: ignoreras. */
+		initialOwnerUserId?: string | null;
 		/** Servern vet redan att samtycke saknas (gäst utan samtyckescookie). */
 		initialConsentMissing?: boolean;
 	} = $props();
@@ -90,6 +93,12 @@
 	// att det aldrig kan återställa en tidigare användares samtal.
 	let privacyEpoch = 0;
 	let inFlightRequest: AbortController | null = null;
+	// Vems samtal som visas. Autosparning sker bara när det är samma användare
+	// som den inloggade, så att ett gammalt samtal aldrig sparas på fel konto.
+	let messagesOwnerUserId: string | null = null;
+	// Döljer samtalet medan sessionen kontrolleras efter att sidan visats igen
+	// från webbläsarens bakåt-cache.
+	let concealed = $state(false);
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
 	let sendWithEnter = $state(true);
@@ -443,6 +452,7 @@
 		// Har kontot loggats ut eller bytts (även i en annan flik) under tiden
 		// ska ingenting skrivas tillbaka till lokal lagring.
 		if (persistenceUserId !== userId) return;
+		if (messagesOwnerUserId !== userId) return;
 
 		const normalized = sanitizeChatMessages(nextMessages);
 
@@ -511,26 +521,41 @@
 			savePromptHidden = {};
 			historyNoticeVisible = false;
 
+			const epoch = privacyEpoch;
 			const seededMessages = sanitizeChatMessages(initialMessages);
+			const seededOwner = initialOwnerUserId;
+			const seededConversationId = initialConversationId;
 			const {
 				data: { session }
 			} = await supabase.auth.getSession();
 
-			if (cancelled) return;
+			if (cancelled || epoch !== privacyEpoch) return;
 
-			persistenceUserId = session?.user.id ?? null;
+			const sessionUserId = session?.user.id ?? null;
+			persistenceUserId = sessionUserId;
 			isAnonymous = !session;
 			if (!session) clearLegacyGuestHistory();
 
-			if (seededMessages.length > 0 || initialConversationId) {
+			// Ett samtal från adressen visas bara för den användare vars session
+			// läste det.
+			const seedBelongsToSession = Boolean(sessionUserId && seededOwner === sessionUserId);
+
+			if (seedBelongsToSession && (seededMessages.length > 0 || seededConversationId)) {
 				messages = seededMessages;
-				conversationId = initialConversationId;
+				messagesOwnerUserId = sessionUserId;
+				conversationId = seededConversationId;
 				historyNoticeVisible = seededMessages.length > 0;
 			} else {
-				const persisted = await loadPersistedHistory(session?.user.id ?? null);
-				if (cancelled) return;
+				const persisted = await loadPersistedHistory(sessionUserId);
+				if (cancelled || epoch !== privacyEpoch || persistenceUserId !== sessionUserId) return;
+				// Sessionen kan ha bytts medan historiken lästes
+				const {
+					data: { session: latest }
+				} = await supabase.auth.getSession();
+				if (cancelled || epoch !== privacyEpoch || (latest?.user.id ?? null) !== sessionUserId) return;
 
 				messages = persisted.messages;
+				messagesOwnerUserId = sessionUserId;
 				conversationId = null;
 				historyNoticeVisible = persisted.loadedFromMemory;
 
@@ -594,13 +619,28 @@
 		// körs om. Kontrollera då sessionen igen innan innehållet får synas.
 		const onPageShow = (event: PageTransitionEvent) => {
 			if (!event.persisted) return;
-			void supabase.auth.getSession().then(({ data }) => {
-				isAnonymous = !data.session;
-				void handleAuthUser(data.session?.user.id ?? null);
-				void syncSensitiveConsent(data.session);
+			concealed = true;
+			void supabase.auth
+				.getSession()
+				.then(async ({ data }) => {
+					isAnonymous = !data.session;
+					await handleAuthUser(data.session?.user.id ?? null);
+					void syncSensitiveConsent(data.session);
+				})
+				.finally(() => {
+					concealed = false;
+				});
+		};
+		// Döljer samtalet innan sidan läggs i bakåt-cachen, så att det inte syns
+		// när sidan visas igen förrän sessionen är kontrollerad.
+		const onPageHide = (event: PageTransitionEvent) => {
+			if (!event.persisted || messages.length === 0) return;
+			flushSync(() => {
+				concealed = true;
 			});
 		};
 		window.addEventListener('pageshow', onPageShow);
+		window.addEventListener('pagehide', onPageHide);
 
 		void supabase.auth.getSession().then(({ data }) => {
 			void syncSensitiveConsent(data.session);
@@ -627,6 +667,7 @@
 			}
 			subscription.unsubscribe();
 			window.removeEventListener('pageshow', onPageShow);
+			window.removeEventListener('pagehide', onPageHide);
 			inFlightRequest?.abort();
 		};
 	});
@@ -802,6 +843,7 @@
 		// annans sparade historik.
 		persistenceReady = false;
 		messages = [];
+		messagesOwnerUserId = null;
 		conversationId = null;
 		input = '';
 		chatError = '';
@@ -830,6 +872,7 @@
 		const persisted = await loadPersistedHistory(nextUserId);
 		if (epoch !== privacyEpoch || persistenceUserId !== nextUserId) return;
 		messages = persisted.messages;
+		messagesOwnerUserId = nextUserId;
 		historyNoticeVisible = persisted.loadedFromMemory;
 		persistenceReady = true;
 	}
@@ -990,6 +1033,7 @@
 	<div
 		bind:this={chatLog}
 		class="chat-messages flex-1 overflow-y-auto px-4 pt-2 pb-3 space-y-2"
+		style:visibility={concealed ? 'hidden' : undefined}
 		aria-live="polite"
 		aria-busy={sending}
 	>
@@ -1238,7 +1282,7 @@
 		</div>
 
 		{#if hasSensitiveDataConsent}
-			<div class="composer-row flex gap-2">
+			<div class="composer-row flex gap-2" style:visibility={concealed ? 'hidden' : undefined}>
 				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
 				<textarea
 					id="chat-message"
