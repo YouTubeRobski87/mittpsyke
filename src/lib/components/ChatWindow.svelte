@@ -85,6 +85,11 @@
 	let voiceInput = $state<VoiceInput>();
 	let autoSendVoice = $state(true);
 	let sendInFlight = false;
+	// Ökas varje gång privat chattinnehåll rensas (utloggning, kontobyte,
+	// avslutad session). Ett AI-svar som kommer tillbaka efter det kastas, så
+	// att det aldrig kan återställa en tidigare användares samtal.
+	let privacyEpoch = 0;
+	let inFlightRequest: AbortController | null = null;
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
 	let sendWithEnter = $state(true);
@@ -581,9 +586,21 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			isAnonymous = !session;
-			persistenceUserId = session?.user.id ?? null;
+			void handleAuthUser(session?.user.id ?? null);
 			void syncSensitiveConsent(session);
 		});
+
+		// Bakåtknappen kan visa sidan från webbläsarens cache utan att något
+		// körs om. Kontrollera då sessionen igen innan innehållet får synas.
+		const onPageShow = (event: PageTransitionEvent) => {
+			if (!event.persisted) return;
+			void supabase.auth.getSession().then(({ data }) => {
+				isAnonymous = !data.session;
+				void handleAuthUser(data.session?.user.id ?? null);
+				void syncSensitiveConsent(data.session);
+			});
+		};
+		window.addEventListener('pageshow', onPageShow);
 
 		void supabase.auth.getSession().then(({ data }) => {
 			void syncSensitiveConsent(data.session);
@@ -609,6 +626,8 @@
 				window.speechSynthesis.removeEventListener('voiceschanged', loadSpeechVoices);
 			}
 			subscription.unsubscribe();
+			window.removeEventListener('pageshow', onPageShow);
+			inFlightRequest?.abort();
 		};
 	});
 
@@ -640,11 +659,15 @@
 		sending = true;
 		stopSpeaking();
 		let userMessageAdded = false;
+		const epoch = privacyEpoch;
+		const controller = new AbortController();
+		inFlightRequest = controller;
 
 		try {
 			const {
 				data: { session }
 			} = await supabase.auth.getSession();
+			if (epoch !== privacyEpoch) return;
 			const contextMessages = sanitizeChatMessages(messages, CHAT_CONTEXT_LIMIT);
 
 			messages.push({ role: 'user', content: text });
@@ -665,7 +688,8 @@
 					category,
 					conversationId: session ? conversationId : null,
 					contextMessages
-				})
+				}),
+				signal: controller.signal
 			});
 
 			const data = (await res.json().catch(() => null)) as
@@ -677,6 +701,9 @@
 						code?: string;
 				  }
 				| null;
+
+			// Sessionen avslutades eller kontot byttes medan svaret väntades in.
+			if (epoch !== privacyEpoch) return;
 
 			if (!res.ok) {
 				if (res.status === 413 || data?.code === 'MESSAGE_TOO_LONG') {
@@ -736,6 +763,8 @@
 				void speakReply(assistantReply, assistantMessageIndex);
 			}
 		} catch (error) {
+			// Avbrutet av utloggning eller kontobyte: inget får återställas.
+			if (epoch !== privacyEpoch) return;
 			const lastMessage = messages[messages.length - 1];
 			if (userMessageAdded && lastMessage?.role === 'user' && lastMessage.content === text) {
 				messages = messages.slice(0, -1);
@@ -748,9 +777,61 @@
 			if (!input.trim()) input = text;
 
 		} finally {
-			sendInFlight = false;
-			sending = false;
+			if (inFlightRequest === controller) inFlightRequest = null;
+			// Efter en rensning har clearPrivateChatState redan återställt läget,
+			// och ett nytt meddelande kan ha skickats.
+			if (epoch === privacyEpoch) {
+				sendInFlight = false;
+				sending = false;
+			}
 		}
+	}
+
+	/**
+	 * Tar bort allt privat chattinnehåll ur vyn och minnet: renderade
+	 * meddelanden, utkast, väntande AI-svar och uppläsning. Lokal lagring
+	 * rensas separat (clearAccountChatHistory i layouten).
+	 */
+	function clearPrivateChatState() {
+		privacyEpoch += 1;
+		inFlightRequest?.abort();
+		inFlightRequest = null;
+		voiceInput?.cancel();
+		stopSpeaking();
+		// Stoppar autosparningen så att den tomma listan inte skrivs över någon
+		// annans sparade historik.
+		persistenceReady = false;
+		messages = [];
+		conversationId = null;
+		input = '';
+		chatError = '';
+		savePromptHidden = {};
+		historyNoticeVisible = false;
+		showAccountNudge = false;
+		sendInFlight = false;
+		sending = false;
+	}
+
+	/**
+	 * Körs när auth-läget ändras, även i andra flikar och när en sida visas
+	 * igen från webbläsarens bakåt-cache. Byts eller försvinner användaren
+	 * rensas samtalet. Ett nytt konto får sin egen historik laddad.
+	 */
+	async function handleAuthUser(nextUserId: string | null) {
+		const previous = persistenceUserId;
+		if (!previous || previous === nextUserId) {
+			persistenceUserId = nextUserId;
+			return;
+		}
+		clearPrivateChatState();
+		persistenceUserId = nextUserId;
+		if (!nextUserId) return;
+		const epoch = privacyEpoch;
+		const persisted = await loadPersistedHistory(nextUserId);
+		if (epoch !== privacyEpoch || persistenceUserId !== nextUserId) return;
+		messages = persisted.messages;
+		historyNoticeVisible = persisted.loadedFromMemory;
+		persistenceReady = true;
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
