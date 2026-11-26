@@ -27,6 +27,60 @@ export function getChatHistoryStorageKey(topic: ChatTopic, userId?: string | nul
 	return userId?.trim() ? `chat_history_${topic}_${userId.trim()}` : `chat_history_${topic}`;
 }
 
+const CHAT_TOPICS: readonly ChatTopic[] = ['angest', 'nedstamdhet', 'stress-oro', 'allmant'];
+
+type StorageLike = Pick<Storage, 'length' | 'key' | 'removeItem'>;
+
+/** Webbläsarens localStorage, eller null om den saknas eller är blockerad. */
+export function getLocalStorageSafely(): StorageLike | null {
+	try {
+		return typeof window === 'undefined' ? null : window.localStorage;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Tar bort inloggade användares chatthistorik (chat_history_<ämne>_<user-id>)
+ * ur webbläsarens lagring. Används vid utloggning, kontobyte, utgången session
+ * och kontoradering, så att nästa person på samma enhet inte kan läsa den.
+ *
+ * keepUserId behåller den nu inloggade användarens egen historik. Nycklar utan
+ * user-id (äldre gästnycklar) och all annan lagring, till exempel gästens
+ * lokala dagbok och tillgänglighetsinställningar, rörs inte.
+ *
+ * Returnerar nycklarna som togs bort.
+ */
+export function clearAccountChatHistory(
+	storage: StorageLike | null | undefined,
+	keepUserId: string | null = null
+): string[] {
+	if (!storage) return [];
+	const keep = keepUserId?.trim() || null;
+	const toRemove: string[] = [];
+
+	try {
+		for (let index = 0; index < storage.length; index += 1) {
+			const key = storage.key(index);
+			if (!key) continue;
+			for (const topic of CHAT_TOPICS) {
+				const prefix = `chat_history_${topic}_`;
+				if (!key.startsWith(prefix)) continue;
+				const owner = key.slice(prefix.length);
+				if (owner && owner !== keep) toRemove.push(key);
+				break;
+			}
+		}
+		// Ta bort efter genomgången, eftersom index flyttas när nycklar försvinner
+		for (const key of toRemove) storage.removeItem(key);
+	} catch {
+		// Blockerad lagring: inget att rensa, och utloggningen får inte stoppas
+		return [];
+	}
+
+	return toRemove;
+}
+
 export function sanitizeChatMessages(input: unknown, limit = CHAT_HISTORY_LIMIT): ChatMessage[] {
 	if (!Array.isArray(input)) return [];
 

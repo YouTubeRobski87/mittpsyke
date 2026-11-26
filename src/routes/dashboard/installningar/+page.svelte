@@ -1,4 +1,5 @@
 ﻿<script lang="ts">
+	import { clearAccountChatHistory, getLocalStorageSafely } from '$lib/state/chat-memory';
 	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
@@ -642,6 +643,9 @@
 		deleteMessageType = 'success';
 		deleteConfirm = '';
 
+		// Kontot finns inte längre, så dess chatthistorik ska inte ligga kvar i
+		// webbläsaren. Gästdagbok och inställningar rörs inte.
+		clearAccountChatHistory(getLocalStorageSafely());
 		await supabase.auth.signOut();
 		setTimeout(() => {
 			window.location.href = '/';
