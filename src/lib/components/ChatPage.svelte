@@ -42,6 +42,8 @@
 
 	let initialMessages = $state<ChatMessage[]>([]);
 	let initialConversationId = $state<string | null>(null);
+	// Användaren vars session läste samtalet. Chatten visar det bara för samma användare.
+	let initialOwnerUserId = $state<string | null>(null);
 
 	$effect(() => {
 		if (!browser || !category) return;
@@ -60,6 +62,7 @@
 			const id = conversationIdFromUrl?.trim() ?? '';
 			initialMessages = [];
 			initialConversationId = null;
+			initialOwnerUserId = null;
 
 			if (!id) return;
 
@@ -105,8 +108,15 @@
 				)
 				.map((row) => ({ role: row.role, content: row.content }));
 
+			// Sessionen kan ha bytts eller avslutats medan samtalet lästes
+			const {
+				data: { session: latest }
+			} = await supabase.auth.getSession();
+			if (!alive || latest?.user.id !== session.user.id) return;
+
 			initialMessages = nextMessages;
 			initialConversationId = id;
+			initialOwnerUserId = session.user.id;
 		}
 
 		void loadHistory();
@@ -155,6 +165,7 @@
 		category={category}
 		initialMessages={initialMessages}
 		initialConversationId={initialConversationId}
+		{initialOwnerUserId}
 		initialConsentMissing={page.data.chatConsentHint === 'missing'}
 	/>
 </div>
