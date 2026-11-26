@@ -19,7 +19,7 @@
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.5.2",
     "@sveltejs/adapter-static": "^3.0.10",
-    "@sveltejs/kit": "^2.70.2",
+    "@sveltejs/kit": "^3.4.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/jsdom": "30.0.0",
