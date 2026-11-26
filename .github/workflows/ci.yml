@@ -32,6 +32,18 @@ jobs:
           path: artifacts/ai-evaluation-report.md
           if-no-files-found: warn
       - run: npm run check
+      # Schemakontroll mot repots SQL-filer. Kräver ingen databas.
+      - name: Schema check (static)
+        run: npm run check:schema
+      # Schemakontroll mot databasen via PostgREST. Använder bara den publika
+      # anon-nyckeln (samma som webbläsaren får) och läser inga rader. Körs när
+      # repovariablerna är satta. Ingen service role-nyckel behövs.
+      - name: Schema check (database, read-only)
+        if: ${{ vars.PUBLIC_SUPABASE_URL != '' && vars.PUBLIC_SUPABASE_ANON_KEY != '' }}
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+        run: node scripts/check-schema.mjs --live
       # Säkerhetstestet för dagbokens HTML-sanering kräver riktig Chromium och
       # körs därför här, inte i produktionsbygget (Render saknar Chrome). Steget
       # blir rött om Chrome saknas, om filtret inte hittar testet eller om en

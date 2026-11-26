@@ -481,10 +481,16 @@ it('låter gästen skriva direkt från startsidan och hitta tillbaka till utkast
 		await until(() => bodyIncludes('Chatta med AI'), 'public home');
 		await click('.hero-actions .cta-primary');
 		await until(() => evaluate(`document.activeElement === document.querySelector('${guestField}')`), 'focused guest field');
+		// Null-säkert: under hydrering kan fokus eller sidhuvudet saknas en kort
+		// stund. Ett undantag i predikatet avbröt tidigare väntan direkt i stället
+		// för att försöka igen, vilket gjorde testet instabilt under last.
 		await until(() => evaluate(`(() => {
-			const rect = document.activeElement.getBoundingClientRect();
-			const header = document.querySelector('.site-header').getBoundingClientRect();
-			return rect.top >= header.bottom && rect.bottom <= visualViewport.height
+			const field = document.activeElement;
+			const header = document.querySelector('.site-header');
+			if (!field || !header || field !== document.querySelector('${guestField}')) return false;
+			const rect = field.getBoundingClientRect();
+			const headerRect = header.getBoundingClientRect();
+			return rect.top >= headerRect.bottom && rect.bottom <= visualViewport.height
 				&& document.documentElement.scrollWidth <= innerWidth;
 		})()`), `visible guest field at ${width}px`);
 		await cdp('Input.insertText', { text: sentence });

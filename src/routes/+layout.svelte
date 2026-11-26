@@ -33,6 +33,7 @@
 	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 	import { canonicalUrl, PUBLIC_SITE_ORIGIN } from '$lib/seo';
 	import { positioningCopy } from '$lib/positioning-copy';
+	import { clearAccountChatHistory, getLocalStorageSafely } from '$lib/state/chat-memory';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -272,6 +273,11 @@
 	}
 
 	async function syncUser(sessionUser: User | null) {
+		// Chatthistorik som ligger kvar lokalt från ett annat konto, eller från en
+		// session som har tagit slut, tas bort. Den inloggades egen historik
+		// behålls. Körs vid start, inloggning, utloggning och kontobyte, och i
+		// andra öppna flikar via Supabase-klientens auth-händelser.
+		clearAccountChatHistory(getLocalStorageSafely(), sessionUser?.id ?? null);
 		user = sessionUser;
 		clientAuthResolved = true;
 		const requestVersion = ++profileRequestVersion;
@@ -397,6 +403,9 @@
 			if (!supabase) throw new Error('Missing auth client');
 			const { error } = await supabase.auth.signOut();
 			if (error) throw error;
+			// Rensas även här, så att det sker innan sidan lämnas oavsett i vilken
+			// ordning auth-händelsen hinner köras.
+			clearAccountChatHistory(getLocalStorageSafely());
 			window.location.href = '/login';
 		} catch {
 			logoutPending = false;
