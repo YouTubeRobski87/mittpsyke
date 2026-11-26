@@ -55,7 +55,7 @@ markdown-artikel, och `src/routes/blogg/blog-index.test.ts` kör den riktiga
 
 ### Key Directories
 
-- `src/routes/api/` — All server endpoints (chat, diary, community, account, retell voice)
+- `src/routes/api/` — All server endpoints (chat, diary, community, account)
 - `src/routes/chat/[category]/` — Chat UI; categories A=anxiety, B=depression, E=trauma
 - `src/routes/dagbok/` — Diary/journaling UI
 - `src/routes/framsteg/` — Progress tracking UI
