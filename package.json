@@ -10,6 +10,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
     "test:unit": "vitest run --exclude \"tests/**/*.browser.test.ts\"",
+    "test:export-db": "bash scripts/test-export-isolation.sh",
     "test:browser": "vitest run --reporter=verbose browser.test",
     "ai:eval": "vitest run tests/ai-evals/eval-suite.test.ts",
     "ai:eval:live": "vitest run --config tests/ai-evals/live-eval.vitest.config.ts"

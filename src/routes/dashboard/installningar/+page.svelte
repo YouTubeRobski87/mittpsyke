@@ -94,7 +94,7 @@
 
 	let exportLoading = $state(false);
 	let exportMessage = $state('');
-	let exportMessageType = $state<'success' | 'error'>('success');
+	let exportMessageType = $state<'success' | 'warning' | 'error'>('success');
 
 	/**
 	 * Hämtar exporten från servern och sparar den som fil. exportLoading spärrar
@@ -123,18 +123,27 @@
 				return;
 			}
 
+			// Servern markerar en export där någon del inte gick att hämta. Den får
+			// aldrig presenteras som fullständig.
+			const complete = response.headers.get('X-Export-Complete') !== 'false';
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = `mittpsyke-data-${new Date().toISOString().slice(0, 10)}.json`;
+			link.download = `mittpsyke-data-${new Date().toISOString().slice(0, 10)}${complete ? '' : '-ofullstandig'}.json`;
 			document.body.appendChild(link);
 			link.click();
 			link.remove();
 			URL.revokeObjectURL(url);
 
-			exportMessageType = 'success';
-			exportMessage = 'Din data har laddats ner.';
+			if (complete) {
+				exportMessageType = 'success';
+				exportMessage = 'Din data har laddats ner.';
+			} else {
+				exportMessageType = 'warning';
+				exportMessage =
+					'Exporten är ofullständig. Vissa delar kunde inte hämtas just nu. Filen innehåller det som gick att hämta, och fältet saknade_delar visar vad som saknas. Försök igen senare eller kontakta oss.';
+			}
 		} catch {
 			exportMessageType = 'error';
 			exportMessage = 'Kunde inte nå servern. Försök igen.';
@@ -1272,6 +1281,14 @@
 
 	.feedback.success {
 		color: hsl(var(--success-foreground));
+	}
+
+	.feedback.warning {
+		color: #92400e;
+	}
+
+	:global(.dark) .feedback.warning {
+		color: #fcd34d;
 	}
 
 	.feedback.error {
