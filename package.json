@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:schema": "node scripts/check-schema.mjs",
     "test": "vitest run",
     "test:unit": "vitest run --exclude \"tests/**/*.browser.test.ts\"",
     "test:browser": "vitest run --reporter=verbose browser.test",
