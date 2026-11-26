@@ -12,10 +12,23 @@
 //       { "tables": { "<tabell>": ["kolumn", ...] } }, till exempel framtaget
 //       med en read-only-fråga mot information_schema.columns.
 //   node scripts/check-schema.mjs --live
-//       Hämtar PostgREST:s OpenAPI-beskrivning med PUBLIC_SUPABASE_URL och
-//       PUBLIC_SUPABASE_ANON_KEY (bara läsning) och jämför mot den.
+//       Jämför mot PostgREST med PUBLIC_SUPABASE_URL och PUBLIC_SUPABASE_ANON_KEY.
+//       Båda värdena är publika (de finns i varje webbläsare som öppnar sajten).
+//       Ingen service role-nyckel används eller behövs.
 //
-// Avslutas med kod 1 om något saknas, så att det kan stoppa en release.
+// Behörighet är inte samma sak som en saknad tabell. PostgREST:s OpenAPI visar
+// bara tabeller som anon-rollen har rättigheter till. En tabell som inte syns
+// där provas därför med en tom fråga (limit=0): PGRST205/404 betyder att
+// tabellen saknas, 42501/401/403 att den finns men att anon inte får läsa den.
+// Bara det första räknas som fel. Allt annat oväntat räknas också som fel,
+// så att kontrollen aldrig blir grön av misstag.
+//
+// Avsiktliga avvikelser står i listorna nedan med motivering. En rad som inte
+// längre behövs (tabellen eller kolumnen finns nu) räknas som fel, så att
+// listorna inte kan dölja nya problem.
+//
+// Avslutas med kod 1 om något saknas eller är inaktuellt, 2 om kontrollen
+// inte kunde köras.
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -34,17 +47,34 @@ export const LEGACY_UNDECLARED_TABLES = new Set([
 	'radar_sources'
 ]);
 
-// Tabeller som koden refererar till men som medvetet saknas tills vidare.
-// Varje rad ska ha en motivering och tas bort när tabellen finns.
+// Tabeller som koden refererar till men som medvetet saknas tills vidare,
+// både i repot och i databasen. Varje rad ska ha en motivering och tas bort
+// när tabellen finns.
 export const KNOWN_MISSING_TABLES = new Map([
-	['reports', 'Gemenskapens rapportfunktion väntar på en egen tabell (separat arbetspaket).']
+	['reports', 'Gemenskapens rapportfunktion väntar på en egen tabell (separat arbetspaket). Koden hanterar att tabellen saknas.']
+]);
+
+// Tabeller som är deklarerade i en migration i repot men som ännu inte har
+// körts i databasen. De ger en varning i stället för fel. Koden som använder
+// dem måste tåla att tabellen saknas.
+export const PENDING_MIGRATION_TABLES = new Map([
+	[
+		'creative_moments',
+		'Migrationen 20261004090000_creative_moments.sql väntar på att migrationsstoppet hävs. Exporten och räknaren tål att tabellen saknas.'
+	]
 ]);
 
 // Kolumner som koden väljer men som saknas i databasen, med motivering.
 // Nyckeln är "tabell.kolumn".
 export const KNOWN_MISSING_COLUMNS = new Map([
-	['journal_entries.tags', 'Reservväg som bara körs om tabellen diary saknas. Död kod i produktion.'],
-	['journal_entries.mood', 'Reservväg som bara körs om tabellen diary saknas. Död kod i produktion.']
+	[
+		'journal_entries.tags',
+		'Inaktuell kolumn. Väljs bara i reservvägen när tabellen diary saknas (src/lib/state/diary.ts, dagbok/checkin), vilket den aldrig gör i produktion.'
+	],
+	[
+		'journal_entries.mood',
+		'Inaktuell kolumn. Väljs bara i reservvägen när tabellen diary saknas (src/lib/state/diary.ts, dagbok/checkin), vilket den aldrig gör i produktion.'
+	]
 ]);
 
 /**
@@ -200,20 +230,130 @@ export function compareColumns(selected, schemaTables, allowMissing = new Map())
 	return missing;
 }
 
-async function loadLiveSchema() {
+/**
+ * @typedef {'missing' | 'no_access' | 'unknown'} AbsentStatus
+ * @typedef {{ kind: string, table: string, column?: string, files: string[], reason?: string }} Finding
+ */
+
+/**
+ * Bedömer schemat. Ren funktion utan nätverk, så att den kan testas.
+ *
+ * @param {object} input
+ * @param {Map<string, Set<string>>} input.codeTables Tabeller som koden använder
+ * @param {Map<string, Map<string, Set<string>>>} input.selectedColumns Kolumner som koden väljer
+ * @param {Map<string, Set<string>>} input.schema Synliga tabeller med kolumner
+ * @param {Map<string, AbsentStatus>} [input.absentStatus] Status för tabeller som inte syns
+ * @returns {{ failures: Finding[], warnings: Finding[], info: Finding[] }}
+ */
+export function evaluateSchema({ codeTables, selectedColumns, schema, absentStatus = new Map() }) {
+	/** @type {Finding[]} */ const failures = [];
+	/** @type {Finding[]} */ const warnings = [];
+	/** @type {Finding[]} */ const info = [];
+	/** @param {string} table */
+	const filesOf = (table) => [...(codeTables.get(table) ?? [])].sort();
+
+	for (const table of [...codeTables.keys()].sort()) {
+		if (schema.has(table)) {
+			if (KNOWN_MISSING_TABLES.has(table) || PENDING_MIGRATION_TABLES.has(table)) {
+				failures.push({ kind: 'inaktuellt_undantag', table, files: filesOf(table), reason: 'Tabellen finns nu. Ta bort raden ur undantagslistan.' });
+			}
+			continue;
+		}
+		const status = absentStatus.get(table) ?? 'missing';
+		if (status === 'no_access') {
+			// Tabellen finns. Anon får inte läsa den, så kolumnerna kan inte kontrolleras.
+			info.push({ kind: 'ingen_anon_atkomst', table, files: filesOf(table) });
+			continue;
+		}
+		if (status === 'unknown') {
+			failures.push({ kind: 'kunde_inte_kontrolleras', table, files: filesOf(table) });
+			continue;
+		}
+		if (KNOWN_MISSING_TABLES.has(table)) {
+			info.push({ kind: 'kand_lucka', table, files: filesOf(table), reason: KNOWN_MISSING_TABLES.get(table) });
+		} else if (PENDING_MIGRATION_TABLES.has(table)) {
+			warnings.push({ kind: 'vantande_migration', table, files: filesOf(table), reason: PENDING_MIGRATION_TABLES.get(table) });
+		} else {
+			failures.push({ kind: 'saknad_tabell', table, files: filesOf(table) });
+		}
+	}
+
+	for (const [table, columns] of [...selectedColumns].sort(([a], [b]) => a.localeCompare(b))) {
+		const available = schema.get(table);
+		if (!available) continue; // saknade tabeller och tabeller utan åtkomst redovisas ovan
+		for (const [column, files] of [...columns].sort(([a], [b]) => a.localeCompare(b))) {
+			const key = `${table}.${column}`;
+			const fileList = [...files].sort();
+			if (available.has(column)) {
+				if (KNOWN_MISSING_COLUMNS.has(key)) {
+					failures.push({ kind: 'inaktuellt_undantag', table, column, files: fileList, reason: 'Kolumnen finns nu. Ta bort raden ur undantagslistan.' });
+				}
+			} else if (KNOWN_MISSING_COLUMNS.has(key)) {
+				info.push({ kind: 'kand_inaktuell_kolumn', table, column, files: fileList, reason: KNOWN_MISSING_COLUMNS.get(key) });
+			} else {
+				failures.push({ kind: 'saknad_kolumn', table, column, files: fileList });
+			}
+		}
+	}
+
+	return { failures, warnings, info };
+}
+
+/**
+ * Avgör varför en tabell inte syns i PostgREST:s OpenAPI.
+ *
+ * @param {number} status HTTP-status för en tom fråga mot tabellen
+ * @param {string | undefined} code PostgREST- eller Postgres-felkod i svaret
+ * @returns {AbsentStatus | 'visible'}
+ */
+export function classifyProbe(status, code) {
+	if (code === 'PGRST205' || code === '42P01') return 'missing';
+	if (code === '42501' || status === 401 || status === 403) return 'no_access';
+	if (status >= 200 && status < 300) return 'visible';
+	if (status === 404) return 'missing';
+	return 'unknown';
+}
+
+/**
+ * Läser schemat via PostgREST med den publika anon-nyckeln.
+ *
+ * @param {Map<string, Set<string>>} codeTables
+ * @param {typeof fetch} [fetchImpl]
+ */
+export async function loadLiveSchema(codeTables, fetchImpl = fetch) {
 	const url = process.env.PUBLIC_SUPABASE_URL;
 	const key = process.env.PUBLIC_SUPABASE_ANON_KEY;
 	if (!url || !key) throw new Error('PUBLIC_SUPABASE_URL och PUBLIC_SUPABASE_ANON_KEY krävs för --live');
-	const response = await fetch(`${url.replace(/\/$/, '')}/rest/v1/`, {
-		headers: { apikey: key, Accept: 'application/openapi+json' }
-	});
+	const base = `${url.replace(/\/$/, '')}/rest/v1`;
+	const headers = { apikey: key, Authorization: `Bearer ${key}` };
+
+	const response = await fetchImpl(`${base}/`, { headers: { ...headers, Accept: 'application/openapi+json' } });
 	if (!response.ok) throw new Error(`Kunde inte hämta schemat (HTTP ${response.status})`);
 	const spec = await response.json();
-	const tables = new Map();
+	/** @type {Map<string, Set<string>>} */
+	const schema = new Map();
 	for (const [name, def] of Object.entries(spec.definitions ?? {})) {
-		tables.set(name, new Set(Object.keys(def.properties ?? {})));
+		schema.set(name, new Set(Object.keys(/** @type {{ properties?: object }} */ (def).properties ?? {})));
 	}
-	return tables;
+
+	/** @type {Map<string, AbsentStatus>} */
+	const absentStatus = new Map();
+	for (const table of codeTables.keys()) {
+		if (schema.has(table)) continue;
+		let status = 0;
+		let code;
+		try {
+			const probe = await fetchImpl(`${base}/${encodeURIComponent(table)}?select=*&limit=0`, { headers });
+			status = probe.status;
+			code = /** @type {{ code?: string }} */ (await probe.json().catch(() => ({}))).code;
+		} catch {
+			status = 0;
+		}
+		const result = classifyProbe(status, code);
+		// Synlig vid provning men inte i OpenAPI: finns, men kolumnerna är okända.
+		absentStatus.set(table, result === 'visible' ? 'no_access' : result);
+	}
+	return { schema, absentStatus };
 }
 
 /**
@@ -227,42 +367,50 @@ function loadSnapshot(path) {
 
 /**
  * @param {string} title
- * @param {{ table: string, column?: string, files: string[] }[]} rows
+ * @param {Finding[]} rows
  */
-function printMissing(title, rows) {
+function printFindings(title, rows) {
+	if (!rows.length) return;
 	console.log(`\n${title}`);
-	for (const row of rows) console.log(`  - ${row.table}${row.column ? `.${row.column}` : ''}  (${row.files.join(', ')})`);
+	for (const row of rows) {
+		const name = `${row.table}${row.column ? `.${row.column}` : ''}`;
+		console.log(`  - [${row.kind}] ${name}  (${row.files.join(', ')})${row.reason ? `\n      ${row.reason}` : ''}`);
+	}
 }
 
 async function main() {
 	const args = process.argv.slice(2);
 	const codeTables = collectCodeTables();
-	let failed = false;
+	let result;
 
 	if (args.includes('--live') || args.includes('--snapshot')) {
-		const snapshotPath = args[args.indexOf('--snapshot') + 1];
-		const schema = args.includes('--live') ? await loadLiveSchema() : loadSnapshot(snapshotPath);
-		// I läget mot databasen saknar PostgREST ibland tabeller som anon inte ser,
-		// därför rapporteras de men listas tydligt som möjlig behörighetsfråga.
-		const { missing, allowed } = compareTables(codeTables, new Set(schema.keys()), {
-			allowMissing: KNOWN_MISSING_TABLES
-		});
-		const missingColumns = compareColumns(collectSelectedColumns(), schema, KNOWN_MISSING_COLUMNS);
-		console.log(`Tabeller i koden: ${codeTables.size}. Tabeller i schemat: ${schema.size}.`);
-		if (allowed.length) printMissing('Kända luckor (tillåtna tills vidare):', allowed);
-		if (missing.length) printMissing('SAKNAS i databasen:', missing);
-		if (missingColumns.length) printMissing('Kolumner som SAKNAS i databasen:', missingColumns);
-		failed = missing.length > 0 || missingColumns.length > 0;
+		const selectedColumns = collectSelectedColumns();
+		if (args.includes('--live')) {
+			const { schema, absentStatus } = await loadLiveSchema(codeTables);
+			console.log(`Tabeller i koden: ${codeTables.size}. Synliga i PostgREST: ${schema.size}.`);
+			result = evaluateSchema({ codeTables, selectedColumns, schema, absentStatus });
+		} else {
+			const schema = loadSnapshot(args[args.indexOf('--snapshot') + 1]);
+			console.log(`Tabeller i koden: ${codeTables.size}. Tabeller i ögonblicksbilden: ${schema.size}.`);
+			result = evaluateSchema({ codeTables, selectedColumns, schema });
+		}
 	} else {
 		const declared = collectDeclaredTables();
-		const available = new Set([...declared.keys(), ...LEGACY_UNDECLARED_TABLES]);
-		const { missing, allowed } = compareTables(codeTables, available, { allowMissing: KNOWN_MISSING_TABLES });
+		/** @type {Map<string, Set<string>>} */
+		const schema = new Map([...declared.keys(), ...LEGACY_UNDECLARED_TABLES].map((t) => [t, new Set()]));
 		console.log(`Tabeller i koden: ${codeTables.size}. Deklarerade i supabase/: ${declared.size}.`);
-		if (allowed.length) printMissing('Kända luckor (tillåtna tills vidare):', allowed);
-		if (missing.length) printMissing('Används i koden men deklareras inte i supabase/:', missing);
-		failed = missing.length > 0;
+		// Statiskt läge kontrollerar bara tabeller. Väntande migrationer är deklarerade.
+		result = evaluateSchema({ codeTables, selectedColumns: new Map(), schema });
+		result.failures = result.failures.filter((f) => !(f.kind === 'inaktuellt_undantag' && PENDING_MIGRATION_TABLES.has(f.table)));
+		for (const table of LEGACY_UNDECLARED_TABLES) {
+			if (declared.has(table)) result.failures.push({ kind: 'inaktuellt_undantag', table, files: [], reason: 'Tabellen är deklarerad nu. Ta bort den ur LEGACY_UNDECLARED_TABLES.' });
+		}
 	}
 
+	printFindings('Information (inget fel):', result.info);
+	printFindings('Varningar:', result.warnings);
+	printFindings('FEL:', result.failures);
+	const failed = result.failures.length > 0;
 	console.log(failed ? '\nSchemakontrollen MISSLYCKADES.' : '\nSchemakontrollen godkänd.');
 	process.exit(failed ? 1 : 0);
 }
