@@ -435,6 +435,9 @@
 		// Gästläge är avsiktligt sessionsbaserat: ingen chatttext skrivs till
 		// webbläsarens lokala lagring eller till Supabase utan inloggat konto.
 		if (!userId) return;
+		// Har kontot loggats ut eller bytts (även i en annan flik) under tiden
+		// ska ingenting skrivas tillbaka till lokal lagring.
+		if (persistenceUserId !== userId) return;
 
 		const normalized = sanitizeChatMessages(nextMessages);
 
@@ -459,7 +462,7 @@
 			if (error) throw error;
 		} catch (error) {
 			console.error('Could not sync chat history to Supabase, local fallback kept:', error);
-			writeLocalHistory(normalized, userId);
+			if (persistenceUserId === userId) writeLocalHistory(normalized, userId);
 		}
 	}
 
