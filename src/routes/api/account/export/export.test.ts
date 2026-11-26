@@ -27,58 +27,58 @@ vi.mock('$env/dynamic/public', () => ({
 // exportera någon test-hook.
 let GET: typeof import('./+server').GET;
 
-const USER = { id: 'user-1', email: 'anvandare@example.com', created_at: '2026-01-01T00:00:00.000Z' };
+const USER = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', email: 'anvandare@example.com', created_at: '2026-01-01T00:00:00.000Z' };
 
 /** Rader per tabell. Fixturen innehåller även en annan användares rad. */
 const TABLE_ROWS: Record<string, Record<string, unknown>[]> = {
 	user_helpful_reminders: [
-		{ user_id: 'user-1', item_id: 'music', active: true, revision: 1 },
-		{ user_id: 'user-1', item_id: 'rest', active: false, revision: 2 },
-		{ user_id: 'user-2', item_id: 'nature', active: true, revision: 1 }
+		{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', item_id: 'music', active: true, revision: 1 },
+		{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', item_id: 'rest', active: false, revision: 2 },
+		{ user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', item_id: 'nature', active: true, revision: 1 }
 	],
 	diary: [
-		{ id: 'd1', user_id: 'user-1', created_at: '2026-02-01T10:00:00.000Z', text: 'Min text', mood: '7', tags: null },
-		{ id: 'd2', user_id: 'user-2', created_at: '2026-02-02T10:00:00.000Z', text: 'ANNAN ANVÄNDARE', mood: '3', tags: null }
+		{ id: 'd1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', created_at: '2026-02-01T10:00:00.000Z', text: 'Min text', mood: '7', tags: null },
+		{ id: 'd2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', created_at: '2026-02-02T10:00:00.000Z', text: 'ANNAN ANVÄNDARE', mood: '3', tags: null }
 	],
-	evening_checkins: [{ id: 'e1', user_id: 'user-1', thought: 'Kvällstanke', theme_id: 'tomorrow' }],
-	creative_moments: [{ id: 'cm1', user_id: 'user-1', activity_type: 'world_coloring', occurred_at: '2026-02-01T10:00:00.000Z' }],
-	companion_daily_answers: [{ user_id: 'user-1', answer_date: '2026-02-01', question_id: 'q1' }],
-	daily_movement: [{ id: 'm1', user_id: 'user-1', entry_date: '2026-02-01', step_count: 4200 }],
-	weekly_reflections: [{ id: 'w1', user_id: 'user-1', week_start: '2026-02-01', words: [] }],
-	user_memories: [{ id: 'u1', user_id: 'user-1', content: 'Tema', created_at: '2026-02-01T00:00:00.000Z' }],
-	user_sms_preferences: [{ user_id: 'user-1', sms_opt_in: false, phone_number: null }],
+	evening_checkins: [{ id: 'e1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', thought: 'Kvällstanke', theme_id: 'tomorrow' }],
+	creative_moments: [{ id: 'cm1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', activity_type: 'world_coloring', occurred_at: '2026-02-01T10:00:00.000Z' }],
+	companion_daily_answers: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', answer_date: '2026-02-01', question_id: 'q1' }],
+	daily_movement: [{ id: 'm1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', entry_date: '2026-02-01', step_count: 4200 }],
+	weekly_reflections: [{ id: 'w1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', week_start: '2026-02-01', words: [] }],
+	user_memories: [{ id: 'u1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Tema', created_at: '2026-02-01T00:00:00.000Z' }],
+	user_sms_preferences: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', sms_opt_in: false, phone_number: null }],
 	community_posts: [
-		{ id: 'p1', user_id: 'user-1', content: 'Delat inlägg', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' },
-		{ id: 'p2', user_id: 'user-2', content: 'ANNAN', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' }
+		{ id: 'p1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Delat inlägg', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' },
+		{ id: 'p2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', content: 'ANNAN', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' }
 	],
 	community_comments: [
-		{ id: 'k1', user_id: 'user-1', post_id: 'p2', body: 'Min kommentar', created_at: '2026-02-01T00:00:00.000Z' },
-		{ id: 'k2', user_id: 'user-2', post_id: 'p1', body: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
+		{ id: 'k1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', post_id: 'p2', body: 'Min kommentar', created_at: '2026-02-01T00:00:00.000Z' },
+		{ id: 'k2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', post_id: 'p1', body: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
 	],
 	forum_threads: [
-		{ id: 't1', user_id: 'user-1', title: 'Min tråd', body: 'Text', is_anonymous: true, created_at: '2026-03-22T00:00:00.000Z' },
-		{ id: 't2', user_id: 'user-2', title: 'ANNAN', body: 'ANNAN', is_anonymous: false, created_at: '2026-03-22T00:00:00.000Z' }
+		{ id: 't1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', title: 'Min tråd', body: 'Text', is_anonymous: true, created_at: '2026-03-22T00:00:00.000Z' },
+		{ id: 't2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', title: 'ANNAN', body: 'ANNAN', is_anonymous: false, created_at: '2026-03-22T00:00:00.000Z' }
 	],
 	forum_replies: [
-		{ id: 'r1', user_id: 'user-1', thread_id: 't2', body: 'Mitt svar', is_anonymous: false, created_at: '2026-03-23T00:00:00.000Z' },
-		{ id: 'r2', user_id: 'user-2', thread_id: 't1', body: 'ANNAN', is_anonymous: true, created_at: '2026-03-23T00:00:00.000Z' }
+		{ id: 'r1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', thread_id: 't2', body: 'Mitt svar', is_anonymous: false, created_at: '2026-03-23T00:00:00.000Z' },
+		{ id: 'r2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', thread_id: 't1', body: 'ANNAN', is_anonymous: true, created_at: '2026-03-23T00:00:00.000Z' }
 	],
 	conversations: [
-		{ id: 'c1', user_id: 'user-1', category: 'A', title: 'Samtal', created_at: '2026-02-01T00:00:00.000Z' },
-		{ id: 'c2', user_id: 'user-2', category: 'B', title: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
+		{ id: 'c1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', category: 'A', title: 'Samtal', created_at: '2026-02-01T00:00:00.000Z' },
+		{ id: 'c2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', category: 'B', title: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
 	],
-	companion_presence_weeks: [{ user_id: 'user-1', week_start: '2026-02-02' }, { user_id: 'user-2', week_start: '2026-02-02' }],
-	daily_questions: [{ id: 'q1', user_id: 'user-1', date: '2026-02-01', question_text: 'Min fråga' }],
-	storify_entries: [{ id: 's1', user_id: 'user-1', content: 'Min berättelse' }, { id: 's2', user_id: 'user-2', content: 'ANNAN' }],
-	chat_history: [{ user_id: 'user-1', topic: 'angest', messages: [{ role: 'user', content: 'Hej igen' }] }, { user_id: 'user-2', topic: 'angest', messages: [{ content: 'ANNAN' }] }],
-	user_category_follows: [{ user_id: 'user-1', category_id: 'cat-1' }],
-	user_thread_follows: [{ user_id: 'user-1', thread_id: 't2' }],
-	notifications: [{ id: 'n1', user_id: 'user-1', type: 'forum_reply', title: 'Svar', actor_user_id: 'user-2' }],
-	feedback_submissions: [{ id: 'f1', user_id: 'user-1', experience: 'bra' }],
-	profiles: [{ id: 'user-1', display_name: 'Robban' }, { id: 'user-2', display_name: 'ANNAN' }],
-	journal_entries: [{ id: 'j1', user_id: 'user-1', content: 'Gammal anteckning' }],
-	user_ai_consents: [{ user_id: 'user-1', scope: 'diary', status: 'granted' }, { user_id: 'user-2', scope: 'chat', status: 'granted' }],
-	forum_reports: [{ id: 'fr1', reporter_id: 'user-1', reason: 'spam' }, { id: 'fr2', reporter_id: 'user-2', reason: 'ANNAN' }],
+	companion_presence_weeks: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', week_start: '2026-02-02' }, { user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', week_start: '2026-02-02' }],
+	daily_questions: [{ id: 'q1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', date: '2026-02-01', question_text: 'Min fråga' }],
+	storify_entries: [{ id: 's1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Min berättelse' }, { id: 's2', user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', content: 'ANNAN' }],
+	chat_history: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', topic: 'angest', messages: [{ role: 'user', content: 'Hej igen' }] }, { user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', topic: 'angest', messages: [{ content: 'ANNAN' }] }],
+	user_category_follows: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', category_id: 'cat-1' }],
+	user_thread_follows: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', thread_id: 't2' }],
+	notifications: [{ id: 'n1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', type: 'forum_reply', title: 'Svar', actor_user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' }],
+	feedback_submissions: [{ id: 'f1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', experience: 'bra' }],
+	profiles: [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', display_name: 'Robban' }, { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', display_name: 'ANNAN' }],
+	journal_entries: [{ id: 'j1', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Gammal anteckning' }],
+	user_ai_consents: [{ user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', scope: 'diary', status: 'granted' }, { user_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', scope: 'chat', status: 'granted' }],
+	forum_reports: [{ id: 'fr1', reporter_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', reason: 'spam' }, { id: 'fr2', reporter_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', reason: 'ANNAN' }],
 	messages: [
 		{ id: 'm-1', conversation_id: 'c1', role: 'user', content: 'Hej', created_at: '2026-02-01T00:01:00.000Z' },
 		{ id: 'm-2', conversation_id: 'c2', role: 'user', content: 'ANNAN', created_at: '2026-02-01T00:01:00.000Z' }
@@ -174,14 +174,14 @@ describe('åtkomst', () => {
 	it('identifierar användaren via auth.getUser, inte via klientdata', async () => {
 		mockSupabase();
 		const response = await call(
-			new Request('https://example.com/api/account/export?user_id=user-2', {
+			new Request('https://example.com/api/account/export?user_id=bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', {
 				headers: { Authorization: 'Bearer token-123' }
 			})
 		);
 		const body = await response.json();
 
 		expect(body.data.konto.e_post).toBe(USER.email);
-		expect(JSON.stringify(body)).not.toContain('user-2');
+		expect(JSON.stringify(body)).not.toContain('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
 	});
 });
 
@@ -207,7 +207,7 @@ describe('rate limiting', () => {
 		for (let i = 0; i < 6; i += 1) await call(request());
 
 		// Användare B ska fortfarande komma igenom.
-		mockSupabase({ user: { ...USER, id: 'user-9', email: 'b@example.com' } });
+		mockSupabase({ user: { ...USER, id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', email: 'b@example.com' } });
 		expect((await call(request())).status).toBe(200);
 	});
 
@@ -293,7 +293,7 @@ describe('ingen annan användares data', () => {
 
 		expect(raw).not.toContain('ANNAN ANVÄNDARE');
 		expect(raw).not.toContain('ANNAN');
-		expect(raw).not.toContain('user-2');
+		expect(raw).not.toContain('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
 	});
 
 	it('läser med användarens token, och service role bara för tabeller utan SELECT-policy', async () => {
@@ -402,7 +402,7 @@ describe('tomma och trasiga lägen', () => {
 		expect(JSON.stringify(body)).not.toMatch(/boom/i);
 	});
 
-	it('anger att en del inte finns än när tabellen saknas i databasen (creative_moments)', async () => {
+	it('creative_moments utan tabell redovisas som ej aktiverad funktion, inte som saknad data', async () => {
 		mockSupabase({
 			failOn: 'creative_moments',
 			failError: { code: 'PGRST205', message: "Could not find the table 'public.creative_moments' in the schema cache" }
@@ -411,9 +411,28 @@ describe('tomma och trasiga lägen', () => {
 		const body = await response.json();
 
 		expect(response.status).toBe(200);
+		expect(body.fullstandig).toBe(true);
+		expect(body.saknade_delar).toEqual([]);
+		expect(body.ej_aktiverade_funktioner).toEqual([{ del: 'kreativa_stunder', orsak: 'funktionen_ar_inte_aktiverad' }]);
+		expect(body.data.kreativa_stunder).toBeUndefined();
+		expect(response.headers.get('x-export-complete')).toBe('true');
+	});
+
+	it('creative_moments med annat fel än saknad tabell gör exporten ofullständig', async () => {
+		mockSupabase({ failOn: 'creative_moments', failError: { code: '57014', message: 'timeout' } });
+		const body = await (await call(request())).json();
+
 		expect(body.fullstandig).toBe(false);
-		expect(body.saknade_delar).toEqual([{ del: 'kreativa_stunder', orsak: 'inte_tillganglig_an' }]);
-		expect(body.data.dagboksinlagg).toHaveLength(1);
+		expect(body.saknade_delar).toEqual([{ del: 'kreativa_stunder', orsak: 'kunde_inte_hamtas' }]);
+	});
+
+	it('en annan saknad tabell gör alltid exporten ofullständig', async () => {
+		mockSupabase({ failOn: 'storify_entries', failError: { code: 'PGRST205', message: 'missing' } });
+		const body = await (await call(request())).json();
+
+		expect(body.fullstandig).toBe(false);
+		expect(body.saknade_delar).toEqual([{ del: 'berattelser', orsak: 'tabellen_saknas' }]);
+		expect(body.ej_aktiverade_funktioner).toEqual([]);
 	});
 
 	it('markerar delar som saknas när service role inte är konfigurerad', async () => {
@@ -475,5 +494,83 @@ describe('nedladdningen', () => {
 			/^attachment; filename="mittpsyke-data-\d{4}-\d{2}-\d{2}\.json"$/
 		);
 		expect(response.headers.get('cache-control')).toBe('no-store');
+	});
+});
+
+describe('den administrativa kodvägen (AI-samtycken och forumrapporter)', () => {
+	it('frågar bara de två tabellerna, med fasta kolumner och verifierat id som enda filter', async () => {
+		mockSupabase();
+		await call(new Request('https://example.com/api/account/export?user_id=bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb&reporter_id=bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', {
+			headers: { Authorization: 'Bearer token-123', 'x-user-id': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' }
+		}));
+
+		const service = queries.filter((q) => q.key === 'service-key');
+		expect(service.map((q) => q.table).sort()).toEqual(['forum_reports', 'user_ai_consents']);
+		for (const q of service) {
+			expect(q.filters).toHaveLength(1);
+			expect(q.filters[0][1]).toBe(USER.id);
+		}
+	});
+
+	it('forumrapporter innehåller inga modereringsfält eller id:n för rapporterat innehåll', async () => {
+		TABLE_ROWS.forum_reports[0] = {
+			id: 'fr1', reporter_id: USER.id, reason: 'spam', details: 'Min text', created_at: '2026-01-01T00:00:00Z',
+			resolved_at: '2026-01-02T00:00:00Z', thread_id: 'TREDJE-PERSONS-TRAD', reply_id: null
+		};
+		mockSupabase();
+		const body = await (await call(request())).json();
+
+		expect(body.data.forumrapporter).toEqual([{ id: 'fr1', reason: 'spam', details: 'Min text', created_at: '2026-01-01T00:00:00Z' }]);
+		expect(JSON.stringify(body)).not.toContain('TREDJE-PERSONS-TRAD');
+	});
+
+	it('en rad med fel ägare från serverläsningen returneras aldrig', async () => {
+		mocks.createClient.mockImplementation((_url: string, key: string) => ({
+			auth: { getUser: async () => ({ data: { user: USER }, error: null }) },
+			from: (table: string) => {
+				const builder = createBuilder(table, {}, key);
+				if (key === 'service-key' && table === 'user_ai_consents') {
+					// Simulerar ett fel där filtret inte gäller: alla rader kommer tillbaka
+					(builder as Record<string, unknown>).eq = () => builder;
+				}
+				return builder;
+			}
+		}));
+		serviceKey.value = 'service-key';
+		const body = await (await call(request())).json();
+
+		expect(body.data.ai_samtycken).toBeUndefined();
+		expect(body.saknade_delar).toContainEqual({ del: 'ai_samtycken', orsak: 'kunde_inte_hamtas' });
+		expect(body.fullstandig).toBe(false);
+		expect(JSON.stringify(body)).not.toContain('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+	});
+
+	it('loggar aldrig användar-id, innehåll eller nycklar när serverläsningen fallerar', async () => {
+		const spy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+		mockSupabase({ failOn: ['user_ai_consents', 'forum_reports'], failError: { code: '42501', message: 'permission denied for aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' } });
+		await call(request());
+
+		const logged = JSON.stringify(spy.mock.calls);
+		expect(logged).not.toContain(USER.id);
+		expect(logged).not.toContain('service-key');
+		expect(logged).not.toContain('permission denied');
+		spy.mockRestore();
+	});
+
+	it('serverläsningen kan inte importeras från klientkod', async () => {
+		const { readFileSync, readdirSync, statSync } = await import('node:fs');
+		const { join } = await import('node:path');
+		const offenders: string[] = [];
+		const walk = (dir: string) => {
+			for (const name of readdirSync(dir)) {
+				const path = join(dir, name);
+				if (statSync(path).isDirectory()) walk(path);
+				else if (/\.(svelte|ts)$/.test(name) && !/\+(page|layout)\.server\.ts$|\+server\.ts$|\.test\.ts$/.test(name) && !path.includes('/lib/server/')) {
+					if (readFileSync(path, 'utf8').includes('account-export-service-reads')) offenders.push(path);
+				}
+			}
+		};
+		walk(join(process.cwd(), 'src'));
+		expect(offenders).toEqual([]);
 	});
 });

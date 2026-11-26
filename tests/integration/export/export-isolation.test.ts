@@ -91,7 +91,7 @@ describe.skipIf(!DATABASE_URL)('dataexport mot isolerad databas', () => {
 
 		const module = await import('../../../src/routes/api/account/export/+server');
 		exportTables = module._EXPORT_TABLES;
-		serviceTables = module._SERVICE_TABLES;
+		serviceTables = module._SERVICE_SECTIONS.map((section) => ({ ...section, orderBy: 'created_at' }));
 	}, 120_000);
 
 	it('varje exporttabell ger användarens egna rader och inga andras', () => {

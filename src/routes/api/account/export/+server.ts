@@ -5,7 +5,13 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { env as privateEnv } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { RateLimiter } from '$lib/server/rate-limit';
-import { createServiceClient, isMissingTableError } from '$lib/server/supabase-admin';
+import { isMissingTableError } from '$lib/server/supabase-admin';
+import {
+	AI_CONSENT_EXPORT_COLUMNS,
+	FORUM_REPORT_EXPORT_COLUMNS,
+	readOwnAiConsents,
+	readOwnForumReports
+} from '$lib/server/account-export-service-reads';
 import type { RequestHandler } from './$types';
 
 // Självbetjänad dataexport.
@@ -14,10 +20,11 @@ import type { RequestHandler } from './$types';
 //
 // 1. Klienten skapas med ANON-nyckeln plus användarens egen access token, aldrig
 //    med service role. RLS gäller därmed som för användaren själv, och en
-//    felskriven fråga kan inte nå någon annans rader. Undantaget är de få
-//    tabeller i _SERVICE_TABLES som saknar SELECT-policy för användaren; utan
-//    service role skulle de ge tomt svar utan fel och exporten se fullständig
-//    ut fast den inte är det.
+//    felskriven fråga kan inte nå någon annans rader. Undantaget är två
+//    tabeller utan SELECT-policy för användaren (AI-samtycken och egna
+//    forumrapporter). De läses via de fasta, strikt avgränsade funktionerna i
+//    $lib/server/account-export-service-reads (tillfällig lösning tills
+//    användarspecifika RLS-policyer finns).
 // 2. Varje fråga filtreras dessutom explicit på det verifierade user_id:t.
 //    Det är inte dubbelarbete: schemat är inte enhetligt RLS-skyddat (se
 //    community_posts, vars select-policy släpper in alla inloggade), så
@@ -38,7 +45,7 @@ export const _EXPORT_VERSION = '4';
  * userColumn anger vilken kolumn som knyter raden till användaren (standard
  * user_id). Varje tabell här har en RLS-policy för SELECT på egna rader;
  * en tabell utan sådan policy ger tomt resultat utan fel och hör inte hemma
- * här (se _SERVICE_TABLES).
+ * här (se account-export-service-reads).
  */
 export const _EXPORT_TABLES: readonly ExportTable[] = [
 	{ key: 'dagboksinlagg', table: 'diary', columns: 'id, created_at, text, mood, tags, prompt_question, image_url, video_path', orderBy: 'created_at' },
@@ -71,13 +78,22 @@ export const _EXPORT_TABLES: readonly ExportTable[] = [
 ];
 
 /**
- * Tabeller utan SELECT-policy för användaren. De läses med service role, men
- * alltid filtrerade på det verifierade user-id:t från auth.getUser().
+ * Delar som läses via den strikt avgränsade serverläsningen. Kolumnerna är
+ * fasta i modulen. Listan används av tester och schemakontrollen.
  */
-export const _SERVICE_TABLES: readonly ExportTable[] = [
-	{ key: 'ai_samtycken', table: 'user_ai_consents', columns: 'scope, status, policy_version, granted_at, revoked_at, updated_at', orderBy: 'scope' },
-	{ key: 'forumrapporter', table: 'forum_reports', columns: 'id, thread_id, reply_id, reason, details, resolved_at, created_at', orderBy: 'created_at', userColumn: 'reporter_id' }
-];
+export const _SERVICE_SECTIONS = [
+	{ key: 'ai_samtycken', table: 'user_ai_consents', userColumn: 'user_id', columns: AI_CONSENT_EXPORT_COLUMNS.join(', ') },
+	{ key: 'forumrapporter', table: 'forum_reports', userColumn: 'reporter_id', columns: FORUM_REPORT_EXPORT_COLUMNS.join(', ') }
+] as const;
+
+/**
+ * Tabeller för funktioner som inte är aktiverade i databasen än (migrationen
+ * väntar). Saknas tabellen helt kan ingen användardata finnas där, eftersom
+ * funktionen inte sparar något någon annanstans. Delen redovisas då som en
+ * funktion som inte är aktiverad, inte som saknad data. Alla andra saknade
+ * tabeller gör exporten ofullständig.
+ */
+export const _UNAVAILABLE_FEATURE_TABLES: ReadonlySet<string> = new Set(['creative_moments']);
 
 type PostgrestErrorLike = { code?: string | null; message?: string | null };
 
@@ -90,8 +106,9 @@ type ExportTable = {
 };
 
 /** Varför en del saknas i exporten. Visas för användaren i filen. */
-type MissingReason = 'inte_tillganglig_an' | 'kunde_inte_hamtas';
+type MissingReason = 'tabellen_saknas' | 'kunde_inte_hamtas';
 type MissingSection = { del: string; orsak: MissingReason };
+type UnavailableFeature = { del: string; orsak: 'funktionen_ar_inte_aktiverad' };
 
 /**
  * Fält ur user_metadata som användaren själv har satt i gränssnittet.
@@ -204,6 +221,7 @@ export const GET: RequestHandler = async ({ request }) => {
 	};
 
 	const missing: MissingSection[] = [];
+	const unavailable: UnavailableFeature[] = [];
 	let succeeded = 0;
 
 	// Varje del hämtas för sig. Ett fel i en del stoppar inte resten, men delen
@@ -215,9 +233,13 @@ export const GET: RequestHandler = async ({ request }) => {
 			succeeded += 1;
 			return value;
 		} catch (error) {
-			const reason: MissingReason = isMissingTableError(error as PostgrestErrorLike, table)
-				? 'inte_tillganglig_an'
-				: 'kunde_inte_hamtas';
+			const tableMissing = isMissingTableError(error as PostgrestErrorLike, table);
+			if (tableMissing && _UNAVAILABLE_FEATURE_TABLES.has(table)) {
+				// Funktionen finns inte i databasen än, så ingen data kan finnas.
+				unavailable.push({ del: key, orsak: 'funktionen_ar_inte_aktiverad' });
+				return null;
+			}
+			const reason: MissingReason = tableMissing ? 'tabellen_saknas' : 'kunde_inte_hamtas';
 			// Serverloggen får tabell och kod, aldrig innehåll eller användar-id.
 			console.error('Data export section failed', { section: key, reason, code: (error as PostgrestErrorLike)?.code });
 			missing.push({ del: key, orsak: reason });
@@ -247,14 +269,12 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (rows) data[spec.key] = rows;
 	}
 
-	const serviceClient = createServiceClient();
-	for (const spec of _SERVICE_TABLES) {
-		const rows = await section(spec.key, spec.table, async () => {
-			if (!serviceClient) throw new Error('service client saknas');
-			return readTable(serviceClient, spec);
-		});
-		if (rows) data[spec.key] = rows;
-	}
+	// Strikt avgränsad serverläsning. user.id kommer från auth.getUser() ovan,
+	// aldrig från klienten.
+	const consents = await section('ai_samtycken', 'user_ai_consents', () => readOwnAiConsents(user.id));
+	if (consents) data.ai_samtycken = consents;
+	const reports = await section('forumrapporter', 'forum_reports', () => readOwnForumReports(user.id));
+	if (reports) data.forumrapporter = reports;
 
 	const sms = await section('sms_installningar', 'user_sms_preferences', async () => {
 		const { data: row, error } = await supabase
@@ -286,6 +306,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			fullstandig: complete,
 			// Delar som saknas i den här filen. Tom lista betyder att allt kom med.
 			saknade_delar: missing,
+			// Funktioner som inte är aktiverade än. Där kan ingen data finnas.
+			ej_aktiverade_funktioner: unavailable,
 			data
 		},
 		null,
