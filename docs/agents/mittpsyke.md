@@ -15,12 +15,11 @@ Las forst berorda filer, narliggande tester och `AGENTS.md`. Begransa varje andr
 - AI-forslag som kan skriva, radera, publicera eller dela data ska folja foresla -> validera -> anvandaren godkanner -> utfor. Godkannandet ar separat och inga destruktiva eller publicerande atgarder far auto-godkannas.
 - Granska databehandlingsavtal, region och loggning innan en ny AI-provider far behandla kansligt innehall. Mark AI-genererat innehall tydligt dar det visas.
 
-## Senaste sakerhetsgranskning
+## Sakerhet
 
-- Rapport: `docs/audits/MITTPSYKE_SECURITY_PRIVACY_AUDIT_V1.md` (fas 1, 2026-11-26, granskad commit `59f3886e0c5c4a9dff3c5ab0554390c54ad5839c`).
-- Sammanfattning: 0 CRITICAL, 1 HIGH, 7 MEDIUM, 8 LOW. HIGH: dataexporten (`/api/account/export`) fallerar for alla eftersom tabellen `creative_moments` saknas i produktion (migrationsdrift). MEDIUM: drift mellan repo-migrationer och databas, dagboksbilder sparas som publika URL:er trots privat bucket, rester efter radering, ofullstandig export, rapportfunktionen skriver till obefintlig tabell `reports`, beroenden med kanda sarbarheter, rate limit beror pa `ADDRESS_HEADER` i Render (ej verifierat).
-- Grundskyddet haller: RLS pa alla tabeller, krisflodet fore AI, samtycke pa servern fore AI, gastchatt utan lagring, GA samtyckesstyrt och sanerat.
-- Fas 2 (atgarder) ar inte paborjad. Las rapporten och respektera dess prioritering innan andringar.
+- Sakerhetsgranskningar, beslut och aterstallningsrutiner forvaltas i intern dokumentation som inte ar publik. Fraga projektagaren om atkomst innan andringar av databas, RLS, autentisering, lagring, backup eller kontoradering.
+- Andringar i produktionsdatabasen (migrationer) kraver uttryckligt godkannande och en verifierad backup.
+- Lagg aldrig sakerhetsrapporter, sarbarhetsdetaljer, hemligheter eller anvandardata i detta publika repo.
 
 ## Verifiering
 
