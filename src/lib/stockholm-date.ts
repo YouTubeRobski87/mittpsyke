@@ -19,6 +19,20 @@ const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 	day: '2-digit'
 });
 
+const stockholmOffsetFormatter = new Intl.DateTimeFormat('en-GB', {
+	timeZone: STOCKHOLM_TIME_ZONE,
+	timeZoneName: 'longOffset'
+});
+
+/** Svensk midnatt som UTC-tidsstämpel för databasfrågor med kalendergränser. */
+export function stockholmDayStart(dateKey: string): string {
+	// I Stockholm infaller sommartidsskiftet efter både lokal och UTC-midnatt.
+	const midnight = new Date(`${dateKey}T00:00:00.000Z`);
+	const offset = stockholmOffsetFormatter.formatToParts(midnight)
+		.find((part) => part.type === 'timeZoneName')?.value.slice(3);
+	return new Date(`${dateKey}T00:00:00.000${offset || 'Z'}`).toISOString();
+}
+
 /** Dygnsnyckel i svensk tid för en timestamp. Ogiltiga värden ger null. */
 export function toStockholmDateKey(value: string | Date | null | undefined): string | null {
 	if (!value) return null;

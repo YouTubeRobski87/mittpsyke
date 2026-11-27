@@ -319,7 +319,9 @@ function buildBasis(
 		`Halvåret visas som ${countLabel(view.monthsShown, 'kalendermånad', 'kalendermånader')}, varav ${view.monthsWithData} har tillräckligt underlag för ett eget snitt. Tillsammans bygger de på ${countLabel(view.entryCount, 'måenderegistrering', 'måenderegistreringar')}.`
 	);
 
-	if (view.edges) {
+	if (truncated) {
+		parts.push('Perioden innehåller fler registreringar än den säkra läsgränsen. Därför går det inte att jämföra början med slutet av halvåret.');
+	} else if (view.edges) {
 		parts.push(
 			`Riktningen jämför ${view.edges.firstLabel} (${formatMood(view.edges.firstAverage)}) med ${view.edges.lastLabel} (${formatMood(view.edges.lastAverage)}). Skillnaden måste vara minst ${formatMood(EDGE_DIFFERENCE_THRESHOLD)} steg innan den kallas högre eller lägre.`
 		);
@@ -341,11 +343,6 @@ function buildBasis(
 			startSentence(
 				`${joinLabels(view.missingMonths)} saknar måenderegistreringar helt. En månad utan registreringar räknas aldrig som en förändring.`
 			)
-		);
-	}
-	if (truncated) {
-		parts.push(
-			'Perioden innehåller fler registreringar än den säkra läsgränsen, så underlaget kan vara beskuret.'
 		);
 	}
 
@@ -658,8 +655,8 @@ export function buildHalfYearView(input: {
 	const lowest = sorted.at(-1) ?? null;
 	const monthSpread =
 		highest && lowest && valued.length >= 2 ? roundToOneDecimal(highest.mean - lowest.mean) : null;
-	const edges = buildEdgeComparison(months);
-	const variation = buildVariation(months);
+	const edges = truncated ? null : buildEdgeComparison(months);
+	const variation = truncated ? 'insufficient' : buildVariation(months);
 	const reflection = buildReflection({ months, edges, monthSpread, truncated });
 
 	const monthViews: HalfYearMonthView[] = months.map((month) => {

@@ -106,6 +106,39 @@ describe('Framstegsanalysens täckning', () => {
 		expect(analysis.insights.some((item) => item.id === 'trend')).toBe(false);
 	});
 
+	it('drar ingen slutsats mellan början och slutet när äldre rader har fallit bort', () => {
+		const rows = [
+			...days('2026-03-18', [2, 2, 2, 2, 2]),
+			...days('2026-04-03', [2, 2, 2, 2, 2]),
+			...days('2026-06-20', [5, 9, 5, 9, 5], () => 'Stress och press i dag.'),
+			...days('2026-07-10', [5, 9, 5, 9, 5], () => 'Stress och press i dag.')
+		];
+		rows[0].text = 'Stress och press i dag.';
+		rows[1].text = 'Stress och press i dag.';
+		const complete = buildProgressAnalysis(rows, 180, NOW);
+		const truncated = buildProgressAnalysis(rows, 180, NOW, { truncated: true });
+
+		expect(complete.trend.direction).toBe('clearly-higher');
+		expect(complete.variability.direction).toBe('more-varied');
+
+		expect(truncated.trend.direction).toBe('insufficient');
+		expect(truncated.variability.direction).toBe('insufficient');
+		expect(truncated.longPeriodSummary).toContain('någon tydlig riktning går inte att se');
+		const comparisons = ['trend', 'variability'];
+		for (const items of [truncated.insights, truncated.halfYearSummary]) {
+			expect(items.some((item) => comparisons.includes(item.id))).toBe(false);
+		}
+		expect(truncated.moodSummary).toEqual(complete.moodSummary);
+		expect(truncated.monthly).toEqual(complete.monthly);
+
+		const textOnly = rows.map((row) => ({ ...row, mood: null, text: row.text || 'Jag skrev några rader.' }));
+		const fullTextAnalysis = buildProgressAnalysis(textOnly, 180, NOW);
+		const partialTextAnalysis = buildProgressAnalysis(textOnly, 180, NOW, { truncated: true });
+		expect(fullTextAnalysis.insights.map((item) => item.id)).toContain('theme-change:Stress');
+		expect(partialTextAnalysis.insights.map((item) => item.id)).not.toContain('theme-change:Stress');
+		expect(partialTextAnalysis.themes).toEqual(fullTextAnalysis.themes);
+	});
+
 	it('skapar månadstäckning för hela sexmånadersperioden', () => {
 		const rows = [
 			...days('2026-02-18', [5, 5, 5, 5]),
