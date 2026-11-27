@@ -171,7 +171,10 @@ describe('tunt och saknat underlag', () => {
 		const truncated = view(months, true);
 		expect(truncated.hasDirection).toBe(false);
 		expect(truncated.summary).toBe(UNEVEN_COVERAGE_COPY);
+		expect(truncated.edges).toBeNull();
+		expect(truncated.variation).toBe('insufficient');
 		expect(truncated.basis).toContain('säkra läsgränsen');
+		expect(truncated.basis).not.toContain('Riktningen jämför');
 	});
 
 	it('ger ingen vy när det inte finns några månadsblock', () => {

@@ -252,18 +252,19 @@ function prepare(rows: ProgressAnalysisRow[], overrides: ProgressThemeOverrides 
 	return { moods: moods.sort((a, b) => a.date.localeCompare(b.date)), texts: texts.sort((a, b) => a.date.localeCompare(b.date)), activeDays, relevantEntryCount };
 }
 
-type TimeSegments = { first: MoodRecord[]; last: MoodRecord[]; firstLabel: string; lastLabel: string };
+type TimeSegments = { first: MoodRecord[]; last: MoodRecord[]; firstLabel: string; lastLabel: string; incomplete: boolean };
 
 /**
  * The comparison windows are fixed calendar ranges. A burst of entries on one
  * day must never move the beginning or end of a user's period.
  */
-function comparisonSegments(moods: MoodRecord[], periodDays: ProgressPeriodDays, now: Date): TimeSegments {
+function comparisonSegments(moods: MoodRecord[], periodDays: ProgressPeriodDays, now: Date, incomplete: boolean): TimeSegments {
 	const { start, end } = getProgressPeriodBounds(periodDays, now);
 	const segmentDays = periodDays === 30 ? 14 : Math.floor(periodDays / 3);
 	const firstEnd = shiftDateKey(start, segmentDays - 1);
 	const lastStart = shiftDateKey(end, -(segmentDays - 1));
 	return {
+		incomplete,
 		first: moods.filter((item) => item.date >= start && item.date <= firstEnd),
 		last: moods.filter((item) => item.date >= lastStart && item.date <= end),
 		firstLabel: `${dateLabel(start)}–${dateLabel(firstEnd)}`,
@@ -273,6 +274,7 @@ function comparisonSegments(moods: MoodRecord[], periodDays: ProgressPeriodDays,
 
 function trendFrom(segments: TimeSegments): TrendAnalysis {
 	if (
+		segments.incomplete ||
 		segments.first.length < MIN_TREND_SAMPLES_PER_SEGMENT ||
 		segments.last.length < MIN_TREND_SAMPLES_PER_SEGMENT
 	) {
@@ -287,6 +289,7 @@ function trendFrom(segments: TimeSegments): TrendAnalysis {
 
 function variabilityFrom(segments: TimeSegments) {
 	if (
+		segments.incomplete ||
 		segments.first.length < MIN_TREND_SAMPLES_PER_SEGMENT ||
 		segments.last.length < MIN_TREND_SAMPLES_PER_SEGMENT
 	) {
@@ -471,7 +474,10 @@ export function buildProgressAnalysis(
 	const values = moods.map((item) => item.mood);
 	const moodDays = new Set(moods.map((item) => item.date));
 	const mean = average(values);
-	const segments = comparisonSegments(moods, periodDays, now);
+	// The row limit drops the oldest entries, so a partial half-year cannot
+	// support a comparison with its beginning, even if both blocks have rows.
+	const incompleteHalfYear = periodDays === 180 && options.truncated === true;
+	const segments = comparisonSegments(moods, periodDays, now, incompleteHalfYear);
 	const trend = trendFrom(segments);
 	const variability = variabilityFrom(segments);
 	const insights: ProgressInsight[] = [];
@@ -549,7 +555,7 @@ export function buildProgressAnalysis(
 		.map((theme) => buildRecurringTheme(theme, texts))
 		.filter((theme): theme is RecurringTheme => theme !== null);
 	if (themes[0]) insights.push(insight('theme', 'recurring', `${themes[0].label} återkommer i dina texter`, `Temat finns i ${themes[0].count} av dina sparade texter ${periodLabel(periodDays)}.`, `${themes[0].label} förekommer i ${themes[0].firstHalfCount} texter i början och ${themes[0].secondHalfCount} senare i perioden.`, themes[0].count, themes[0].count / Math.max(texts.length, 1), 82));
-	if (periodDays >= 90) for (const theme of themes) {
+	if (periodDays >= 90 && !incompleteHalfYear) for (const theme of themes) {
 		const firstTotal = texts.filter((item) => item.date < splitDate).length;
 		const secondTotal = texts.length - firstTotal;
 		if (theme.firstHalfCount < 2 || theme.secondHalfCount < 2 || firstTotal === 0 || secondTotal === 0) continue;

@@ -76,7 +76,8 @@ export function buildOpenAIChatParams(
 export class OpenAITextProvider implements AITextProvider {
 	constructor(
 		private readonly client: OpenAIClient,
-		private readonly confidentialCompletion?: ConfidentialCompletion
+		private readonly confidentialCompletion?: ConfidentialCompletion,
+		private readonly useConfidentialTransport: () => boolean = () => false
 	) {}
 
 	async generate(request: AITextProviderRequest): Promise<string> {
@@ -84,10 +85,11 @@ export class OpenAITextProvider implements AITextProvider {
 		// passera leverantörsfelmappningen och se ut som ett tillfälligt fel.
 		const params = buildOpenAIChatParams(request);
 		try {
-			if (request.confidential && !this.confidentialCompletion) {
+			const useConfidentialTransport = request.confidential || this.useConfidentialTransport();
+			if (useConfidentialTransport && !this.confidentialCompletion) {
 				throw new AITextGenerationError('configuration', 'Konfidentiell AI-transport saknas.');
 			}
-			const completion = request.confidential && this.confidentialCompletion
+			const completion = useConfidentialTransport && this.confidentialCompletion
 				? await this.confidentialCompletion(params, request.timeoutMs)
 				: await this.client.chat.completions.create(params, { timeout: request.timeoutMs });
 			const choice = completion?.choices?.[0];
@@ -179,8 +181,8 @@ export function createDefaultTextProvider(): AITextProvider {
 	}
 
 	const client = new OpenAI({ apiKey });
-	// The SDK logs request and response bodies when DEBUG=true. Confidential
-	// calls use the same configuration and parameters without entering that SDK path.
+	// The SDK logs request and response bodies when DEBUG=true. In that mode
+	// every text request uses the existing confidential transport.
 	return new OpenAITextProvider(client, async (params, timeoutMs) => {
 		const headers = new Headers({
 			Authorization: `Bearer ${apiKey}`,
@@ -214,5 +216,5 @@ export function createDefaultTextProvider(): AITextProvider {
 			if (error instanceof AITextGenerationError) throw error;
 			throw new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
 		}
-	});
+	}, () => process.env.DEBUG === 'true');
 }

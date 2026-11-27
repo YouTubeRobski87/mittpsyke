@@ -73,8 +73,13 @@ describe('gemensam felloggning i textlagret', () => {
 		expect(logged).not.toContain(SECRET_LIKE);
 	});
 
-	it('använder den konfidentiella transporten även med DEBUG=true och loggar inga utdrag eller svar', async () => {
-		env.OPENAI_DIARY_NARRATIVE_MODEL = 'gpt-4o-mini-2024-07-18';
+	it.each([
+		{ purpose: 'diary-narrative', confidential: true, modelEnv: 'OPENAI_DIARY_NARRATIVE_MODEL', timeoutMs: 20_000, tokens: 900 },
+		{ purpose: 'support-chat', confidential: false, modelEnv: 'OPENAI_SUPPORT_CHAT_MODEL', timeoutMs: 25_000, tokens: 500 }
+	] as const)('skyddar $purpose när DEBUG=true utan att logga innehåll', async ({
+		purpose, confidential, modelEnv, timeoutMs, tokens
+	}) => {
+		env[modelEnv] = 'gpt-4o-mini-2024-07-18';
 		const { generateAIText } = await generator();
 		const citation = 'Syntetiskt stödspann';
 		const sourceId = 'syntetisk-kalla-9';
@@ -110,8 +115,8 @@ describe('gemensam felloggning i textlagret', () => {
 		vi.stubGlobal('fetch', transport);
 
 		const confidentialRequest = {
-			purpose: 'diary-narrative' as const,
-			confidential: true as const,
+			purpose,
+			...(confidential ? { confidential: true as const } : {}),
 			outputFormat: 'json_object' as const,
 			messages: [{ role: 'user' as const, content: [USER_TEXT, citation, sourceId].join(' ') }]
 		};
@@ -124,7 +129,7 @@ describe('gemensam felloggning i textlagret', () => {
 			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'rate_limit', providerStatus: 429 });
 			timeout.mockReturnValueOnce(timeoutController.signal);
 			await expect(generateAIText(confidentialRequest)).rejects.toMatchObject({ code: 'timeout' });
-			expect(timeout.mock.calls).toEqual([[20_000], [20_000], [20_000], [20_000], [20_000]]);
+			expect(timeout.mock.calls).toEqual(Array.from({ length: 5 }, () => [timeoutMs]));
 			expect(transport).toHaveBeenCalledTimes(5);
 			const [url, options] = transport.mock.calls[0];
 			expect(url).toBe('https://example.invalid/v1/chat/completions');
@@ -134,7 +139,7 @@ describe('gemensam felloggning i textlagret', () => {
 			expect(options.headers.get('OpenAI-Project')).toBe('synthetic-project');
 			expect(JSON.parse(options.body)).toMatchObject({
 				model: 'gpt-4o-mini-2024-07-18',
-				max_completion_tokens: 900,
+				max_completion_tokens: tokens,
 				response_format: { type: 'json_object' },
 				messages: confidentialRequest.messages
 			});
