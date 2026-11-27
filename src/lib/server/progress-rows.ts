@@ -11,7 +11,7 @@ import {
 	normalizeProgressThemeOverrides,
 	type ProgressThemeOverrides
 } from '$lib/progress-theme-overrides';
-import { shiftDateKey } from '$lib/stockholm-date';
+import { shiftDateKey, stockholmDayStart } from '$lib/stockholm-date';
 
 export const INSIGHTS_ROW_LIMIT = 500;
 export const VALID_PROGRESS_PERIODS = new Set<ProgressPeriodDays>([30, 90, 180]);
@@ -32,17 +32,19 @@ export function readThemeOverrides(user: Pick<User, 'user_metadata'>): ProgressT
 export async function loadProgressRows(
 	supabase: SupabaseClient,
 	userId: string,
-	period: ProgressPeriodDays
+	period: ProgressPeriodDays,
+	now: Date = new Date()
 ): Promise<{ rows: LighterDaysRow[]; truncated: boolean; error: string | null }> {
-	const { start: periodStart } = getProgressPeriodBounds(period);
-	// En kalenderdag extra bakåt fångar tidsstämplar nära sommartidsskiftet.
-	// filterProgressRows() lägger sedan på det exakta Stockholmsintervallet.
-	const queryStart = `${shiftDateKey(periodStart, -1)}T00:00:00.000Z`;
+	const { start, end } = getProgressPeriodBounds(period, now);
+	// Samma svenska kalendergränser måste gälla för både raderna och antalet.
+	const queryStart = stockholmDayStart(start);
+	const queryEnd = stockholmDayStart(shiftDateKey(end, 1));
 	const { data, error, count } = await supabase
 		.from('diary')
 		.select('id, created_at, mood, text, tags', { count: 'exact' })
 		.eq('user_id', userId)
 		.gte('created_at', queryStart)
+		.lt('created_at', queryEnd)
 		// Begränsningen ska alltid prioritera det användaren nyligen lagt till.
 		// Analysen sorterar tillbaka raderna kronologiskt innan den jämför
 		// perioder, så den läser aldrig äldre data på bekostnad av nya mönster.
